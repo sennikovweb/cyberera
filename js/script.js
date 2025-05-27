@@ -633,7 +633,7 @@ async function lastFileUpload() {
 
 	try {
 
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=${filesJson[filesJson.length - 1].fileName}`
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${filesJson[filesJson.length - 1].fileName}`
 
 		const data = await fetch(url);
 
