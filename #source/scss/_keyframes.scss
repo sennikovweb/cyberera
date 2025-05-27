@@ -1,0 +1,119 @@
+@keyframes ready-animation {
+	0% {
+		box-shadow: 0px 0px 10px $color-akcent2;
+	}
+
+	50% {
+		box-shadow: 0px 0px 20px $color-akcent2;
+
+	}
+
+	100% {
+		box-shadow: 0px 0px 10px $color-akcent2;
+	}
+}
+
+@keyframes error-animation {
+	0% {
+		transform: perspective(3000) translate3d(0px, 0px, 0px);
+	}
+
+	25% {
+		transform: perspective(3000) translate3d(-25px, 0px, 0px);
+	}
+
+	50% {
+		transform: perspective(3000) translate3d(10px, 0px, 0px);
+	}
+
+	75% {
+		transform: perspective(3000) translate3d(-5px, 0px, 0px);
+	}
+
+	100% {
+		transform: perspective(3000) translate3d(0px, 0px, 0px);
+	}
+
+
+}
+
+@keyframes best-lap-animation {
+	0% {
+		box-shadow: 0px 0px 5px $color-akcent2;
+	}
+
+	50% {
+		box-shadow: 0px 0px 15px $color-akcent2;
+	}
+
+	100% {
+		box-shadow: 0px 0px 5px $color-akcent2;
+	}
+}
+
+@keyframes round-end-animation {
+	0% {
+		box-shadow: 0px 0px 4px $color-back inset;
+	}
+
+	50% {
+		box-shadow: 0px 0px 15px $color-back inset;
+	}
+
+	100% {
+		box-shadow: 0px 0px 4px $color-back inset;
+	}
+}
+
+
+@keyframes best-lap-animation2 {
+	0% {
+		box-shadow: 0px 0px 0px $color-akcent2;
+	}
+
+	50% {
+		box-shadow: 0px 0px 5px $color-akcent2;
+	}
+
+	100% {
+		box-shadow: 0px 0px 0px $color-akcent2;
+	}
+}
+
+
+@keyframes loading {
+	0% {
+		background-color: #45a29200;
+	}
+
+	50% {
+		background-color: #45a29243;
+
+	}
+
+	100% {
+		background-color: #45a29200;
+	}
+}
+
+@keyframes no-files {
+	0% {
+		background-position: 100% 0;
+	}
+
+	100% {
+		background-position: -100% 0;
+	}
+
+}
+
+@keyframes no-files-2 {
+	0% {
+		background-position: 100% 0;
+	}
+
+	100% {
+		background-position: -100% 0;
+	}
+
+}
