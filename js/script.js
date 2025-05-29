@@ -323,7 +323,8 @@ function calendarRender(filesloaded) {
 
 		if (currentMonth.getFullYear() == today.getFullYear() &&
 			currentMonth.getMonth() == today.getMonth() &&
-			dayNumber == today.getDate()) {
+			dayNumber == today.getDate()&&
+		   isCurrentMonth) {
 			dayElement.classList.add('_day__today')
 
 		}
