@@ -716,8 +716,9 @@ async function lastFileUpload() {
 
 	try {
 		const fileName = filesJson[filesJson.length - 1].fileName;
-		// const fileName = `2025-06-24_19-31_Whoopclub.json`
 		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+
+		// const fileName = `2025-06-24_19-31_Whoopclub.json`
 		// const url = fileName
 
 		const data = await fetch(url);
@@ -1083,6 +1084,7 @@ function startFileView(fileType, fileName) {
 				const hideEnd = setTimeout(() => {
 					wrapperElement.classList.remove('_to-hide')
 					wrapperElement.classList.remove('_hide')
+					clearTimeout(hideEnd);
 				}, 1000);
 			}
 		}, 500);
@@ -1094,6 +1096,11 @@ function startFileView(fileType, fileName) {
 			mainForm.subtittle.remove();
 			buttons.container.classList.add('_active');
 			classButtonsContainer.classList.add('_active')
+
+			const homeElement = document.querySelector('.home')
+			homeElement.classList.remove('_hidden')
+			console.log('hiddennn?');
+
 		}, 500);
 	} else {
 
