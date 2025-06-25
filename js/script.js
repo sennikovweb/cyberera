@@ -249,10 +249,9 @@ async function urlEventUpload() {
 	try {
 
 		const fileName = `${isEvent}.json`
-		console.log('fileName', fileName);
 
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		// const url = fileName
+		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		const url = fileName
 
 		const data = await fetch(url);
 
@@ -275,8 +274,21 @@ async function urlEventUpload() {
 		const shareUrlElement = document.querySelector('.author__share-url')
 
 		shareUrlElement.textContent = eventUrl.href;
+		if (language == 'ru') {
+			const languageElement = document.querySelector('.language__EN')
+			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+			console.log('newLanguageChangeLinkRUU', newLanguageChangeLink);
 
+			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
 
+		} else if (language == 'en') {
+			const languageElement = document.querySelector('.language__RU')
+			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+			console.log('newLanguageChangeLinkENNNN', newLanguageChangeLink);
+
+			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+
+		}
 
 	} catch (error) {
 		const wrapperElement = document.querySelector('.wrapper')
@@ -485,9 +497,9 @@ async function filesJsonLoad() {
 
 	try {
 
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
+		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
 
-		// const url = `files.json`
+		const url = `files.json`
 
 
 		const response = await fetch(url);
@@ -703,10 +715,10 @@ async function lastFileUpload() {
 	}, 500);
 
 	try {
-		const fileName = filesJson[filesJson.length - 1].fileName;
-		// const fileName = `2025-06-24_19-31_Whoopclub.json`
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		// const url = fileName
+		// const fileName = filesJson[filesJson.length - 1].fileName;
+		const fileName = `2025-06-24_19-31_Whoopclub.json`
+		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		const url = fileName
 
 		const data = await fetch(url);
 
@@ -730,7 +742,6 @@ async function lastFileUpload() {
 				const shareUrlElement = document.querySelector('.author__share-url')
 
 				shareUrlElement.textContent = eventUrl.href;
-
 
 			}
 		})
