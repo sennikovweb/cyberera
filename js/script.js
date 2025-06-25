@@ -228,6 +228,63 @@ if (touchZapros.matches) {			//Анимация кнопок на тач экр�
 let filesJson = [];
 
 
+//Проверка, есть ли ивент в url
+const isEvent = new URLSearchParams(window.location.search).get('event')
+
+if (isEvent) {
+	const wrapperElement = document.querySelector('.wrapper')
+	wrapperElement.classList.add('_hide')
+	urlEventUpload();
+	console.log('urlEvent');
+
+} else {
+	const mainElement = document.querySelector('.main')
+	mainElement.classList.remove('_hide');
+	console.log('no event on url');
+}
+
+
+// Загрузка ивента по имени из url
+async function urlEventUpload() {
+	try {
+
+		const fileName = `${isEvent}.json`
+		console.log('fileName', fileName);
+
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		// const url = fileName
+
+		const data = await fetch(url);
+
+
+
+		if (!data.ok) throw new Error('Ошибка загрузки');
+
+		mainObj = await data.json();
+
+		makeRaceClassButtons();
+
+
+		console.log('startViewwww');
+
+		startFileView('url', fileName);
+
+		const eventUrl = new URL(window.location.href)
+		eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
+
+		const shareUrlElement = document.querySelector('.author__share-url')
+
+		shareUrlElement.textContent = eventUrl.href;
+
+
+
+	} catch (error) {
+		const wrapperElement = document.querySelector('.wrapper')
+		wrapperElement.classList.add('_error')
+	}
+}
+
+
 //Календарь///////////////////////////
 let currentMonth = new Date();
 const daysElement = document.querySelector('.calendar__days')
@@ -323,8 +380,8 @@ function calendarRender(filesloaded) {
 
 		if (currentMonth.getFullYear() == today.getFullYear() &&
 			currentMonth.getMonth() == today.getMonth() &&
-			dayNumber == today.getDate()&&
-		   isCurrentMonth) {
+			dayNumber == today.getDate() &&
+			isCurrentMonth) {
 			dayElement.classList.add('_day__today')
 
 		}
@@ -430,6 +487,9 @@ async function filesJsonLoad() {
 
 		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
 
+		// const url = `files.json`
+
+
 		const response = await fetch(url);
 
 		if (!response.ok) throw new Error("Ошибка загрузки");
@@ -481,9 +541,11 @@ async function filesJsonLoad() {
 
 		calendarRender(true);
 
+		console.log('filessss', filesJson);
 
 	} catch (error) {
 		console.error("Не удалось загрузить файл:", error);
+
 	}
 }
 
@@ -591,6 +653,14 @@ async function dateFileUpload(fileName) {
 						behavior: 'smooth'
 					})
 					startFileView('date', fileName);
+
+					const eventUrl = new URL(window.location.href)
+					eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
+
+					const shareUrlElement = document.querySelector('.author__share-url')
+
+					shareUrlElement.textContent = eventUrl.href;
+
 				}
 			})
 
@@ -633,8 +703,10 @@ async function lastFileUpload() {
 	}, 500);
 
 	try {
-
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${filesJson[filesJson.length - 1].fileName}`
+		const fileName = filesJson[filesJson.length - 1].fileName;
+		// const fileName = `2025-06-24_19-31_Whoopclub.json`
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		// const url = fileName
 
 		const data = await fetch(url);
 
@@ -651,6 +723,15 @@ async function lastFileUpload() {
 		lastFileButton.addEventListener('transitionend', function (e) {
 			if (e.propertyName === 'transform') {
 				startFileView('local', filesJson[filesJson.length - 1].fileName);
+
+				const eventUrl = new URL(window.location.href)
+				eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
+
+				const shareUrlElement = document.querySelector('.author__share-url')
+
+				shareUrlElement.textContent = eventUrl.href;
+
+
 			}
 		})
 	} catch (error) {
@@ -659,7 +740,6 @@ async function lastFileUpload() {
 
 	}
 	clearTimeout(loadTimer);
-
 
 }
 
@@ -905,7 +985,29 @@ function startFileView(fileType, fileName) {
 
 
 	if (fileType != 'classSwitch') {
+		const shareElement = document.querySelector('.author__share')
 
+		shareElement.classList.remove('_hide')
+
+		shareElement.addEventListener('click', async function () {
+
+			const urlToCopy = document.querySelector('.author__share-url').textContent;
+			try {
+				await navigator.clipboard.writeText(urlToCopy)
+
+				shareElement.classList.add('_success')
+				const timer = setTimeout(() => {
+					shareElement.classList.remove('_success')
+					clearTimeout(timer)
+				}, 1000);
+			} catch (error) {
+				shareElement.classList.add('_error')
+				const timer = setTimeout(() => {
+					shareElement.classList.remove('_error')
+					clearTimeout(timer)
+				}, 1000);
+			}
+		})
 
 
 		const windowWidth = window.innerWidth;			// ширина окна, сколько надо проехаться кнопками за границу
@@ -936,9 +1038,6 @@ function startFileView(fileType, fileName) {
 		mainForm.subtittle.classList.add('_hidden');
 
 
-
-
-
 		setTimeout(() => {			//меняем после анимации кнопки и label, которые ниже.
 			const mainDisplayName = document.querySelector('.main-tittle__display-name')
 			const mainDate = document.querySelector('.main-tittle__date')
@@ -964,6 +1063,17 @@ function startFileView(fileType, fileName) {
 			lastFileElement.remove();
 			calendarElement.remove();
 			dateFilesElement.remove();
+			if (fileType == 'url') {
+				const mainElement = document.querySelector('.main')
+				const wrapperElement = document.querySelector('.wrapper')
+
+				mainElement.classList.remove('_hide')
+				wrapperElement.classList.add('_to-hide')
+				const hideEnd = setTimeout(() => {
+					wrapperElement.classList.remove('_to-hide')
+					wrapperElement.classList.remove('_hide')
+				}, 1000);
+			}
 		}, 500);
 
 		setTimeout(() => {

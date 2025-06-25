@@ -117,3 +117,14 @@
 	}
 
 }
+
+@keyframes to-error {
+	0% {
+		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, $color-akcent1 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+	}
+
+	100% {
+		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+	}
+
+}
