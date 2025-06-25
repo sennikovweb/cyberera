@@ -250,8 +250,8 @@ async function urlEventUpload() {
 
 		const fileName = `${isEvent}.json`
 
-		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		const url = fileName
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		// const url = fileName
 
 		const data = await fetch(url);
 
@@ -497,9 +497,9 @@ async function filesJsonLoad() {
 
 	try {
 
-		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
 
-		const url = `files.json`
+		// const url = `files.json`
 
 
 		const response = await fetch(url);
@@ -715,10 +715,10 @@ async function lastFileUpload() {
 	}, 500);
 
 	try {
-		// const fileName = filesJson[filesJson.length - 1].fileName;
-		const fileName = `2025-06-24_19-31_Whoopclub.json`
-		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		const url = fileName
+		const fileName = filesJson[filesJson.length - 1].fileName;
+		// const fileName = `2025-06-24_19-31_Whoopclub.json`
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		// const url = fileName
 
 		const data = await fetch(url);
 
