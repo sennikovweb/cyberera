@@ -669,9 +669,12 @@ async function dateFileUpload(fileName) {
 					const eventUrl = new URL(window.location.href)
 					eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
 
-					const shareUrlElement = document.querySelector('.author__share-url')
+					history.pushState({},'',eventUrl)
 
+
+					const shareUrlElement = document.querySelector('.author__share-url')
 					shareUrlElement.textContent = eventUrl.href;
+					
 
 				}
 			})
@@ -740,8 +743,9 @@ async function lastFileUpload() {
 				const eventUrl = new URL(window.location.href)
 				eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
 
-				const shareUrlElement = document.querySelector('.author__share-url')
+				history.pushState({},'',eventUrl)
 
+				const shareUrlElement = document.querySelector('.author__share-url')
 				shareUrlElement.textContent = eventUrl.href;
 
 			}
