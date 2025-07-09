@@ -3,9 +3,19 @@ export default async (req, res) => {
     try {
       const data = req.body;
       const uuid = data["event_uuid"];
-      console.log('uuid',uuid)
+      console.log('Received data with uuid:', uuid);
+      
+      // Проверка наличия необходимых переменных окружения
+      if (!process.env.REDIS_REST_URL || !process.env.REDIS_REST_TOKEN) {
+        throw new Error('Redis credentials are not configured');
+      }
+      console.log('Redis URL:', process.env.REDIS_REST_URL);
+      
       // Сохраняем данные в Redis
-      const redisResponse = await fetch(`${process.env.REDIS_REST_URL}`, {
+      const redisUrl = `${process.env.REDIS_REST_URL}/set/${uuid}`;
+      console.log('Making request to Redis at:', redisUrl);
+      
+      const redisResponse = await fetch(redisUrl, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`,
@@ -14,11 +24,16 @@ export default async (req, res) => {
         body: JSON.stringify(data)
       });
       
+      console.log('Redis response status:', redisResponse.status);
+      
       if (!redisResponse.ok) {
-        throw new Error('Ошибка при сохранении в Redis');
+        const errorText = await redisResponse.text();
+        console.error('Redis error response:', errorText);
+        throw new Error(`Redis error: ${errorText}`);
       }
-      console.log('before redisData = await redisResponse.json();')
+      
       const redisData = await redisResponse.json();
+      console.log('Redis response data:', redisData);
       
       // Формируем URL для доступа к данным
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
@@ -31,9 +46,11 @@ export default async (req, res) => {
       });
       
     } catch (error) {
+      console.error('Full error:', error);
       res.status(500).json({ 
         success: false,
-        error: error.message 
+        error: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
   } else if (req.method === 'GET') {
