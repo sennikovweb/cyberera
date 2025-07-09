@@ -16,7 +16,7 @@ export default async (req, res) => {
       console.log('Redis URL:', process.env.REDIS_REST_URL);
       
       // Сохраняем данные в Redis
-      const redisUrl = `http://${process.env.REDIS_REST_URL.replace('https://', '')}/set/${uuid}`;
+      const redisUrl = `http://${process.env.REDIS_REST_URL.replace('https://', '')}/SET/${uuid}`;
       console.log('Making request to Redis at:', redisUrl);
       
       const redisResponse = await fetch(redisUrl, {
