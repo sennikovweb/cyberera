@@ -20,7 +20,7 @@ export default async (req, res) => {
       });
     }
   } else if(req.method === 'GET') {
-    res.status(405).json({ 
+    res.status(200).json({ 
       success: true,
       message: 'GET Работает' 
     });
