@@ -19,10 +19,10 @@ export default async (req, res) => {
         error: error.message 
       });
     }
-  } else {
+  } else if(req.method === 'GET') {
     res.status(405).json({ 
-      success: false,
-      error: 'Только POST-запросы!' 
+      success: true,
+      message: 'GET Работает' 
     });
   }
 };
