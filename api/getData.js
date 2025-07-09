@@ -15,7 +15,8 @@ export default async (req, res) => {
         `${process.env.KV_REST_API_URL}/get/${uuid}`,
         {
           headers: {
-            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
+            'Access-Control-Allow-Origin', '*'
           }
         }
       );
