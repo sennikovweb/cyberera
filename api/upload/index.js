@@ -3,7 +3,8 @@ export default async (req, res) => {
     try {
       const data = req.body;
       const uuid = data["event_uuid"];
-      
+      console.log('data':data)
+      console.log('dataString':JSON.stringify(data))
       // Сохраняем данные в Upstash Redis через REST API
       const redisResponse = await fetch(
         `${process.env.KV_REST_API_URL}/set/${uuid}`,
