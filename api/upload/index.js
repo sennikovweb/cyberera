@@ -1,3 +1,7 @@
+const https = require('https');
+const agent = new https.Agent({ rejectUnauthorized: false });
+
+
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
@@ -17,6 +21,7 @@ export default async (req, res) => {
       
       const redisResponse = await fetch(redisUrl, {
         method: 'POST',
+        agent,
         headers: {
           'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`,
           'Content-Type': 'application/json'
