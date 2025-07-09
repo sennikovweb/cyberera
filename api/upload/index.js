@@ -6,6 +6,7 @@ export default async (req, res) => {
       
       // Просто логируем и возвращаем успех
       console.log('Received data:', JSON.stringify(data, null, 2));
+      console.log('uuid', data["event_uuid"])
       
       res.status(200).json({ 
         success: true,
