@@ -3,7 +3,7 @@ export default async (req, res) => {
     try {
       const data = req.body;
       const uuid = data["event_uuid"];
-      
+      console.log('uuid',uuid)
       // Сохраняем данные в Redis
       const redisResponse = await fetch(`${process.env.REDIS_REST_URL}/set/${uuid}`, {
         method: 'POST',
@@ -17,7 +17,7 @@ export default async (req, res) => {
       if (!redisResponse.ok) {
         throw new Error('Ошибка при сохранении в Redis');
       }
-      
+      console.log('before redisData = await redisResponse.json();')
       const redisData = await redisResponse.json();
       
       // Формируем URL для доступа к данным
