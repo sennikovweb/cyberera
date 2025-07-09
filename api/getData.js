@@ -1,4 +1,13 @@
 export default async (req, res) => {
+  // Устанавливаем CORS-заголовки для ответа API
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  
+  // Обрабатываем OPTIONS-запрос (для CORS Preflight)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method === 'GET') {
     try {
       const { uuid } = req.query;
@@ -10,13 +19,12 @@ export default async (req, res) => {
         });
       }
 
-      // Получаем данные из Upstash Redis
+      // Запрос к Redis (убираем ненужный CORS-заголовок)
       const redisResponse = await fetch(
         `${process.env.KV_REST_API_URL}/get/${uuid}`,
         {
           headers: {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
-            'Access-Control-Allow-Origin', '*'
           }
         }
       );
@@ -29,7 +37,7 @@ export default async (req, res) => {
       
       res.status(200).json({ 
         success: true,
-        data: data.result // Upstash возвращает данные в поле result
+        data: data.result
       });
       
     } catch (error) {
