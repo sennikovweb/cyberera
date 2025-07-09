@@ -1,17 +1,33 @@
-// Простейший обработчик POST-запросов
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
-      const data = req.body; // Получаем данные от плагина
-      const uuid = data["event_uuid"]
-      // Просто логируем и возвращаем успех
-      console.log('Received data:', JSON.stringify(data));
-      console.log('uuid', uuid)
+      const data = req.body;
+      const uuid = data["event_uuid"];
+      
+      // Сохраняем данные в Redis
+      const redisResponse = await fetch(`${process.env.REDIS_REST_URL}/set/${uuid}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!redisResponse.ok) {
+        throw new Error('Ошибка при сохранении в Redis');
+      }
+      
+      const redisData = await redisResponse.json();
+      
+      // Формируем URL для доступа к данным
+      const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
       
       res.status(200).json({ 
         success: true,
         message: 'Данные успешно сохранены',
-        yourData: data // Эхо-ответ для проверки
+        dataUrl: dataUrl,
+        yourData: data
       });
       
     } catch (error) {
@@ -20,7 +36,7 @@ export default async (req, res) => {
         error: error.message 
       });
     }
-  } else if(req.method === 'GET') {
+  } else if (req.method === 'GET') {
     res.status(200).json({ 
       success: true,
       message: 'GET Работает' 
