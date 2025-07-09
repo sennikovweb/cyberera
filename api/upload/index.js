@@ -30,21 +30,8 @@
 
 
 
-import { createClient } from 'redis';
-
-// Автоматически использует REDIS_URL из переменных окружения
-const redis = createClient({
-  url: process.env.REDIS_URL
-});
-
-// Обработчик API
+// Простейший вариант без зависимостей
 export default async (req, res) => {
-  // Подключаемся к Redis при каждом запросе (не идеально, но просто для старта)
-  await redis.connect().catch(err => {
-    console.error('Redis connect error:', err);
-    return res.status(500).json({ error: 'Redis connection failed' });
-  });
-
   try {
     const { event_uuid, ...data } = req.body;
     
@@ -52,14 +39,23 @@ export default async (req, res) => {
       return res.status(400).json({ error: 'Missing event_uuid' });
     }
 
-    // Сохраняем данные
-    await redis.set(
-      `event:${event_uuid}`,
-      JSON.stringify(data),
-      { EX: 2592000 } // TTL 30 дней в секундах
-    );
+    // Используем fetch для работы с Redis REST API
+    const redisResponse = await fetch(process.env.REDIS_REST_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`
+      },
+      body: JSON.stringify({
+        command: ['SET', `event:${event_uuid}`, JSON.stringify(data), 'EX', '2592000']
+      })
+    });
 
-    res.status(200).json({
+    if (!redisResponse.ok) {
+      throw new Error('Redis operation failed');
+    }
+
+    res.status(200).json({ 
       status: 'success',
       saved_uuid: event_uuid
     });
@@ -67,7 +63,5 @@ export default async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: error.message });
-  } finally {
-    await redis.disconnect(); // Закрываем соединение
   }
-};
+}
