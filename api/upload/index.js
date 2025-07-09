@@ -33,8 +33,8 @@
 // Простейший вариант без зависимостей
 export default async (req, res) => {
   try {
-    const { event_uuid, ...data } = req.body;
-    
+    const data = req.body;
+    const event_uuid=data[event_uuid];
     if (!event_uuid) {
       return res.status(400).json({ error: 'Missing event_uuid' });
     }
