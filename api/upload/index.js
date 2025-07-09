@@ -1,6 +1,6 @@
 const https = require('https');
 const agent = new https.Agent({ rejectUnauthorized: false });
-
+const authString = Buffer.from(`default:${process.env.REDIS_REST_TOKEN}`).toString('base64');
 
 export default async (req, res) => {
   if (req.method === 'POST') {
@@ -23,7 +23,7 @@ export default async (req, res) => {
         method: 'POST',
         agent,
         headers: {
-          'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`,
+          'Authorization': `Basic ${authString}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
