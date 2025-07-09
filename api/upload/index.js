@@ -3,10 +3,10 @@ export default async (req, res) => {
   if (req.method === 'POST') {
     try {
       const data = req.body; // Получаем данные от плагина
-      
+      const uuid = data["event_uuid"]
       // Просто логируем и возвращаем успех
       console.log('Received data:', JSON.stringify(data));
-      console.log('uuid', data["event_uuid"])
+      console.log('uuid', uuid)
       
       res.status(200).json({ 
         success: true,
