@@ -1,67 +1,48 @@
-const https = require('https');
-const agent = new https.Agent({ rejectUnauthorized: false });
-const authString = Buffer.from(`default:${process.env.REDIS_REST_TOKEN}`).toString('base64');
-
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
       const data = req.body;
       const uuid = data["event_uuid"];
-      console.log('Received data with uuid:', uuid);
       
-      // Проверка наличия необходимых переменных окружения
-      if (!process.env.REDIS_REST_URL || !process.env.REDIS_REST_TOKEN) {
-        throw new Error('Redis credentials are not configured');
-      }
-      console.log('Redis URL:', process.env.REDIS_REST_URL);
-      
-      // Сохраняем данные в Redis
-      const redisUrl = `http://${process.env.REDIS_REST_URL.replace('https://', '')}/SET/${uuid}`;
-      console.log('Making request to Redis at:', redisUrl);
-      
-      const redisResponse = await fetch(redisUrl, {
-        method: 'POST',
-        agent,
-        headers: {
-          'Authorization': `Basic ${authString}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-      
-      console.log('Redis response status:', redisResponse.status);
-      
+      // Сохраняем данные в Upstash Redis через REST API
+      const redisResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/set/${uuid}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data) // Тело запроса - ваши данные
+        }
+      );
+
       if (!redisResponse.ok) {
-        const errorText = await redisResponse.text();
-        console.error('Redis error response:', errorText);
-        throw new Error(`Redis error: ${errorText}`);
+        const errorDetails = await redisResponse.text();
+        throw new Error(`Redis error: ${errorDetails}`);
       }
-      
-      const redisData = await redisResponse.json();
-      console.log('Redis response data:', redisData);
-      
+
       // Формируем URL для доступа к данным
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
       
       res.status(200).json({ 
         success: true,
-        message: 'Данные успешно сохранены',
+        message: 'Данные успешно сохранены в Upstash Redis',
         dataUrl: dataUrl,
         yourData: data
       });
       
     } catch (error) {
-      console.error('Full error:', error);
+      console.error('Error:', error);
       res.status(500).json({ 
         success: false,
-        error: error.message,
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        error: error.message 
       });
     }
   } else if (req.method === 'GET') {
     res.status(200).json({ 
       success: true,
-      message: 'GET Работает' 
+      message: 'GET endpoint works' 
     });
   }
 };
