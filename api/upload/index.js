@@ -32,6 +32,11 @@
 
 export default async (req, res) => {
   // Читаем тело запроса вручную
+
+
+
+
+      
   let body = '';
   req.on('data', chunk => body += chunk);
   
@@ -83,4 +88,8 @@ export default async (req, res) => {
       });
     }
   });
+
+      console.log('Request body:', body);
+console.log('Redis URL:', process.env.REDIS_REST_URL);
+console.log('Redis command:', command);
 };
