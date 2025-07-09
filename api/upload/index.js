@@ -13,7 +13,7 @@ export default async (req, res) => {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(data) // Тело запроса - ваши данные
+          body: data // Тело запроса - ваши данные
         }
       );
 
