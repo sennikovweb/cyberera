@@ -5,7 +5,7 @@ export default async (req, res) => {
       const data = req.body; // Получаем данные от плагина
       
       // Просто логируем и возвращаем успех
-      console.log('Received data:', JSON.stringify(data, null, 2));
+      console.log('Received data:', JSON.stringify(data));
       console.log('uuid', data["event_uuid"])
       
       res.status(200).json({ 
