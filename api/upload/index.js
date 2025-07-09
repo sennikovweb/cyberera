@@ -5,7 +5,7 @@ export default async (req, res) => {
       const uuid = data["event_uuid"];
       console.log('uuid',uuid)
       // Сохраняем данные в Redis
-      const redisResponse = await fetch(`${process.env.REDIS_REST_URL}/set/${uuid}`, {
+      const redisResponse = await fetch(`${process.env.REDIS_REST_URL}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.REDIS_REST_TOKEN}`,
