@@ -3,8 +3,8 @@ export default async (req, res) => {
     try {
       const data = req.body;
       const uuid = data["event_uuid"];
-      console.log('data', data)
-      console.log('dataSting', JSON.stringify(data))
+      // console.log('data', data)
+      // console.log('dataSting', JSON.stringify(data))
 
       // Сохраняем данные в Upstash Redis через REST API
       const redisResponse = await fetch(
@@ -28,8 +28,8 @@ export default async (req, res) => {
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
 
       res.status(200).json({ 
-        success: true,
-        message: 'Данные успешно сохранены в Upstash Redis',
+        status: 'success',
+        message: 'import successful',
         dataUrl: dataUrl,
         yourData: data
       });
@@ -37,13 +37,13 @@ export default async (req, res) => {
     } catch (error) {
       console.error('Error:', error);
       res.status(500).json({ 
-        success: false,
+        status: 'failed',
         error: error.message 
       });
     }
   } else if (req.method === 'GET') {
     res.status(200).json({ 
-      success: true,
+      status: 'success',
       message: 'GET endpoint works' 
     });
   }
