@@ -18,7 +18,11 @@ if (language == 'ru') {
 		choosed: 'Файл выбран',
 		load: 'Загрузить',
 		uploaded:'Обновлено',
-		ago:'минут назад',
+		minute3:'минуты',
+		minute2:'минуту',
+		minute1:'минут',
+		seconds:'секунд',
+		ago:'назад',
 		pilotsTab: {
 			bestLap: 'Лучший круг',
 			round: 'Раунд',
@@ -121,8 +125,12 @@ if (language == 'ru') {
 		chooseAnother: 'Choose another file',
 		choosed: 'File choosed',
 		load: 'Load',
-		uploaded:'Update',
-		ago:'minute ago',
+		uploaded:'Updated',
+		minute3:'minutes',
+		minute2:'minutes',
+		minute1:'minutes',
+		seconds:'seconds',
+		ago:'ago',
 
 		pilotsTab: {
 			bestLap: 'Best lap',
@@ -282,12 +290,44 @@ if (isLive) {
 	console.log('no event on url');
 }
 
-
+function getMinutesSinceUpload(uploadTimestamp) {
+	if (!uploadTimestamp || typeof uploadTimestamp !== 'number') {
+		 return 'Некорректный timestamp';
+	}
+	
+	const now = Date.now();
+	
+	// Проверка на "timestamp из будущего"
+	if (uploadTimestamp > now) {
+		 return 'Timestamp не может быть из будущего';
+	}
+	
+	const diffMs = now - uploadTimestamp;
+	const diffMinutes = Math.floor(diffMs / 60000); // 60000 мс = 1 минута
+	
+	// Возвращаем текст с правильным склонением
+	if (diffMinutes === 0) {
+		 const diffSeconds = Math.floor(diffMs / 1000);
+		 return `${textStrings.uploaded} ${diffSeconds} ${textStrings.seconds} ${textStrings.ago}`;
+	}
+	
+	const lastDigit = diffMinutes % 10;
+	const lastTwoDigits = diffMinutes % 100;
+	
+	let minuteWord = textStrings.minute1;
+	if (lastTwoDigits < 11 || lastTwoDigits > 14) {
+		 if (lastDigit === 1) minuteWord = textStrings.minute2;
+		 if (lastDigit >= 2 && lastDigit <= 4) minuteWord = textStrings.minute3;
+	}
+	
+	return `${textStrings.uploaded}: ${diffMinutes} ${minuteWord} ${textStrings.ago}`;
+}
 
 // Загрузка ивента по имени из url
 async function urlUpload(type) {
 	try {
-
+		const eventUrl = new URL(window.location.href)
+		const shareUrlElement = document.querySelector('.author__share-url')
 
 		if (type=='live'){
 			const fullLive = await getLiveData(isLive)
@@ -298,49 +338,48 @@ async function urlUpload(type) {
 			const mainDate = document.querySelector('.main-tittle__date')
 			const mainTime = document.querySelector('.main-tittle__time')
 
-			const timestamp = Date.now()-fullLive.date			
-			const date = new Date(timestamp)
-			const minutes = date.getMinutes()
-
 	
 			mainDisplayName.innerHTML = `${fullLive.GlobalSettings[5]['option_value']}`;
-			mainDate.innerHTML = `${textStrings.uploaded}: ${minutes} ${textStrings.ago}`
+			mainDate.innerHTML = getMinutesSinceUpload(fullLive.date)
 			mainTime.remove();
-		
 
+			eventUrl.searchParams.set('uuid', `${isLive}`)
+			shareUrlElement.textContent = eventUrl.href;
+			if (language == 'ru') {
+				const languageElement = document.querySelector('.language__EN')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?uuid=${eventUrl.searchParams.get('uuid')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+	
+			} else if (language == 'en') {
+				const languageElement = document.querySelector('.language__RU')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?uuid=${eventUrl.searchParams.get('uuid')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			}
 
 		}else if (type=='event'){			
 			await getEventData(isEvent)
 			makeRaceClassButtons();
 			startFileView('url', isEvent);
+
+			eventUrl.searchParams.set('event', `${isEvent}`)
+			shareUrlElement.textContent = eventUrl.href;
+			if (language == 'ru') {
+				const languageElement = document.querySelector('.language__EN')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+	
+			} else if (language == 'en') {
+				const languageElement = document.querySelector('.language__RU')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			}
 		}
 		
 		
 
 
 	
-		const eventUrl = new URL(window.location.href)
 		
-		eventUrl.searchParams.set('event', `${isEvent}`)
-
-		const shareUrlElement = document.querySelector('.author__share-url')
-
-		shareUrlElement.textContent = eventUrl.href;
-		if (language == 'ru') {
-			const languageElement = document.querySelector('.language__EN')
-			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
-			console.log('newLanguageChangeLinkRUU', newLanguageChangeLink);
-
-			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
-
-		} else if (language == 'en') {
-			const languageElement = document.querySelector('.language__RU')
-			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
-			console.log('newLanguageChangeLinkENNNN', newLanguageChangeLink);
-
-			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
-
-		}
 
 	} catch (error) {
 		const wrapperElement = document.querySelector('.wrapper')
