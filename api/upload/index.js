@@ -48,13 +48,14 @@ export default async (req, res) => {
       
       const data = req.body;
       const uuid = data["event_uuid"];
+		const date = Date.now()
       // console.log('data', data)
       // console.log('dataSting', JSON.stringify(data))
 
      // ИСПРАВЛЕННАЯ ЧАСТЬ: сначала SET, затем EXPIRE отдельными запросами
       // 1. Сохраняем данные
       const setResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}`,
+        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}/${encodeURIComponent(date)}/${encodeURIComponent(JSON.stringify(data))}`,
         {
           method: 'POST',
           headers: {
