@@ -1,38 +1,12 @@
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
-      // Получаем IP-адрес пользователя для идентификации
-      const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-      
-      // Проверяем количество запросов от этого IP в Redis
+     const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       const rateLimitKey = `rate_limit:${userIP}`;
-      const rateLimitResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/get/${encodeURIComponent(rateLimitKey)}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
-          }
-        }
-      );
-      
-      let currentCount = 0;
-      if (rateLimitResponse.ok) {
-        const countData = await rateLimitResponse.json();
-        currentCount = parseInt(countData.result || '0', 10);
-      }
-      
-      // Если превышен лимит - возвращаем ошибку
-      if (currentCount >= 10) {
-        res.status(429).json({
-          status: 'failed',
-          error: 'Too many requests. Limit is 10 requests per minute.'
-        });
-        return;
-      }
-      
-      // Увеличиваем счетчик запросов и устанавливаем TTL 60 секунд
-      await fetch(
-        `${process.env.KV_REST_API_URL}/multi/set/${encodeURIComponent(rateLimitKey)}/${currentCount + 1}/ex/60`,
+
+      // Атомарно увеличиваем счетчик и получаем новое значение
+      const incrResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/incr/${encodeURIComponent(rateLimitKey)}`,
         {
           method: 'POST',
           headers: {
@@ -40,6 +14,35 @@ export default async (req, res) => {
           }
         }
       );
+
+      if (!incrResponse.ok) {
+        throw new Error('Failed to increment rate limit counter');
+      }
+
+      const result = await incrResponse.json();
+      const currentCount = result.result;
+
+      // Если это первый запрос, устанавливаем TTL 60 секунд
+      if (currentCount === 1) {
+        await fetch(
+          `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(rateLimitKey)}/60`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+            }
+          }
+        );
+      }
+
+      // Проверяем лимит
+      if (currentCount > 10) {
+        res.status(429).json({
+          status: 'failed',
+          error: 'Too many requests. Limit is 10 requests per minute.'
+        });
+        return;
+      }
 
       
       const data = req.body;
