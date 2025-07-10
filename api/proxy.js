@@ -5,7 +5,8 @@
 export default async function handler(req, res) {
 	// --- 1. Проверяем метод запроса (разрешаем только GET) ---
 
-	res.setHeader('Access-Control-Allow-Origin', 'https://sharikovstepan.github.io')
+	// res.setHeader('Access-Control-Allow-Origin', 'https://sharikovstepan.github.io')
+	res.setHeader('Access-Control-Allow-Origin', '*')
 	res.setHeader('Access-Control-Allow-Methods', 'GET,OPTION')
 
 	if (req.method !== 'GET') {
