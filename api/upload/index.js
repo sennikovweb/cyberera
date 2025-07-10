@@ -38,7 +38,8 @@ export default async (req, res) => {
       // Проверяем лимит
       if (currentCount > 10) {
         res.status(429).json({
-          status: 'failed',
+          status: 'error',
+          message:'Too many requests. Limit is 10 requests per minute.',
           error: 'Too many requests. Limit is 10 requests per minute.'
         });
         return;
@@ -50,9 +51,10 @@ export default async (req, res) => {
       // console.log('data', data)
       // console.log('dataSting', JSON.stringify(data))
 
-     // Сохраняем данные с TTL 14 дней (используем pipeline для атомарности)
+     // ИСПРАВЛЕННАЯ ЧАСТЬ: сначала SET, затем EXPIRE отдельными запросами
+      // 1. Сохраняем данные
       const setResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/multi/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}/ex/1209600`,
+        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}`,
         {
           method: 'POST',
           headers: {
@@ -64,7 +66,23 @@ export default async (req, res) => {
 
       if (!setResponse.ok) {
         const errorDetails = await setResponse.text();
-        throw new Error(`Redis error: ${errorDetails}`);
+        throw new Error(`Redis set error: ${errorDetails}`);
+      }
+
+      // 2. Устанавливаем TTL 14 дней (1209600 секунд)
+      const expireResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(uuid)}/1209600`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+          }
+        }
+      );
+
+      if (!expireResponse.ok) {
+        const errorDetails = await expireResponse.text();
+        throw new Error(`Redis expire error: ${errorDetails}`);
       }
 
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
@@ -79,7 +97,8 @@ export default async (req, res) => {
     } catch (error) {
       console.error('Error:', error);
       res.status(500).json({ 
-        status: 'failed',
+        status: 'error',
+        message:'error.message',
         error: error.message 
       });
     }
