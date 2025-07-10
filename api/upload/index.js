@@ -50,25 +50,23 @@ export default async (req, res) => {
       // console.log('data', data)
       // console.log('dataSting', JSON.stringify(data))
 
-      // Сохраняем данные в Upstash Redis через REST API
-      const redisResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/set/${uuid}`,
+     // Сохраняем данные с TTL 14 дней (используем pipeline для атомарности)
+      const setResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/multi/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}/ex/1209600`,
         {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data) // Тело запроса - ваши данные
+          }
         }
       );
 
-      if (!redisResponse.ok) {
-        const errorDetails = await redisResponse.text();
+      if (!setResponse.ok) {
+        const errorDetails = await setResponse.text();
         throw new Error(`Redis error: ${errorDetails}`);
       }
 
-      // Формируем URL для доступа к данным
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
 
       res.status(200).json({ 
