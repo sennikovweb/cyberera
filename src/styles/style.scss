@@ -737,8 +737,6 @@ body {
 
 	}
 
-	&__date-tittle {}
-
 	&__date-value {
 		font-weight: 600;
 
@@ -752,7 +750,6 @@ body {
 
 	}
 
-	&__time-tittle {}
 
 	&__time-value {
 		font-weight: 600;
@@ -1340,7 +1337,6 @@ body {
 		}
 	}
 
-	&__items {}
 
 	&__item {
 		padding: 10px;
@@ -1538,9 +1534,6 @@ body {
 		}
 	}
 
-	&__best-lap-round-text {}
-
-	&__best-lap-start-text {}
 
 	&__best-lap-end-text {
 		@media(max-width:767px) {
@@ -1603,7 +1596,6 @@ body {
 
 	}
 
-	&__best-lap-start-value {}
 
 	&__best-lap-end-value {
 		@media(max-width:767px) {
@@ -1724,9 +1716,6 @@ body {
 		}
 	}
 
-	&__best-consecutives-round-text {}
-
-	&__best-consecutives-start-text {}
 
 	&__best-consecutives-end-text {
 		@media(max-width:767px) {
@@ -1789,7 +1778,6 @@ body {
 		}
 	}
 
-	&__best-consecutives-start-value {}
 
 	&__best-consecutives-end-value {
 		@media(max-width:767px) {
@@ -2234,7 +2222,6 @@ body {
 
 	}
 
-	&__round-area-laps {}
 
 	&__lap {
 		height: 100%;
@@ -2293,7 +2280,6 @@ body {
 			}
 		}
 
-		&._akcent {}
 	}
 
 	&__lap-column {
@@ -2420,7 +2406,6 @@ body {
 		}
 	}
 
-	&__tittle {}
 
 	&__tittle-text {
 		margin: 0px 0px 0px 40px;
@@ -2662,7 +2647,8 @@ body {
 	&__slider {
 		align-self: center;
 		grid-row: 4/5;
-		-webkit-appearance: none;
+		appearance: none; /* Стандартное свойство */
+		-webkit-appearance: none; /* Для старых версий Safari и Chrome */		
 		width: 100%;
 		background-color: $color-dark;
 		height: 2px;
@@ -2734,13 +2720,6 @@ body {
 		}
 	}
 
-	&__minus {}
-
-	&__buttons-tittle {}
-
-	&__plus {}
-
-	&__stats {}
 
 	.modal__stat {
 		gap: 50px;
@@ -2796,12 +2775,6 @@ body {
 		}
 	}
 
-
-	&__lap-button {}
-
-	&__consecutive-button {}
-
-	&__count-button {}
 
 	.leaderboard__average-button {
 		font-size: 19px;
@@ -2899,19 +2872,6 @@ body {
 
 .leaderboard-lap {
 
-	&__container {}
-
-	&__items {}
-
-	&__tittles {}
-
-	&__tittles-name {}
-
-	&__tittles-round {}
-
-	&__tittles-time {}
-
-	&__item {}
 
 	&__name {
 		p:first-child {
@@ -2952,28 +2912,10 @@ body {
 		}
 	}
 
-	&__time {}
 }
 
 .leaderboard-consecutive {
 
-	&__container {}
-
-	&__items {}
-
-	&__tittles {
-		// grid-template-columns: 1fr 1.5fr 0.7fr;
-	}
-
-	&__tittles-name {}
-
-	&__tittles-round {}
-
-	&__tittles-time {}
-
-	&__item {
-		// grid-template-columns: 1fr 0.9fr 0.5fr;
-	}
 
 	&__name {
 		p:first-child {
@@ -3014,27 +2956,10 @@ body {
 		}
 	}
 
-	&__time {
-		// justify-self: end;
-
-	}
 }
 
 .leaderboard-count {
 
-	&__container {}
-
-	&__items {}
-
-	&__tittles {}
-
-	&__tittles-name {}
-
-	&__tittles-starts {}
-
-	&__tittles-counts {}
-
-	&__item {}
 
 	&__name {
 		p:first-child {
@@ -3074,26 +2999,10 @@ body {
 		}
 	}
 
-	&__counts {}
 }
 
 .leaderboard-average {
 
-	&__container {}
-
-	&__items {}
-
-	&__tittles {}
-
-	&__tittles-name {}
-
-	&__tittles-starts {}
-
-	&__tittles-laps {}
-
-	&__tittles-average {}
-
-	&__item {}
 
 	&__name {
 		p:first-child {
@@ -3134,7 +3043,6 @@ body {
 		}
 	}
 
-	&__average {}
 }
 
 
@@ -3425,7 +3333,8 @@ body {
 	}
 
 	&__slider {
-		-webkit-appearance: none;
+		appearance: none; /* Стандартное свойство */
+		-webkit-appearance: none; /* Для старых версий Safari и Chrome */		
 		width: 100%;
 		background-color: $color-grey;
 		height: 2px;
@@ -3725,35 +3634,6 @@ body {
 		flex-direction: column;
 	}
 
-	&__laps-tittle {}
-
-	&__laps-items {}
-
-	&__laps-item {}
-
-	&__best-lap-column {}
-
-	&__best-lap-tittle {}
-
-	&__best-lap-items {}
-
-	&__best-lap-item {}
-
-	&__best-consecutive-column {}
-
-	&__best-consecutive-tittle {}
-
-	&__best-consecutive-items {}
-
-	&__best-consecutive-item {}
-
-	&__total-time-column {}
-
-	&__total-time-tittle {}
-
-	&__total-time-items {}
-
-	&__total-time-item {}
 
 	&__single-laps {
 		border-radius: 8px;
@@ -3790,16 +3670,6 @@ body {
 		margin: 0px 0px 10px 0px;
 	}
 
-	&__single-laps-tittle {}
-
-
-	&__names-column {}
-
-	&__names-tittle {}
-
-	&__names-items {}
-
-	&__names-item {}
 
 	&__single-laps-row {
 		grid-column: 2/3;
@@ -3815,11 +3685,6 @@ body {
 		// border: 1px solid #00f;
 	}
 
-	&__single-laps-column {}
-
-	&__single-laps-items {}
-
-	&__single-laps-item {}
 }
 
 
@@ -3827,7 +3692,6 @@ body {
 
 .rounds {
 
-	&__container {}
 
 	&__buttons {
 		display: flex;
@@ -3901,20 +3765,6 @@ body {
 	}
 
 
-	&__rounds-heat-1 {
-		// position: relative;
-		// overflow: auto;
-	}
-
-	&__rounds-heat-2 {
-		// opacity: 0;
-		// visibility: hidden;
-	}
-
-	&__rounds-heat-3 {
-		// opacity: 0;
-		// visibility: hidden;
-	}
 
 	&__item {
 		width: 100%;
@@ -3934,7 +3784,6 @@ body {
 		}
 	}
 
-	&__tittle {}
 
 	&__tittle-text {
 		margin: 0px 0px 0px 40px;
@@ -4003,7 +3852,6 @@ body {
 		border-radius: 5px;
 	}
 
-	&__statistic-button {}
 
 	&__tabs-wrapper {
 		position: relative;
@@ -4119,7 +3967,8 @@ body {
 	&__slider {
 		align-self: center;
 		grid-row: 4/5;
-		-webkit-appearance: none;
+		appearance: none; /* Стандартное свойство */
+		-webkit-appearance: none; /* Для старых версий Safari и Chrome */
 		width: 100%;
 		background-color: $color-dark;
 		height: 2px;
@@ -4307,7 +4156,6 @@ body {
 		cursor: pointer;
 	}
 
-	&__lap-graph-obj {}
 
 	&__scale-buttons {
 		display: flex;
@@ -4339,9 +4187,6 @@ body {
 		}
 	}
 
-	&__buttons-tittle {}
-
-	&__plus {}
 
 	&__stats {
 		// overflow: auto;
@@ -4352,8 +4197,6 @@ body {
 		display: grid;
 		grid-template-columns: 1fr 2fr;
 		gap: 10px;
-
-		._stat-text {}
 
 		._stat-value {
 			display: grid;
@@ -4412,9 +4255,6 @@ body {
 	}
 
 
-	&__round-count {}
-
-	&__round-count-text {}
 
 	&__round-count-value {
 		font-size: 18px;
@@ -4434,11 +4274,7 @@ body {
 		}
 	}
 
-	&__lap-count {}
-
-	&__lap-count-text {}
-
-	&__lap-count-value {
+	// &__lap-count-value {
 		// display: flex;
 		// gap: 20px;
 
@@ -4470,19 +4306,8 @@ body {
 		// 	}
 		// }
 
-	}
+	// }
 
-	&__lap-start {}
-
-	&__lap-start-text {}
-
-	&__lap-start-value {}
-
-	&__lap-time {}
-
-	&__lap-time-text {}
-
-	&__lap-time-value {}
 
 	&__statistic-tab {
 		position: absolute;
@@ -4642,13 +4467,6 @@ body {
 
 		}
 
-		&_average {}
-
-		&_total-laps {}
-
-		&_starts {}
-
-		&_total-time {}
 	}
 
 
@@ -4809,17 +4627,6 @@ body {
 
 		}
 
-		&_best-lap {}
-
-		&_best-consecutive {}
-
-		&_average {}
-
-		&_total-laps {}
-
-		&_starts {}
-
-		&_total-time {}
 	}
 
 	&__stat-stroke-value {
