@@ -231,6 +231,8 @@ let filesJson = [];
 
 //Проверка, есть ли ивент в url
 const isEvent = new URLSearchParams(window.location.search).get('event')
+console.log('isEvent',isEvent);
+
 
 if (isEvent) {
 	const wrapperElement = document.querySelector('.wrapper')
@@ -250,10 +252,10 @@ async function urlEventUpload() {
 	try {
 
 		const fileName = `${isEvent}.json`
+		// const url = fileName
+console.log('EVENT??');
 
 		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		// const url = fileName
-
 		const data = await fetch(url);
 
 
@@ -498,9 +500,9 @@ async function filesJsonLoad() {
 
 	try {
 
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
+		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
 
-		// const url = `files.json`
+		const url = `files.json`
 
 
 		const response = await fetch(url);
@@ -719,11 +721,11 @@ async function lastFileUpload() {
 	}, 500);
 
 	try {
-		const fileName = filesJson[filesJson.length - 1].fileName;
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		// const fileName = filesJson[filesJson.length - 1].fileName;
+		// const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
 
-		// const fileName = `2025-06-24_19-31_Whoopclub.json`
-		// const url = fileName
+		const fileName = `2025-06-24_19-31_Whoopclub.json`
+		const url = fileName
 
 		const data = await fetch(url);
 
@@ -808,7 +810,12 @@ const buttons = {
 
 
 let tabsMain;
+let tabsLeader;
+let tabsRounds;
+let tabsPilotsVs;
+
 let graphMouseFlag;
+let graphTouchFlag
 let akcentArr;
 let lapsIdData = [];
 let pilotsVsDuel = [];
@@ -1784,7 +1791,7 @@ function goToRoundAction(round, heat, buttonPressed) {
 		modalOnOff(roundElement, false);
 		setTimeout(() => {
 			clearInterval(intervalButtonsAccept)
-			for (holeNames in holeShots) {
+			for (const holeNames in holeShots) {
 				const holeObj = holeShots[holeNames];
 				clearInterval(holeObj.interval)
 				if (CONSOLE_DEBUG) console.log('holeObj', holeObj);
@@ -4184,7 +4191,8 @@ function getPilotsStats() {			//здесь список пилотов
 
 	let pilots = [];
 	data.forEach(function (pilot) {
-		pilotInfo = {}
+
+		const pilotInfo = {}
 
 		pilotInfo.averageLap = pilot.average_lap;
 		pilotInfo.laps = pilot.laps;
@@ -4310,7 +4318,7 @@ function getLapsByName(name, noNeed, sorted) {
 
 	let allRoundsData = [];		//Вместо раундов в одном Heatе, найдем все все раунды из всех heatов.
 
-	for (heat in heatsData) {
+	for (const heat in heatsData) {
 
 
 
@@ -4652,7 +4660,7 @@ function getHoldeShot(name, heat, round) {
 	let heats;
 
 	const fullData = mainObj;
-	for (objStroke in fullData) {
+	for (const objStroke in fullData) {
 		if (objStroke == 'heats') {
 			heats = fullData[objStroke];
 		} else if (fullData[objStroke].heats) {
@@ -4775,14 +4783,14 @@ function fromFloatToString(array) {			//превращаем массив вре
 		if (lap < 60) {
 			lap = `0:${lap}`;
 		} else if (lap >= 60 && lap < 120) {
-			lapWithoutMinute = lap - 60;
+			let lapWithoutMinute = lap - 60;
 			if (lapWithoutMinute < 10) {
 				lap = `1:0${lapWithoutMinute.toFixed(3)}`;
 			} else {
 				lap = `1:${lapWithoutMinute.toFixed(3)}`;
 			}
 		} else {
-			lapWithoutMinute = lap - 120;
+			let lapWithoutMinute = lap - 120;
 			if (lapWithoutMinute < 10) {
 				lap = `2:0${lapWithoutMinute.toFixed(3)}`;
 			} else {
@@ -5204,7 +5212,8 @@ function allLapsGraphScale(minusPlus) {			//масштабирование не 
 
 
 		allLaps.style.gridTemplateColumns = `7px repeat(${laps.length - 1},${lapWidth + scaleStep}px)7px`			//увеличиваем все все круги
-
+		let paddingScroll;
+		let pseudoScroll;
 		if (scroll) {
 			paddingScroll = padding;
 			pseudoScroll = pseudoLapWidth;
@@ -5348,6 +5357,8 @@ function pilotsVsGraphScale(minusPlus) {			//масштабирование не
 
 
 		allLaps.style.gridTemplateColumns = `7px repeat(${laps.length - 1},${lapWidth + scaleStep}px)7px`			//увеличиваем все все круги
+		let paddingScroll
+		let pseudoScroll
 
 		if (scroll) {
 			paddingScroll = padding;
@@ -5695,7 +5706,7 @@ function startRound() {
 
 						const allLapsState = [];
 
-						for (counts in pilotsIntervalCount) {
+						for (const counts in pilotsIntervalCount) {
 							const pilotCounts = pilotsIntervalCount[counts]
 							pilotCounts.forEach(count => {
 								allLapsState.push(count)
@@ -5733,7 +5744,7 @@ function endRound() {
 
 	textChange(paragraph, `<p>${textStrings.roundsTab.again}</p>`, 150)
 
-	for (lapp in lapsByPilot) {
+	for (const lapp in lapsByPilot) {
 		const laps = lapsByPilot[lapp]
 		laps.forEach((lapp, index) => {
 			laps[index].classList.add('_akcent')
@@ -5741,21 +5752,21 @@ function endRound() {
 		})
 	}
 
-	for (counts in pilotsIntervalCount) {
+	for (const counts in pilotsIntervalCount) {
 		const pilotCounts = pilotsIntervalCount[counts]
 		pilotCounts.forEach((count, index) => {
 			pilotCounts[index] = 0;
 		})
 	}
 
-	for (lap in lapState) {
+	for (const lap in lapState) {
 		const lapsStates = lapState[lap]
 		lapsStates.forEach((states, index) => {
 			lapsStates[index] = false;
 		})
 	}
 
-	for (holeName in holeShots) {
+	for (const holeName in holeShots) {
 		const holeObj = holeShots[holeName]
 		holeObj.state = false;
 	}
