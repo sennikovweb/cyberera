@@ -17,7 +17,8 @@ if (language == 'ru') {
 		chooseAnother: 'Выберите другой файл',
 		choosed: 'Файл выбран',
 		load: 'Загрузить',
-
+		uploaded:'Обновлено',
+		ago:'минут назад',
 		pilotsTab: {
 			bestLap: 'Лучший круг',
 			round: 'Раунд',
@@ -120,6 +121,8 @@ if (language == 'ru') {
 		chooseAnother: 'Choose another file',
 		choosed: 'File choosed',
 		load: 'Load',
+		uploaded:'Update',
+		ago:'minute ago',
 
 		pilotsTab: {
 			bestLap: 'Best lap',
@@ -243,6 +246,7 @@ async function getLiveData(uuid) {
 	console.log('dataJsondataJson',dataJson);
 	
 		mainObj = dataJson.data.data.results
+		return dataJson.data.data
 }
 
 async function getEventData(event) {
@@ -279,16 +283,32 @@ if (isLive) {
 }
 
 
+
 // Загрузка ивента по имени из url
 async function urlUpload(type) {
 	try {
 
 
 		if (type=='live'){
-
-			await getLiveData(isLive)
+			const fullLive = await getLiveData(isLive)
 			makeRaceClassButtons();
 			startFileView('live', '123');
+
+			const mainDisplayName = document.querySelector('.main-tittle__display-name')
+			const mainDate = document.querySelector('.main-tittle__date')
+			const mainTime = document.querySelector('.main-tittle__time')
+
+			const timestamp = Date.now()-fullLive.date			
+			const date = new Date(timestamp)
+			const minutes = date.getMinutes()
+
+	
+			mainDisplayName.innerHTML = `${fullLive.GlobalSettings[5]['option_value']}`;
+			mainDate.innerHTML = `${textStrings.uploaded}: ${minutes} ${textStrings.ago}`
+			mainTime.remove();
+		
+
+
 		}else if (type=='event'){			
 			await getEventData(isEvent)
 			makeRaceClassButtons();
@@ -1112,10 +1132,6 @@ function startFileView(fileType, fileName) {
 				mainDisplayName.innerHTML = `${textStrings.event}`;
 				mainDate.innerHTML = `${day} ${year}`
 				mainTime.innerHTML = `${time}`
-			}else if(fileType == 'live'){
-				mainDisplayName.innerHTML = `${textStrings.event}`;
-				mainDate.innerHTML = `${10} ${10}`
-				mainTime.innerHTML = `${10}`
 			}
 			mainForm.tittle.classList.remove('_hidden');
 			lastFileElement.remove();
