@@ -231,10 +231,45 @@ let filesJson = [];
 //Проверка, есть ли ивент в url
 const isEvent = new URLSearchParams(window.location.search).get('event')
 
-if (isEvent) {
+const isLive = new URLSearchParams(window.location.search).get('uuid')
+
+
+
+async function getLiveData(uuid) {
+		const data = await fetch(`https://rh-results-viewer.vercel.app/api/getData?uuid=${uuid}`)
+		
+		if (!data.ok) throw new Error('Ошибка загрузки')
+		const dataJson = await data.json();
+	console.log('dataJsondataJson',dataJson);
+	
+		mainObj = dataJson.data.data.results
+}
+
+async function getEventData(event) {
+		const fileName = `${event}.json`
+		// const url = fileName
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		const data = await fetch(url)
+		if (!data.ok) throw new Error('Ошибка загрузки')
+		mainObj = await data.json();
+		
+		console.log('EVENT',mainObj);
+		
+}
+
+
+
+if (isLive) {
 	const wrapperElement = document.querySelector('.wrapper')
 	wrapperElement.classList.add('_hide')
-	urlEventUpload();
+	
+	urlUpload('live');
+	
+	
+}else if(isEvent){
+	const wrapperElement = document.querySelector('.wrapper')
+	wrapperElement.classList.add('_hide')
+	urlUpload('event');
 	console.log('urlEvent');
 
 } else {
@@ -245,31 +280,28 @@ if (isEvent) {
 
 
 // Загрузка ивента по имени из url
-async function urlEventUpload() {
+async function urlUpload(type) {
 	try {
 
-		const fileName = `${isEvent}.json`
 
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		// const url = fileName
+		if (type=='live'){
 
-		const data = await fetch(url);
+			await getLiveData(isLive)
+			makeRaceClassButtons();
+			startFileView('live', '123');
+		}else if (type=='event'){			
+			await getEventData(isEvent)
+			makeRaceClassButtons();
+			startFileView('url', isEvent);
+		}
+		
+		
 
 
-
-		if (!data.ok) throw new Error('Ошибка загрузки');
-
-		mainObj = await data.json();
-
-		makeRaceClassButtons();
-
-
-		console.log('startViewwww');
-
-		startFileView('url', fileName);
-
+	
 		const eventUrl = new URL(window.location.href)
-		eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
+		
+		eventUrl.searchParams.set('event', `${isEvent}`)
 
 		const shareUrlElement = document.querySelector('.author__share-url')
 
@@ -932,13 +964,18 @@ function makeRaceClassButtons() {
 			classSwitchButton.setAttribute('value', `${raceClass}`)
 			classSwitchButton.addEventListener('click', classSwitch)
 
-			if (!currentClassChoosed) {
-				currentClass = raceClass
-				classSwitchButton.classList.add('_active', '_no-event')
-				currentClassChoosed = true;
-			}
+			// if (!currentClassChoosed) {			//С таким учловием будет выбран 1 класс 
+			// 	currentClass = raceClass
+			// 	classSwitchButton.classList.add('_active', '_no-event')
+			// 	currentClassChoosed = true;
+			// }
 		}
 	}
+	const classSwitchButtons = document.querySelectorAll('.class-switch-buttons__button')
+			const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length-1]
+			lastClassButtonSwitch.classList.add('_active', '_no-event')
+
+			currentClass=lastClassButtonSwitch.getAttribute('value')
 
 }
 
@@ -1059,7 +1096,7 @@ function startFileView(fileType, fileName) {
 			const mainDisplayName = document.querySelector('.main-tittle__display-name')
 			const mainDate = document.querySelector('.main-tittle__date')
 			const mainTime = document.querySelector('.main-tittle__time')
-			if (fileType != 'load') {
+			if (fileType != 'load'&&fileType != 'live') {
 				const [datePart, timePart, displayName] = fileName.split('_');
 				const isoString = `${datePart}T${timePart.replace('-', ':')}`;
 				const date = new Date(isoString);
@@ -1075,12 +1112,16 @@ function startFileView(fileType, fileName) {
 				mainDisplayName.innerHTML = `${textStrings.event}`;
 				mainDate.innerHTML = `${day} ${year}`
 				mainTime.innerHTML = `${time}`
+			}else if(fileType == 'live'){
+				mainDisplayName.innerHTML = `${textStrings.event}`;
+				mainDate.innerHTML = `${10} ${10}`
+				mainTime.innerHTML = `${10}`
 			}
 			mainForm.tittle.classList.remove('_hidden');
 			lastFileElement.remove();
 			calendarElement.remove();
 			dateFilesElement.remove();
-			if (fileType == 'url') {
+			if (fileType == 'url'||fileType == 'live') {
 				const mainElement = document.querySelector('.main')
 				const wrapperElement = document.querySelector('.wrapper')
 
@@ -1104,7 +1145,6 @@ function startFileView(fileType, fileName) {
 
 			const homeElement = document.querySelector('.home')
 			homeElement.classList.remove('_hidden')
-			console.log('hiddennn?');
 
 		}, 500);
 	} else {
@@ -1121,6 +1161,9 @@ function startFileView(fileType, fileName) {
 			buttonRounds.classList.add('_ready')
 		}, 450);
 	}
+	setTimeout(() => {
+		tabSwitch(tabsMain[1].name, tabsMain);
+	}, 550);
 }
 
 mainForm.form.addEventListener('submit', startButtonClick);			//событие нажатия на кнопку
