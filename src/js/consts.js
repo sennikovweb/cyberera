@@ -1,4 +1,3 @@
-export let consecutivesCount = 3;
 export const RU_DICT = {
   monthsNames: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
   event: "Событие",
@@ -18,7 +17,7 @@ export const RU_DICT = {
     start: "Старт",
     end: "Конец",
     time: "Время",
-    bestConsecutive: `Лучшие ${consecutivesCount} круга`,
+    bestConsecutive: `лучших круга`,
     average: "Среднее время круга",
     totalLaps: "Всего кругов",
     totalStarts: "Всего Стартов",
@@ -27,7 +26,7 @@ export const RU_DICT = {
   },
   leaderboardTab: {
     lap: "Круг",
-    consecutive: `${consecutivesCount} Круга`,
+    consecutive: `Круга`,
     totalLaps: "Всего кругов",
     average: "Среднее время",
     name: "Имя",
@@ -49,7 +48,7 @@ export const RU_DICT = {
     name: "Имя пилота",
     laps: "Круги",
     bestLap: "Лучший круг",
-    bestConsecutive: `Лучшие ${consecutivesCount} круга`,
+    bestConsecutive: `3 лучшие круга`,
     totalTime: "Всего времени",
     holeShot: "Старт",
     lap: "Круг",
@@ -92,7 +91,7 @@ export const RU_DICT = {
     lapNum: "Номер круга",
     lapTime: "Время круга",
     bestLap: "Лучший круг",
-    bestConsecutive: `Лучшие ${consecutivesCount} круга`,
+    bestConsecutive: `лучших круга`,
     totalLaps: "Всего кругов",
     average: "Среднее время",
     starts: "Стартов",

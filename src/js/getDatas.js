@@ -1,12 +1,13 @@
+import { getState } from "./sharedStates";
 import { timeSumer, lapTimeSumer, fromFloatToString, lapTimeConverter } from "./utils";
 
 export function getLapsByName(name, noNeed, sorted) {
   // const data = mainObj.heats[heat].rounds;			//Когда искали в Heat, ниже будем искать во всех Heatах
 
-  const heatsData = mainObj.heats;
+  const heatsData = getState("mainObj").heats;
 
   //Тут будет переменная для Heatов класса;
-  const classHeats = mainObj.heats_by_class[currentClass];
+  const classHeats = getState("mainObj").heats_by_class[getState('currentClass')];
 
   let allLapsFloat = [];
   let allLapsTime = [];
@@ -26,7 +27,7 @@ export function getLapsByName(name, noNeed, sorted) {
       });
     }
   }
-  if (CONSOLE_DEBUG) console.log("allRounsData", allRoundsData);
+  if (getState('CONSOLE_DEBUG')) console.log("allRounsData", allRoundsData);
 
   allRoundsData.forEach(function (round) {
     //Заходим в каждый раунд
@@ -41,7 +42,7 @@ export function getLapsByName(name, noNeed, sorted) {
     if (round.heatName.includes("Round") || round.heatName.includes("Раунд") || round.heatName.includes("round") || round.heatName.includes("раунд")) {
       currentRound = round.heatName;
     } else {
-      currentRound = `${round.heatName} / ${textStrings.roundsTab.round} ${round.id}`;
+      currentRound = `${round.heatName} / ${getState("textStrings").roundsTab.round} ${round.id}`;
     }
     node.forEach(function (node) {
       // Находим там ноду
@@ -109,7 +110,7 @@ export function getLapsByName(name, noNeed, sorted) {
   });
 
   if (sorted == false) {
-    if (CONSOLE_DEBUG) console.log("allLapsData", allLapsData);
+    if (getState('CONSOLE_DEBUG')) console.log("allLapsData", allLapsData);
 
     return allLapsData; //Возвращаем сортировкой по раундам
   } else {
@@ -139,12 +140,14 @@ export function getLapsByName(name, noNeed, sorted) {
 }
 
 export function getConsecutivesByName(name, heat, sorted) {
-  let consecutivesCount;
-  if (mainObj.consecutives_count) {
-    consecutivesCount = mainObj.consecutives_count;
-  } else {
-    consecutivesCount = 3;
-  }
+  //   let consecutivesCount;
+  //   if (mainObj.consecutives_count) {
+  //     consecutivesCount = mainObj.consecutives_count;
+  //   } else {
+  //     consecutivesCount = 3;
+  //   }
+
+  const consecutivesCount = getState("consecutivesCount") ? getState("consecutivesCount") : 3;
 
   const allLapsData = getLapsByName(name, heat, false);
   let allConsecutivesFloat = [];
@@ -220,7 +223,7 @@ export function getRound(roundNum, heatNum) {
   let lapsCount = []; //тут количество кругов каждого пилота, чтобы найти максимальные круги за раунд
   const allPilots = getPilotsStats(); //инфа по пилотам
 
-  const currentRoundNodes = mainObj.heats[heatNum].rounds[roundNum - 1].nodes; //Ищем записи данного раунда
+  const currentRoundNodes = getState("mainObj").heats[heatNum].rounds[roundNum - 1].nodes; //Ищем записи данного раунда
 
   const currentRoundPilotsCallsigns = []; //вытащим из записей имена пилотов
   currentRoundNodes.forEach(function (node) {
@@ -240,13 +243,13 @@ export function getRound(roundNum, heatNum) {
   heatPilots.forEach((element) => {
     //проходимся по каждому пилоту
     const allLapsData = getLapsByName(element.name, heatNum, false);
-    // if(CONSOLE_DEBUG)console.log('allLapsData---allLapsData', allLapsData);
+    // if(getState('CONSOLE_DEBUG'))console.log('allLapsData---allLapsData', allLapsData);
 
     const roundLaps = allLapsData.filter((element) => {
       //избираем круги только нужного раунда
       return element.roundId == roundNum && element.heatId == heatNum;
     });
-    if (CONSOLE_DEBUG) console.log("roundLapsroundLaps--------===============================", roundLaps);
+    if (getState('CONSOLE_DEBUG')) console.log("roundLapsroundLaps--------===============================", roundLaps);
 
     if (roundLaps.length > 0) {
       //Если круги есть в этом раунде у этого пилота, то....
@@ -280,7 +283,7 @@ export function getRound(roundNum, heatNum) {
       let lapsTimeFloat = []; //Массив, где все времена во float 1 пилот;
       lapsTimeFloat.push(+lapTimeConverter(pilot[0], "float")); //Добавляем Hole shot
 
-      for (let i = 1; i <= consecutivesCount; i++) {
+      for (let i = 1; i <= getState('consecutivesCount'); i++) {
         //Добавляем 3 круга (3 через consecutivesCount)
         try {
           lapsTimeFloat.push(+lapTimeConverter(pilot[i].lapTime, "float"));
@@ -326,17 +329,17 @@ export function getRound(roundNum, heatNum) {
     });
   });
 
-  if (CONSOLE_DEBUG) console.log("roundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSorted", roundPilotsLapsSorted);
+  if (getState('CONSOLE_DEBUG')) console.log("roundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSorted", roundPilotsLapsSorted);
 
   return roundPilotsLapsSorted;
 }
 
 export function getHoleShot(name, heat, round) {
-  if (CONSOLE_DEBUG) console.log("ИМЯяяя", name);
+  if (getState('CONSOLE_DEBUG')) console.log("ИМЯяяя", name);
 
   let heats;
 
-  const fullData = mainObj;
+  const fullData = getState("mainObj");
   for (const objStroke in fullData) {
     if (objStroke == "heats") {
       heats = fullData[objStroke];
@@ -367,25 +370,25 @@ export function getLapData(targetTime, lapOrConsecutive, name, heat, getLap) {
     lapsData = getConsecutivesByName(name, heat, true); //находим все круги для сравнение с выбранным(круги подряд)
   }
   lapsData.forEach((lap, index) => {
-    // if(CONSOLE_DEBUG)console.log('I T E R A T I O N', index);
+    // if(getState('CONSOLE_DEBUG'))console.log('I T E R A T I O N', index);
     if (lap.lapTime == targetTime) {
       //перебирая все круги ищем совпадение по времени;
       lapData = lap; //объект выбранного круга
-      // if(CONSOLE_DEBUG)console.log('N A S H E L');
+      // if(getState('CONSOLE_DEBUG'))console.log('N A S H E L');
       if (getLap == "current") return; //если нам нужно вернуть выбранный круг - уходим
 
       singleLapsData.forEach((lap) => {
         //перебираем все круги и ищем совпадение по round с выбранным для otherLap
-        if (CONSOLE_DEBUG) console.log("O T H E R L A P S");
+        if (getState('CONSOLE_DEBUG')) console.log("O T H E R L A P S");
         if (lap.round == lapData.round) {
           otherLapData.push(lap); //добавляем найденный в массив otherLap
         }
       });
-      if (CONSOLE_DEBUG) console.log("L A P = NE LAP");
+      if (getState('CONSOLE_DEBUG')) console.log("L A P = NE LAP");
     }
-    if (CONSOLE_DEBUG) console.log("L A P D A T A");
+    if (getState('CONSOLE_DEBUG')) console.log("L A P D A T A");
   });
-  if (CONSOLE_DEBUG) console.log("F I N A L R E T U R N");
+  if (getState('CONSOLE_DEBUG')) console.log("F I N A L R E T U R N");
 
   if (getLap == "current") {
     //возвращаем нужные значение
@@ -400,13 +403,13 @@ export function getLapData(targetTime, lapOrConsecutive, name, heat, getLap) {
 
 export function getPilotsStats() {
   //здесь список пилотов
-  const fullData = mainObj;
+  const fullData = getState("mainObj");
 
   const classes = fullData.classes;
 
-  const data = fullData.classes[currentClass].leaderboard.by_race_time;
+  const data = fullData.classes[getState('currentClass')].leaderboard.by_race_time;
 
-  if (CONSOLE_DEBUG) console.log("datadatadata", data);
+  if (getState('CONSOLE_DEBUG')) console.log("datadatadata", data);
 
   let pilots = [];
   data.forEach(function (pilot) {
@@ -442,6 +445,26 @@ export function getTabsRounds() {
   return tabsRounds;
 }
 
+export function getRoundsByHeats() {
+  const heatsObj = {};
+
+  const classHeats = getState("mainObj").heats_by_class[getState('currentClass')];
+  const heats = getState("mainObj").heats;
+
+  for (let heat in heats) {
+    if (classHeats.includes(+heat)) {
+      const rounds = [];
+      const heatNum = heat;
+      const heatRounds = heats[heat].rounds;
+      heatRounds.forEach((round) => {
+        rounds.push(round.id);
+      });
+      heatsObj[heatNum] = rounds;
+    }
+  }
+
+  return heatsObj;
+}
 export function getDateinfo(dateOrTime) {
   // Может больше и не нужна
   //берем дату для заголовка
@@ -450,7 +473,7 @@ export function getDateinfo(dateOrTime) {
 
     let dateString;
 
-    const fullData = mainObj;
+    const fullData = getState("mainObj");
     for (objStroke in fullData) {
       if (objStroke == "heats") {
         const heatsStroke = fullData[objStroke];
@@ -467,7 +490,7 @@ export function getDateinfo(dateOrTime) {
     let mounth;
     let day;
     let time;
-    if (CONSOLE_DEBUG) console.log("ДАТА", dateString);
+    if (getState('CONSOLE_DEBUG')) console.log("ДАТА", dateString);
 
     // let monthArr;
     // if (language == 'ru') {
@@ -484,7 +507,7 @@ export function getDateinfo(dateOrTime) {
       day = [...dateString].splice(8, 2).join(""); //число
       time = `${[...dateString].splice(11, 2).join("")}:00`; //Час времени
 
-      mounth = textStrings.monthsNames[parseInt(monthNum) - 1]; //меняем номер месяца на название
+      mounth = getState("textStrings").monthsNames[parseInt(monthNum) - 1]; //меняем номер месяца на название
     } else {
       //Если врдуг мы нашли дату, но она undefined;
       day = "Дата ";
@@ -509,7 +532,7 @@ export function getDateinfo(dateOrTime) {
       return time;
     }
   } catch (error) {
-    if (CONSOLE_DEBUG) console.log("Ошибка при формировании даты", error);
+    if (getState('CONSOLE_DEBUG')) console.log("Ошибка при формировании даты", error);
   }
 }
 

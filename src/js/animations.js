@@ -1,4 +1,6 @@
 import { textChange, startRound } from "./uiChange";
+import { getState } from "./sharedStates";
+import { allLapsGraphChoosing } from "./uiChange";
 // import {}
 
 export function allLapsShow(allLaps, allLapsButton, nameForSlider) {
@@ -30,7 +32,7 @@ export function allLapsShow(allLaps, allLapsButton, nameForSlider) {
     element.solidAnimation.remove();
     element.averageLine.classList.remove("_hidden-horizontal-stroke");
     element.maxLine.classList.remove("_hidden-horizontal-stroke");
-    if (CONSOLE_DEBUG) console.log("REMOVE");
+    if (getState('CONSOLE_DEBUG')) console.log("REMOVE");
     allLapsGraphChoosing(nameForSlider, "_active");
   }, 1400);
   setTimeout(() => {
@@ -127,7 +129,7 @@ export function roundShow(round, buttonRound) {
     element.playButton.classList.remove("_hidden-play-button");
 
     const paragraph = element.playButton.firstElementChild;
-    textChange(paragraph, `<p>${textStrings.roundsTab.pause}</p>`, 150);
+    textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 150);
     startRound();
     roundPlayState = "play";
   }, 1100);

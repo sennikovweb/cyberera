@@ -1,4 +1,6 @@
+import { getButton,getState } from "./sharedStates";
 import { getTransitionDurationTime} from "./utils";
+import { getHeat,getLapsByName } from "./getDatas";
 
 export function classSwitch(e) {
   const curentButton = e.target;
@@ -8,7 +10,7 @@ export function classSwitch(e) {
   buttonsContainer.classList.add("_no-event");
 
   allButtons.forEach((button) => {
-    if (CONSOLE_DEBUG) console.log("button", button);
+    if (getState('CONSOLE_DEBUG')) console.log("button", button);
     button.classList.remove("_active", "_no-event");
   });
   curentButton.classList.add("_active", "_no-event");
@@ -41,9 +43,9 @@ export function tabSwitch(toOpen, tabss) {
   });
 
   tabss.forEach((tab) => {
-    if (buttons[tab.name].classList.contains("_ready")) {
-      if (CONSOLE_DEBUG) console.log("TRUUUUUE");
-      buttons[tab.name].classList.remove("_ready");
+    if (getButton([tab.name]).classList.contains("_ready")) {
+      if (getState('CONSOLE_DEBUG')) console.log("TRUUUUUE");
+      getButton([tab.name]).classList.remove("_ready");
     }
   });
 
@@ -56,16 +58,16 @@ export function tabSwitch(toOpen, tabss) {
 
       closingtime = getTransitionDurationTime(tab.element) / 1.5; //берем время на открытие следующей
       tab.opened = false; //закрыта
-      buttons[tab.name].classList.remove("_active", "_no-event"); //отжимаем кнопку вкладки и позволяем нажиматься
+      getButton([tab.name]).classList.remove("_active", "_no-event"); //отжимаем кнопку вкладки и позволяем нажиматься
 
-      if (CONSOLE_DEBUG) console.log("T A B C L O S I N G", tab.element);
+      if (getState('CONSOLE_DEBUG')) console.log("T A B C L O S I N G", tab.element);
     }
   });
 
   tabss.forEach((tab) => {
     if (toOpen == tab.name) {
       //ищем вкладку, которую открыть
-      buttons[tab.name].classList.add("_active", "_no-event"); //сразу красим кнопку и запрещаем нажиматься
+      getButton([tab.name]).classList.add("_active", "_no-event"); //сразу красим кнопку и запрещаем нажиматься
       const tabItems = tab.element.firstElementChild;
       setTimeout(() => {
         tab.element.classList.add("_active");
@@ -76,7 +78,7 @@ export function tabSwitch(toOpen, tabss) {
           //возвращаем кнопки
           btn.classList.remove("_no-event");
         });
-        if (CONSOLE_DEBUG) console.log("T A B O P E N", tab);
+        if (getState('CONSOLE_DEBUG')) console.log("T A B O P E N", tab);
       }, closingtime);
     }
   });
@@ -162,7 +164,7 @@ export function lapNodeShow(node, column, time) {
   const lapLeft = lap.offsetLeft;
   const lapWidth = lap.offsetWidth;
   const columnHeight = column.offsetTop;
-  if (CONSOLE_DEBUG) console.log(columnHeight);
+  if (getState('CONSOLE_DEBUG')) console.log(columnHeight);
 
   node.style.left = `${lapLeft + lapWidth / 2}px`;
   node.style.top = `${columnHeight}px`;
@@ -348,7 +350,7 @@ export function pilotsVsGraphScale(minusPlus) {
   const padding = parseInt(getComputedStyle(allLapsArea).paddingRight); //отступ для контейнера
   const fullWidth = allLapsArea.offsetWidth - padding * 2; //ширина контейнера
   let lapWidth = laps[0].offsetWidth; //текущая ширина одного круга
-  if (CONSOLE_DEBUG) console.log("laps", laps[0]);
+  if (getState('CONSOLE_DEBUG')) console.log("laps", laps[0]);
 
   const scroll = allLapsArea.scrollLeft; //текущее положение скроллла
   if (minusPlus == "minus") {
@@ -416,14 +418,14 @@ export function pilotsVsGraphScale(minusPlus) {
     //увеличение масштаба
     const scaleStep = lapWidth / 2; //шаг увеличения
     buttons.minus.classList.remove("_no-event"); //открываем кнопку МИНУС. Иногда она может быть блокирована
-    if (CONSOLE_DEBUG) console.log("lapWidth", lapWidth);
+    if (getState('CONSOLE_DEBUG')) console.log("lapWidth", lapWidth);
 
-    if (CONSOLE_DEBUG) console.log("scaleStep", scaleStep);
+    if (getState('CONSOLE_DEBUG')) console.log("scaleStep", scaleStep);
 
     const slider = document.querySelector(".pilots-vs__slider");
     const lapsShow = fullWidth / (lapWidth + scaleStep); //вычисляем, сколько сейчас влезает кругов в контейнер
     const lapChoosed = slider.value; //круг, который выбран ползунком
-    if (CONSOLE_DEBUG) console.log("lapChoosed", lapChoosed);
+    if (getState('CONSOLE_DEBUG')) console.log("lapChoosed", lapChoosed);
 
     allLaps.style.gridTemplateColumns = `7px repeat(${laps.length - 1},${lapWidth + scaleStep}px)7px`; //увеличиваем все все круги
     let paddingScroll;
@@ -530,7 +532,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
 
   lapsDatas.forEach((arr, index) => {
     let lapData = arr.filter((el) => el.lapId == currentLapsId[index]);
-    // if(CONSOLE_DEBUG)console.log('LAPPPPDATA', ...lapData);
+    // if(getState('CONSOLE_DEBUG'))console.log('LAPPPPDATA', ...lapData);
     if (lapData == "") {
       lapData = ["-"];
     }
@@ -548,7 +550,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
   const roundCounts = {};
   currentLapsData.forEach((lapData, index) => {
     const roundCount = lapData.round;
-    if (CONSOLE_DEBUG) console.log("lapData.round", lapData.round);
+    if (getState('CONSOLE_DEBUG')) console.log("lapData.round", lapData.round);
 
     if (roundCount) {
       roundCounts[index] = roundCount;
@@ -587,11 +589,11 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
     }
   });
 
-  // if(CONSOLE_DEBUG)console.log('roundCount', roundCount);
+  // if(getState('CONSOLE_DEBUG'))console.log('roundCount', roundCount);
 
-  // if(CONSOLE_DEBUG)console.log('lapTimes', lapTimes);
-  // if(CONSOLE_DEBUG)console.log('lapStarts', lapStarts);
-  // if(CONSOLE_DEBUG)console.log('lapCounts', lapCounts);
+  // if(getState('CONSOLE_DEBUG'))console.log('lapTimes', lapTimes);
+  // if(getState('CONSOLE_DEBUG'))console.log('lapStarts', lapStarts);
+  // if(getState('CONSOLE_DEBUG'))console.log('lapCounts', lapCounts);
 
   // stat.roundCount.innerHTML = roundCount   Это когда раунд был один для двух пилотов
   stat.roundCount.innerHTML = `<p>${roundCounts[0]}</p><p>${roundCounts[1]}</p>`;
@@ -600,7 +602,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
   stat.lapTime.innerHTML = `<p>${lapTimes[0]}</p><p>${lapTimes[1]}</p>`;
 
   laps[vsSlider.value].classList.add(classForSpan);
-  if (CONSOLE_DEBUG) console.log("vsSlider.value", vsSlider.value);
+  if (getState('CONSOLE_DEBUG')) console.log("vsSlider.value", vsSlider.value);
 
   laps.forEach((lap, index) => {
     if (index != vsSlider.value) {
@@ -611,15 +613,15 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
 }
 
 export function startRound() {
-  if (CONSOLE_DEBUG) console.log("NAMES", pilotsName);
-  if (CONSOLE_DEBUG) console.log("lapsByPilot", lapsByPilot);
-  if (CONSOLE_DEBUG) console.log("intervals", intervals);
-  if (CONSOLE_DEBUG) console.log("lapTimeStep", lapTimeStep);
-  if (CONSOLE_DEBUG) console.log("holeShots", holeShots);
-  if (CONSOLE_DEBUG) console.log("pilotsIntervalCount", pilotsIntervalCount);
-  if (CONSOLE_DEBUG) console.log("lapState", lapState);
-  if (CONSOLE_DEBUG) console.log("roundSpeed", roundSpeed);
-  if (CONSOLE_DEBUG) console.log("playState", roundPlayState);
+  if (getState('CONSOLE_DEBUG')) console.log("NAMES", pilotsName);
+  if (getState('CONSOLE_DEBUG')) console.log("lapsByPilot", lapsByPilot);
+  if (getState('CONSOLE_DEBUG')) console.log("intervals", intervals);
+  if (getState('CONSOLE_DEBUG')) console.log("lapTimeStep", lapTimeStep);
+  if (getState('CONSOLE_DEBUG')) console.log("holeShots", holeShots);
+  if (getState('CONSOLE_DEBUG')) console.log("pilotsIntervalCount", pilotsIntervalCount);
+  if (getState('CONSOLE_DEBUG')) console.log("lapState", lapState);
+  if (getState('CONSOLE_DEBUG')) console.log("roundSpeed", roundSpeed);
+  if (getState('CONSOLE_DEBUG')) console.log("playState", roundPlayState);
 
   if (!lastHoleShot) {
     intervalButtonsAccept = setInterval(() => {
@@ -636,7 +638,7 @@ export function startRound() {
       }
 
       if (lastHoleShot == true) {
-        if (CONSOLE_DEBUG) console.log("RJYTWWWWW");
+        if (getState('CONSOLE_DEBUG')) console.log("RJYTWWWWW");
         const roundPlayButton = document.querySelector(".round__play-button");
         const slider = document.querySelector(".round__slider");
         roundPlayButton.classList.remove("_no-event");
@@ -666,7 +668,7 @@ export function startRound() {
       }
 
       if (!holeShots[pilotName].state) {
-        if (CONSOLE_DEBUG) console.log("HOLESHOTTTTTTTTTT", pilotName);
+        if (getState('CONSOLE_DEBUG')) console.log("HOLESHOTTTTTTTTTT", pilotName);
         holeShots[pilotName].state = true;
 
         let timeoutMultiplier;
@@ -679,7 +681,7 @@ export function startRound() {
         holeShots[pilotName].interval = setTimeout(() => {
           lapState[pilotName][0] = true;
           // holeShots[pilotName].state = false;
-          if (CONSOLE_DEBUG) console.log("SETT TIME");
+          if (getState('CONSOLE_DEBUG')) console.log("SETT TIME");
         }, holeShots[pilotName].timeout * +fixedRoundSpeed * timeoutMultiplier);
       }
 
@@ -688,7 +690,7 @@ export function startRound() {
       // const intervalTime = 100;
 
       intervals[pilotName][lapIndex] = setInterval(() => {
-        // if (pilotName == 'BeeHolder') if(CONSOLE_DEBUG)console.log('INTERVALLLL', lapIndex);
+        // if (pilotName == 'BeeHolder') if(getState('CONSOLE_DEBUG'))console.log('INTERVALLLL', lapIndex);
 
         if (lapState[pilotName][lapIndex]) {
           let pecrentMultiplaer;
@@ -719,13 +721,13 @@ export function startRound() {
             const fullWidthLaps = allLapsState.filter((el) => el == 100);
 
             if (allLapsState.length == fullWidthLaps.length) {
-              // if(CONSOLE_DEBUG)console.log('В С Ё!!!!');
+              // if(getState('CONSOLE_DEBUG'))console.log('В С Ё!!!!');
               endRound();
               roundPlayState = "end";
             }
           }
         }
-        // if(CONSOLE_DEBUG)console.log('fixedIntervalTime', fixedIntervalTime);
+        // if(getState('CONSOLE_DEBUG'))console.log('fixedIntervalTime', fixedIntervalTime);
       }, +fixedIntervalTime);
     });
   });
@@ -745,7 +747,7 @@ export function endRound() {
   const roundPlayButton = document.querySelector(".round__play-button");
   const paragraph = roundPlayButton.firstElementChild;
 
-  textChange(paragraph, `<p>${textStrings.roundsTab.again}</p>`, 150);
+  textChange(paragraph, `<p>${getState("textStrings").roundsTab.again}</p>`, 150);
 
   for (const lapp in lapsByPilot) {
     const laps = lapsByPilot[lapp];
@@ -782,7 +784,7 @@ export function speedChange(sliderElement) {
   const speedValue = document.querySelector(".round__speed-value");
   const sliderValue = sliderElement.value;
   roundSpeed = speedValues[sliderValue];
-  if (CONSOLE_DEBUG) console.log("LOGG", roundSpeed);
+  if (getState('CONSOLE_DEBUG')) console.log("LOGG", roundSpeed);
 
   speedValue.innerHTML = `x${speedNames[roundSpeed]}`;
 
@@ -796,14 +798,14 @@ export function roundStatsStrokeWidthChange() {
     const allNames = document.querySelectorAll(".statistic__names-item");
     const statWindowWidth = statWindow.clientWidth;
 
-    if (CONSOLE_DEBUG) console.log("statWindowWidth", statWindowWidth);
+    if (getState('CONSOLE_DEBUG')) console.log("statWindowWidth", statWindowWidth);
 
     const padding = parseInt(getComputedStyle(statWindow).paddingLeft);
 
     allNames.forEach((stroke) => {
       const span = stroke.firstElementChild;
       span.style.width = `${statWindowWidth - padding * 2}px`;
-      if (CONSOLE_DEBUG) console.log("span", span);
+      if (getState('CONSOLE_DEBUG')) console.log("span", span);
     });
   }
 }

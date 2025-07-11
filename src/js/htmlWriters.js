@@ -1,7 +1,7 @@
-import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getHeat } from "./getDatas";
+import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getHeat, getRoundsByHeats } from "./getDatas";
 import { lapTimeConverter } from "./utils";
 import { lapNodeShow } from "./uiChange";
-
+import { getState } from "./sharedStates";
 export function writePilotsHTML() {
   // Рисуем страницу пилотов
   const pilots = {
@@ -149,10 +149,10 @@ export function writePilotsHTML() {
 
       item.pilotName.innerHTML = pilot.name; //Имя пилота
 
-      item.allLapsButton.innerHTML = textStrings.pilotsTab.allLaps;
+      item.allLapsButton.innerHTML = getState("textStrings").pilotsTab.allLaps;
       const lapsData = getLapsByName(pilot.name, pilot.heat, true); //берем круги пилота
 
-      item.bestLapText.innerHTML = textStrings.pilotsTab.bestLap;
+      item.bestLapText.innerHTML = getState("textStrings").pilotsTab.bestLap;
       try {
         item.bestLapMainTime.innerHTML = lapsData[0].lapTime;
       } catch (error) {
@@ -160,10 +160,10 @@ export function writePilotsHTML() {
       }
       item.bestLapButton.innerHTML = "<span></span>"; //кнопка спойлер
 
-      item.bestLapTittlesRound.innerHTML = textStrings.pilotsTab.round;
-      item.bestLapTittlesStart.innerHTML = textStrings.pilotsTab.start;
-      item.bestLapTittlesEnd.innerHTML = textStrings.pilotsTab.end;
-      item.bestLapTittlesTime.innerHTML = textStrings.pilotsTab.time;
+      item.bestLapTittlesRound.innerHTML = getState("textStrings").pilotsTab.round;
+      item.bestLapTittlesStart.innerHTML = getState("textStrings").pilotsTab.start;
+      item.bestLapTittlesEnd.innerHTML = getState("textStrings").pilotsTab.end;
+      item.bestLapTittlesTime.innerHTML = getState("textStrings").pilotsTab.time;
 
       item.bestLapItems.append(item.bestLapTittles);
       item.bestLapTittles.append(item.bestLapTittlesRound, item.bestLapTittlesStart, item.bestLapTittlesEnd, item.bestLapTittlesTime);
@@ -186,8 +186,8 @@ export function writePilotsHTML() {
           startElement.innerHTML = unableDate;
           endElement.innerHTML = unableDate;
           timeElement.innerHTML = unableTime;
-          // if(CONSOLE_DEBUG)console.log(`У ${ pilot.name } нет лучшего круга номер ${ i } `);
-          // if(CONSOLE_DEBUG)console.log(err);
+          // if(getState('CONSOLE_DEBUG'))console.log(`У ${ pilot.name } нет лучшего круга номер ${ i } `);
+          // if(getState('CONSOLE_DEBUG'))console.log(err);
         }
         itemElement.append(roundElement, startElement, endElement, timeElement);
         item.bestLapItems.append(itemElement);
@@ -195,9 +195,9 @@ export function writePilotsHTML() {
 
       const consecutivesData = getConsecutivesByName(pilot.name, pilot.heat, true); //берем круги подряд пилота
 
-      // if(CONSOLE_DEBUG)console.log(`consecutives от ${ pilot.name } `, consecutivesData);
+      // if(getState('CONSOLE_DEBUG'))console.log(`consecutives от ${ pilot.name } `, consecutivesData);
 
-      item.bestConsecutivesText.innerHTML = textStrings.pilotsTab.bestConsecutive;
+      item.bestConsecutivesText.innerHTML = getState("textStrings").pilotsTab.bestConsecutive;
       try {
         item.bestConsecutivesMainTime.innerHTML = consecutivesData[0].lapTime;
       } catch (error) {
@@ -205,10 +205,10 @@ export function writePilotsHTML() {
       }
       item.bestConsecutivesButton.innerHTML = "<span></span>";
 
-      item.bestConsecutivesTittlesRound.innerHTML = textStrings.pilotsTab.round;
-      item.bestConsecutivesTittlesStart.innerHTML = textStrings.pilotsTab.start;
-      item.bestConsecutivesTittlesEnd.innerHTML = textStrings.pilotsTab.end;
-      item.bestConsecutivesTittlesTime.innerHTML = textStrings.pilotsTab.time;
+      item.bestConsecutivesTittlesRound.innerHTML = getState("textStrings").pilotsTab.round;
+      item.bestConsecutivesTittlesStart.innerHTML = getState("textStrings").pilotsTab.start;
+      item.bestConsecutivesTittlesEnd.innerHTML = getState("textStrings").pilotsTab.end;
+      item.bestConsecutivesTittlesTime.innerHTML = getState("textStrings").pilotsTab.time;
 
       item.bestConsecutivesItems.append(item.bestConsecutivesTittles);
       item.bestConsecutivesTittles.append(item.bestConsecutivesTittlesRound, item.bestConsecutivesTittlesStart, item.bestConsecutivesTittlesEnd, item.bestConsecutivesTittlesTime);
@@ -231,20 +231,20 @@ export function writePilotsHTML() {
           startElement.innerHTML = unableDate;
           endElement.innerHTML = unableDate;
           timeElement.innerHTML = unableTime;
-          // if(CONSOLE_DEBUG)console.log(`У ${ pilot.name } нет лучшего круга номер ${ i } `);
-          // if(CONSOLE_DEBUG)console.log(err);
+          // if(getState('CONSOLE_DEBUG'))console.log(`У ${ pilot.name } нет лучшего круга номер ${ i } `);
+          // if(getState('CONSOLE_DEBUG'))console.log(err);
         }
         itemElement.append(roundElement, startElement, endElement, timeElement);
         item.bestConsecutivesItems.append(itemElement);
       }
 
-      item.quantityLapText.innerHTML = textStrings.pilotsTab.totalLaps;
+      item.quantityLapText.innerHTML = getState("textStrings").pilotsTab.totalLaps;
       item.quantityLapValue.innerHTML = pilot.laps;
 
-      item.quantityStartsText.innerHTML = textStrings.pilotsTab.totalStarts;
+      item.quantityStartsText.innerHTML = getState("textStrings").pilotsTab.totalStarts;
       item.quantityStartsValue.innerHTML = pilot.starts;
 
-      item.averageLapText.innerHTML = textStrings.pilotsTab.average;
+      item.averageLapText.innerHTML = getState("textStrings").pilotsTab.average;
       item.averageLapValue.innerHTML = pilot.averageLap;
 
       // item.lapText.innerHTML = 'Лучший круг';
@@ -276,7 +276,7 @@ export function writePilotsHTML() {
 
       pilotsVsInputLabel.classList.add("pilots-vs-form-input__label");
       pilotsVsInputLabel.setAttribute("for", `${pilot.name}`);
-      pilotsVsInputLabel.innerHTML = `<p> ${textStrings.pilotsTab.vs}</p><span class="label__span"></span>`;
+      pilotsVsInputLabel.innerHTML = `<p> ${getState("textStrings").pilotsTab.vs}</p><span class="label__span"></span>`;
       pilotsVsInputContainer.append(pilotsVsInputLabel, pilotsVsInput);
 
       pilots.items.append(item.container); //Начинаем складывать HTML
@@ -389,44 +389,44 @@ export function writeLeaderboardHTML() {
   leaderboard.tab.append(leaderboard.container);
   leaderboard.container.append(leaderboard.buttons, leaderboard.items);
   leaderboard.buttons.append(leaderboard.lapBtn, leaderboard.consecutiveBtn, leaderboard.countBtn, leaderboard.averageBtn);
-  leaderboard.lapBtn.innerHTML = textStrings.leaderboardTab.lap;
-  leaderboard.consecutiveBtn.innerHTML = textStrings.leaderboardTab.consecutive;
-  leaderboard.countBtn.innerHTML = textStrings.leaderboardTab.totalLaps;
-  leaderboard.averageBtn.innerHTML = textStrings.leaderboardTab.average;
+  leaderboard.lapBtn.innerHTML = getState("textStrings").leaderboardTab.lap;
+  leaderboard.consecutiveBtn.innerHTML = getState("textStrings").leaderboardTab.consecutive;
+  leaderboard.countBtn.innerHTML = getState("textStrings").leaderboardTab.totalLaps;
+  leaderboard.averageBtn.innerHTML = getState("textStrings").leaderboardTab.average;
   leaderboard.items.append(lapItem.lap, consecutiveItem.consecutive, countItem.count, averageItem.average);
 
   lapItem.lap.append(lapItem.container);
   lapItem.container.append(lapItem.items);
   lapItem.items.append(lapItem.tittles);
   lapItem.tittles.append(lapItem.tittlesName, lapItem.tittlesRound, lapItem.tittlesTime);
-  lapItem.tittlesName.innerHTML = textStrings.leaderboardTab.name;
-  lapItem.tittlesRound.innerHTML = textStrings.leaderboardTab.round;
-  lapItem.tittlesTime.innerHTML = textStrings.leaderboardTab.time;
+  lapItem.tittlesName.innerHTML = getState("textStrings").leaderboardTab.name;
+  lapItem.tittlesRound.innerHTML = getState("textStrings").leaderboardTab.round;
+  lapItem.tittlesTime.innerHTML = getState("textStrings").leaderboardTab.time;
 
   consecutiveItem.consecutive.append(consecutiveItem.container);
   consecutiveItem.container.append(consecutiveItem.items);
   consecutiveItem.items.append(consecutiveItem.tittles);
   consecutiveItem.tittles.append(consecutiveItem.tittlesName, consecutiveItem.tittlesRound, consecutiveItem.tittlesTime);
-  consecutiveItem.tittlesName.innerHTML = textStrings.leaderboardTab.name;
-  consecutiveItem.tittlesRound.innerHTML = textStrings.leaderboardTab.round;
-  consecutiveItem.tittlesTime.innerHTML = textStrings.leaderboardTab.time;
+  consecutiveItem.tittlesName.innerHTML = getState("textStrings").leaderboardTab.name;
+  consecutiveItem.tittlesRound.innerHTML = getState("textStrings").leaderboardTab.round;
+  consecutiveItem.tittlesTime.innerHTML = getState("textStrings").leaderboardTab.time;
 
   countItem.count.append(countItem.container);
   countItem.container.append(countItem.items);
   countItem.items.append(countItem.tittles);
   countItem.tittles.append(countItem.tittlesName, countItem.tittlesStarts, countItem.tittlesCounts);
-  countItem.tittlesName.innerHTML = textStrings.leaderboardTab.name;
-  countItem.tittlesStarts.innerHTML = textStrings.leaderboardTab.starts;
-  countItem.tittlesCounts.innerHTML = textStrings.leaderboardTab.laps;
+  countItem.tittlesName.innerHTML = getState("textStrings").leaderboardTab.name;
+  countItem.tittlesStarts.innerHTML = getState("textStrings").leaderboardTab.starts;
+  countItem.tittlesCounts.innerHTML = getState("textStrings").leaderboardTab.laps;
 
   averageItem.average.append(averageItem.container);
   averageItem.container.append(averageItem.items);
   averageItem.items.append(averageItem.tittles);
   averageItem.tittles.append(averageItem.tittlesName, averageItem.tittlesLaps, averageItem.tittlesAverage);
-  averageItem.tittlesName.innerHTML = textStrings.leaderboardTab.name;
-  averageItem.tittlesStarts.innerHTML = textStrings.leaderboardTab.starts;
-  averageItem.tittlesLaps.innerHTML = textStrings.leaderboardTab.laps;
-  averageItem.tittlesAverage.innerHTML = textStrings.leaderboardTab.time;
+  averageItem.tittlesName.innerHTML = getState("textStrings").leaderboardTab.name;
+  averageItem.tittlesStarts.innerHTML = getState("textStrings").leaderboardTab.starts;
+  averageItem.tittlesLaps.innerHTML = getState("textStrings").leaderboardTab.laps;
+  averageItem.tittlesAverage.innerHTML = getState("textStrings").leaderboardTab.time;
 
   let lapArr = [];
   let consecutiveArr = [];
@@ -434,7 +434,7 @@ export function writeLeaderboardHTML() {
   let averageArr = [];
 
   const pilots = getPilotsStats();
-  if (CONSOLE_DEBUG) console.log("PILOT STAAATS", pilots);
+  if (getState("CONSOLE_DEBUG")) console.log("PILOT STAAATS", pilots);
 
   pilots.forEach((pilot) => {
     if (pilot.laps) {
@@ -455,7 +455,7 @@ export function writeLeaderboardHTML() {
         lapObj.lapRound = allLaps[0].round;
         lapObj.LapTime = lapTimeConverter(allLaps[0].lapTime, "float");
       } catch (error) {
-        if (CONSOLE_DEBUG) console.log("Нет кругов", error);
+        if (getState("CONSOLE_DEBUG")) console.log("Нет кругов", error);
       }
 
       let allConsecutives;
@@ -468,7 +468,7 @@ export function writeLeaderboardHTML() {
         consecutiveObj.consecutiveRound = allConsecutives[0].round;
         consecutiveObj.consecutiveTime = lapTimeConverter(allConsecutives[0].lapTime, "float");
       } catch (error) {
-        if (CONSOLE_DEBUG) console.log("Нет 3 подряд", error);
+        if (getState("CONSOLE_DEBUG")) console.log("Нет 3 подряд", error);
       }
 
       countObj.name = name;
@@ -584,7 +584,7 @@ export function writeLeaderboardHTML() {
     averageItem.items.append(averageStroke.item);
   });
 
-  if (CONSOLE_DEBUG) console.log(leaderboard.tab);
+  if (getState("CONSOLE_DEBUG")) console.log(leaderboard.tab);
   return leaderboard.tab;
 }
 
@@ -607,7 +607,7 @@ export function writeRoundsHTML() {
 
   for (let heat in heatsObj) {
     const obj = {};
-    obj.name = mainObj.heats[heat].displayname;
+    obj.name = getState("mainObj").heats[heat].displayname;
     obj.heatNum = heat;
     heatNamesArr.push(obj);
   }
@@ -638,10 +638,10 @@ export function writeRoundsHTML() {
 
     let groupName;
     try {
-      const displayName = mainObj.heats[heatNum].displayname;
+      const displayName = getState("mainObj").heats[heatNum].displayname;
       groupName = displayName;
     } catch (error) {
-      groupName = `${textStrings.roundsTab.heat} ${heatNum}`;
+      groupName = `${getState("textStrings").roundsTab.heat} ${heatNum}`;
     }
 
     // const heatTextString = `Группа ${ heat } `;
@@ -661,17 +661,17 @@ export function writeRoundsHTML() {
     roundsArr.forEach((round) => {
       const roundElement = document.createElement("button");
       roundElement.classList.add("rounds__item", "_button");
-      roundElement.innerHTML = `${textStrings.roundsTab.round} ${round} `;
+      roundElement.innerHTML = `${getState("textStrings").roundsTab.round} ${round} `;
       roundsContainer.append(roundElement);
     });
   });
   // }
 
-  if (CONSOLE_DEBUG) console.log("rounds.itemsrounds.items", rounds.items);
+  if (getState("CONSOLE_DEBUG")) console.log("rounds.itemsrounds.items", rounds.items);
 
   rounds.rounds.append(rounds.container);
   rounds.container.append(rounds.buttons, rounds.items);
-  if (CONSOLE_DEBUG) console.log("ROUNDS", rounds.rounds);
+  if (getState("CONSOLE_DEBUG")) console.log("ROUNDS", rounds.rounds);
   return rounds.rounds;
 }
 
@@ -826,30 +826,30 @@ export function writeRound(roundRound, roundHeat) {
 
   // round.tittleHeat.innerHTML = `Группа ${roundHeat}`
 
-  round.viewBtn.innerHTML = textStrings.roundsTab.view;
-  round.statBtn.innerHTML = textStrings.roundsTab.statistic;
+  round.viewBtn.innerHTML = getState("textStrings").roundsTab.view;
+  round.statBtn.innerHTML = getState("textStrings").roundsTab.statistic;
 
-  view.speedTittle.innerHTML = textStrings.roundsTab.speed;
+  view.speedTittle.innerHTML = getState("textStrings").roundsTab.speed;
   view.speedValue.innerHTML = `x2`;
-  view.playBtn.innerHTML = `<p>${textStrings.roundsTab.play}</p>`;
+  view.playBtn.innerHTML = `<p>${getState("textStrings").roundsTab.play}</p>`;
 
-  statistic.fullRoundNamesTittle.innerHTML = textStrings.roundsTab.name;
-  statistic.lapsTittle.innerHTML = textStrings.roundsTab.laps;
-  statistic.bestLapTittle.innerHTML = textStrings.roundsTab.bestLap;
-  statistic.consecutiveTittle.innerHTML = textStrings.roundsTab.bestConsecutive;
-  statistic.totalTimeTittle.innerHTML = textStrings.roundsTab.totalTime;
+  statistic.fullRoundNamesTittle.innerHTML = getState("textStrings").roundsTab.name;
+  statistic.lapsTittle.innerHTML = getState("textStrings").roundsTab.laps;
+  statistic.bestLapTittle.innerHTML = getState("textStrings").roundsTab.bestLap;
+  statistic.consecutiveTittle.innerHTML = getState("textStrings").roundsTab.bestConsecutive;
+  statistic.totalTimeTittle.innerHTML = getState("textStrings").roundsTab.totalTime;
 
-  statistic.singleLapNamesTittle.innerHTML = textStrings.roundsTab.name;
+  statistic.singleLapNamesTittle.innerHTML = getState("textStrings").roundsTab.name;
 
   const roundInfo = getRound(roundRound, roundHeat);
-  // if(CONSOLE_DEBUG)console.log('Round IFONNNN', roundInfo);
+  // if(getState('CONSOLE_DEBUG'))console.log('Round IFONNNN', roundInfo);
 
   round.tittleRound.innerHTML = roundInfo[0].round;
 
   const maxLaps = roundInfo[0].maxLaps;
 
-  statistic.fullRoundTittle.innerHTML = `${textStrings.roundsTab.roundStart} - ${roundInfo[0].roundStart}`;
-  statistic.singleLapsTittle.innerHTML = textStrings.roundsTab.laps;
+  statistic.fullRoundTittle.innerHTML = `${getState("textStrings").roundsTab.roundStart} - ${roundInfo[0].roundStart}`;
+  statistic.singleLapsTittle.innerHTML = getState("textStrings").roundsTab.laps;
 
   view.lapsArea.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
   view.pilots.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
@@ -857,7 +857,7 @@ export function writeRound(roundRound, roundHeat) {
     const lapElement = document.createElement("div");
     if (i != maxLaps) {
       lapElement.classList.add("round__graph-area-lap-node", "_hidden-graph-area-lap-node");
-      lapElement.innerHTML = `${textStrings.roundsTab.lap} ${i + 1}<span></span>`;
+      lapElement.innerHTML = `${getState("textStrings").roundsTab.lap} ${i + 1}<span></span>`;
     } else {
       lapElement.classList.add("round__graph-area-lap-node", "round__graph-area-lap-node-final", "_hidden-graph-area-lap-node");
       lapElement.innerHTML = `<span></span>`;
@@ -876,15 +876,15 @@ export function writeRound(roundRound, roundHeat) {
     singleLapTittle.classList.add("statistic__single-laps-tittle", "statistic__tittle");
     singleLapItems[i].classList.add("statistic__single-laps-items");
     if (i == 0) {
-      singleLapTittle.innerHTML = textStrings.roundsTab.holeShot;
+      singleLapTittle.innerHTML = getState("textStrings").roundsTab.holeShot;
     } else {
-      singleLapTittle.innerHTML = `${textStrings.roundsTab.lap} ${i}`;
+      singleLapTittle.innerHTML = `${getState("textStrings").roundsTab.lap} ${i}`;
     }
     singleLapColumn.append(singleLapTittle, singleLapItems[i]);
     statistic.singleLapsRowContainer.append(singleLapColumn);
   }
 
-  if (CONSOLE_DEBUG) console.log("roundInfo---------------------", roundInfo);
+  if (getState("CONSOLE_DEBUG")) console.log("roundInfo---------------------", roundInfo);
 
   for (let i = 1; i < roundInfo.length; i++) {
     const pilotRoundInfo = roundInfo[i];
@@ -892,7 +892,7 @@ export function writeRound(roundRound, roundHeat) {
     const pilotName = pilotRoundInfo[pilotRoundInfo.length - 1];
     const pilotElement = document.createElement("div");
     const lapsAreaNameElement = document.createElement("div");
-    // if(CONSOLE_DEBUG)console.log('PILOT ROUND', pilotRoundInfo);
+    // if(getState('CONSOLE_DEBUG'))console.log('PILOT ROUND', pilotRoundInfo);
 
     pilotElement.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
 
@@ -937,14 +937,14 @@ export function writeRound(roundRound, roundHeat) {
       const previousTime = totalTimeFloat;
 
       const time = lapTimeConverter(lap.lapTime, "float");
-      // if(CONSOLE_DEBUG)console.log('curr time', time);
+      // if(getState('CONSOLE_DEBUG'))console.log('curr time', time);
       totalTimeFloat = +previousTime + +time;
     });
     const totalTimeString = lapTimeConverter(+totalTimeFloat, "string");
 
-    // if(CONSOLE_DEBUG)console.log('TOTAL TIME', totalTimeString);
-    // if(CONSOLE_DEBUG)console.log('BEST', bestLap);
-    // if(CONSOLE_DEBUG)console.log('CONST', bestConsecutive);
+    // if(getState('CONSOLE_DEBUG'))console.log('TOTAL TIME', totalTimeString);
+    // if(getState('CONSOLE_DEBUG'))console.log('BEST', bestLap);
+    // if(getState('CONSOLE_DEBUG'))console.log('CONST', bestConsecutive);
 
     const fullRoundPilot = {
       name: document.createElement("div"),
@@ -977,7 +977,7 @@ export function writeRound(roundRound, roundHeat) {
     singleLapName.innerHTML = `${pilotName}<span></span>`;
     statistic.singleLapNamesItems.append(singleLapName);
     const singleLaps = singleLapItems;
-    if (CONSOLE_DEBUG) console.log("SingleLAPS", singleLaps);
+    if (getState("CONSOLE_DEBUG")) console.log("SingleLAPS", singleLaps);
 
     for (let i = 0; i <= maxLaps; i++) {
       const singleLapItem = document.createElement("div");
@@ -1044,7 +1044,7 @@ export function writeRound(roundRound, roundHeat) {
 
   statistic.singleLapsRow.append(statistic.singleLapsRowContainer);
 
-  if (CONSOLE_DEBUG) console.log("R O U N DDDD", round.round);
+  if (getState("CONSOLE_DEBUG")) console.log("R O U N DDDD", round.round);
   return round.round;
 }
 
@@ -1149,7 +1149,7 @@ export function writeInRoundHTML(lap, laps, name) {
       roundNode.classList.add("in-round__lap-node");
       roundColumn.classList.add("in-round__lap-column", "_hidden-columns");
 
-      roundLap.innerHTML = `<span>${textStrings.inRoundTab.lap} ${i + 1}</span>`;
+      roundLap.innerHTML = `<span>${getState("textStrings").inRoundTab.lap} ${i + 1}</span>`;
       roundNode.innerHTML = laps[i].lapTime; //номер круга
 
       roundColumn.style.height = `${lapHeights[i] * heightStep - 10}%`;
@@ -1164,48 +1164,48 @@ export function writeInRoundHTML(lap, laps, name) {
     }
   }
 
-  inRound.startText.innerHTML = textStrings.inRoundTab.roundStart;
+  inRound.startText.innerHTML = getState("textStrings").inRoundTab.roundStart;
   inRound.startValue.innerHTML = lap.roundTimeStart;
 
   if (akcentLap.length == 1) {
     // выбрали один круг
-    inRound.lapStartText.innerHTML = textStrings.inRoundTab.lapStart;
-    inRound.lapEndText.innerHTML = textStrings.inRoundTab.lapEnd;
+    inRound.lapStartText.innerHTML = getState("textStrings").inRoundTab.lapStart;
+    inRound.lapEndText.innerHTML = getState("textStrings").inRoundTab.lapEnd;
   } else if (akcentLap.length > 1) {
     //выбрали круги подряд
-    inRound.lapStartText.innerHTML = textStrings.inRoundTab.lapsStart;
-    inRound.lapEndText.innerHTML = textStrings.inRoundTab.lapsEnd;
+    inRound.lapStartText.innerHTML = getState("textStrings").inRoundTab.lapsStart;
+    inRound.lapEndText.innerHTML = getState("textStrings").inRoundTab.lapsEnd;
   }
   inRound.lapStartValue.innerHTML = lap.lapTimeStart;
   inRound.lapEndValue.innerHTML = lap.lapTimeEnd;
 
   if (akcentLap.length == 1) {
     // выбрали один круг
-    inRound.lapCountText.innerHTML = textStrings.inRoundTab.lapNum;
+    inRound.lapCountText.innerHTML = getState("textStrings").inRoundTab.lapNum;
     inRound.lapCountValue.innerHTML = +akcentLap[0];
     const timeText = document.createElement("div");
     const timeValue = document.createElement("div");
     timeText.classList.add("in-round__lap-time-text", "_stat-text");
     timeValue.classList.add("in-round__lap-time-value", "modal__stat-value", "_stat-value");
-    timeText.innerHTML = textStrings.inRoundTab.lapTime;
+    timeText.innerHTML = getState("textStrings").inRoundTab.lapTime;
     timeValue.innerHTML = lap.lapTime;
     inRound.lapTime.append(timeText, timeValue);
   } else if (akcentLap.length > 1) {
     //выбрали круги подря
-    inRound.lapCountText.innerHTML = textStrings.inRoundTab.lapsNum;
+    inRound.lapCountText.innerHTML = getState("textStrings").inRoundTab.lapsNum;
     inRound.lapCountValue.innerHTML = `${+akcentLap[0]} -${+akcentLap[akcentLap.length - 1]}`;
     for (let i = 0; i < akcentLap.length; i++) {
       const timeText = document.createElement("div");
       const timeValue = document.createElement("div");
       timeText.classList.add("in-round__lap-time-text", "_stat-text");
       timeValue.classList.add("in-round__lap-time-value", "modal__stat-value", "_stat-value");
-      timeText.innerHTML = `${textStrings.inRoundTab.lapTime} ${i + 1} `;
+      timeText.innerHTML = `${getState("textStrings").inRoundTab.lapTime} ${i + 1} `;
       timeValue.innerHTML = lap.lapsData[i].lapTime;
       inRound.lapTime.append(timeText, timeValue);
     }
   }
 
-  inRound.button.innerHTML = textStrings.inRoundTab.goToRound;
+  inRound.button.innerHTML = getState("textStrings").inRoundTab.goToRound;
 
   //ищем совпадение лучшего круга и лучших кругов
 
@@ -1218,11 +1218,11 @@ export function writeInRoundHTML(lap, laps, name) {
     const consecutivesData = getConsecutivesByName(name, heat, true);
     const bestLapId = lapsData[0].lapId;
     const bestConsecutiveId = consecutivesData[0].lapId;
-    // if(CONSOLE_DEBUG)console.log('CURR ID', currentLapId);
-    // if(CONSOLE_DEBUG)console.log('BEST LAP ID', bestLapId);
-    // if(CONSOLE_DEBUG)console.log('BEST CONS ID', bestConsecutiveId);
+    // if(getState('CONSOLE_DEBUG'))console.log('CURR ID', currentLapId);
+    // if(getState('CONSOLE_DEBUG'))console.log('BEST LAP ID', bestLapId);
+    // if(getState('CONSOLE_DEBUG'))console.log('BEST CONS ID', bestConsecutiveId);
   } catch (error) {
-    if (CONSOLE_DEBUG) console.log("Чего-то нет", error);
+    if (getState("CONSOLE_DEBUG")) console.log("Чего-то нет", error);
   }
 
   inRound.inRound.append(inRound.container, inRound.roundNum, inRound.heatNum); //собираем HTML
@@ -1351,22 +1351,22 @@ export function writeAllLapsHTML(name) {
   allLaps.lapsArea.innerHTML = `<span></span>`;
 
   allLaps.minus.innerHTML = `- `;
-  allLaps.buttonsTittle.innerHTML = textStrings.allLapsTab.scale;
+  allLaps.buttonsTittle.innerHTML = getState("textStrings").allLapsTab.scale;
   allLaps.plus.innerHTML = `+ `;
 
-  allLaps.roundCountText.innerHTML = textStrings.allLapsTab.roundNum;
+  allLaps.roundCountText.innerHTML = getState("textStrings").allLapsTab.roundNum;
   allLaps.roundCountValue.innerHTML = `0`;
 
-  allLaps.lapCountText.innerHTML = textStrings.allLapsTab.lapNum;
+  allLaps.lapCountText.innerHTML = getState("textStrings").allLapsTab.lapNum;
   allLaps.lapCountValue.innerHTML = `0`;
 
-  allLaps.lapStartText.innerHTML = textStrings.allLapsTab.lapStart;
+  allLaps.lapStartText.innerHTML = getState("textStrings").allLapsTab.lapStart;
   allLaps.lapStartValue.innerHTML = `00:00:00`;
 
-  allLaps.lapEndText.innerHTML = textStrings.allLapsTab.lapEnd;
+  allLaps.lapEndText.innerHTML = getState("textStrings").allLapsTab.lapEnd;
   allLaps.lapEndValue.innerHTML = `00:00:00`;
 
-  allLaps.lapTimeText.innerHTML = textStrings.allLapsTab.lapTime;
+  allLaps.lapTimeText.innerHTML = getState("textStrings").allLapsTab.lapTime;
   allLaps.lapTimeValue.innerHTML = `0:00.000`;
 
   const pilots = getPilotsStats(); //список пилотов
@@ -1397,7 +1397,7 @@ export function writeAllLapsHTML(name) {
     const consecutivesDataSorted = getConsecutivesByName(name, heat, true); //берем все круги подряд сортированные, чтобы найти лучший
     bestConsecutivesId = consecutivesDataSorted[0].lapId; //id лучшего consecutives
   } catch (error) {
-    if (CONSOLE_DEBUG) console.log("Нет подряд");
+    if (getState("CONSOLE_DEBUG")) console.log("Нет подряд");
   }
 
   const maxLinefloat = lapTimeConverter(averageLineValueString, "float") * 2;
@@ -1615,29 +1615,29 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
   pilotsVsStatistic.totalTimeTittle.classList.add("pilots-vs__stat-stroke-tittle", "pilots-vs__stat-stroke-tittle_total-time");
 
   pilotsVs.exitBtn.innerHTML = "<span></span>";
-  pilotsVs.allLapsButton.innerHTML = textStrings.vsTab.laps;
-  pilotsVs.statisticButton.innerHTML = textStrings.vsTab.statistic;
+  pilotsVs.allLapsButton.innerHTML = getState("textStrings").vsTab.laps;
+  pilotsVs.statisticButton.innerHTML = getState("textStrings").vsTab.statistic;
 
-  pilotsVsAllLaps.buttonsTittle.innerHTML = textStrings.vsTab.scale;
+  pilotsVsAllLaps.buttonsTittle.innerHTML = getState("textStrings").vsTab.scale;
   pilotsVsAllLaps.plus.innerHTML = "+";
   pilotsVsAllLaps.minus.innerHTML = "-";
-  pilotsVsAllLaps.roundCountText.innerHTML = textStrings.vsTab.roundNum;
-  pilotsVsAllLaps.lapCountText.innerHTML = textStrings.vsTab.lapNum;
-  pilotsVsAllLaps.lapStartText.innerHTML = textStrings.vsTab.roundStart;
-  pilotsVsAllLaps.lapTimeText.innerHTML = textStrings.vsTab.lapTime;
+  pilotsVsAllLaps.roundCountText.innerHTML = getState("textStrings").vsTab.roundNum;
+  pilotsVsAllLaps.lapCountText.innerHTML = getState("textStrings").vsTab.lapNum;
+  pilotsVsAllLaps.lapStartText.innerHTML = getState("textStrings").vsTab.roundStart;
+  pilotsVsAllLaps.lapTimeText.innerHTML = getState("textStrings").vsTab.lapTime;
 
   const pilotsAverages = [];
   const pilotsHeats = [];
   let bestConsecutivesIds = [];
   let bestIds = [];
 
-  pilotsVsStatistic.bestLapTittle.innerHTML = textStrings.vsTab.bestLap;
+  pilotsVsStatistic.bestLapTittle.innerHTML = getState("textStrings").vsTab.bestLap;
 
-  pilotsVsStatistic.bestConsecutiveTittle.innerHTML = textStrings.vsTab.bestConsecutive;
-  pilotsVsStatistic.averageTittle.innerHTML = textStrings.vsTab.average;
-  pilotsVsStatistic.totalLapsTittle.innerHTML = textStrings.vsTab.totalLaps;
-  pilotsVsStatistic.startsTittle.innerHTML = textStrings.vsTab.starts;
-  pilotsVsStatistic.totalTimeTittle.innerHTML = textStrings.vsTab.totalTime;
+  pilotsVsStatistic.bestConsecutiveTittle.innerHTML = getState("textStrings").vsTab.bestConsecutive;
+  pilotsVsStatistic.averageTittle.innerHTML = getState("textStrings").vsTab.average;
+  pilotsVsStatistic.totalLapsTittle.innerHTML = getState("textStrings").vsTab.totalLaps;
+  pilotsVsStatistic.startsTittle.innerHTML = getState("textStrings").vsTab.starts;
+  pilotsVsStatistic.totalTimeTittle.innerHTML = getState("textStrings").vsTab.totalTime;
 
   const bestLapOtherElements = [];
   const bestConsecutiveOtherElements = [];
@@ -1671,17 +1671,17 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     pilotsHeats.push(heat);
 
     const laps = getLapsByName(pilot, heat, true);
-    if (CONSOLE_DEBUG) console.log("PilotsVSInfoLAPS", laps);
+    if (getState("CONSOLE_DEBUG")) console.log("PilotsVSInfoLAPS", laps);
 
     let consecutives;
     try {
       consecutives = getConsecutivesByName(pilot, heat, true);
     } catch (error) {
       consecutives = [];
-      if (CONSOLE_DEBUG) console.log("Нет 3 Подряд");
+      if (getState("CONSOLE_DEBUG")) console.log("Нет 3 Подряд");
     }
     const pilotsInfo = getPilotsStats();
-    if (CONSOLE_DEBUG) console.log("PilotsVSInfoPilots", pilotsInfo);
+    if (getState("CONSOLE_DEBUG")) console.log("PilotsVSInfoPilots", pilotsInfo);
 
     const pilotInfo = pilotsInfo.filter((element) => element.name == pilot);
 
@@ -1762,7 +1762,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
       const pilot2Time = pilotsFloatTimes[1][floatTimeName];
       if (pilot1Time > pilot2Time) akcentArr[floatCounter] = 2;
       floatCounter++;
-      if (CONSOLE_DEBUG) console.log("floatTime", pilotsFloatTimes[0][floatTimeName]);
+      if (getState("CONSOLE_DEBUG")) console.log("floatTime", pilotsFloatTimes[0][floatTimeName]);
     } else {
       const pilot1Time = pilotsFloatTimes[0][floatTimeName];
       const pilot2Time = pilotsFloatTimes[1][floatTimeName];
@@ -1784,17 +1784,17 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 		const roundByHeat = [];
 		pilotsHeats.forEach(heat => {
 			try {
-				roundByHeat.push(mainObj.heats[heat].rounds.length)
+				roundByHeat.push(getState("mainObj").heats[heat].rounds.length)
 			} catch (error) {
-				roundByHeat.push(mainObj.Results.heats[heat].rounds.length)
+				roundByHeat.push(getState("mainObj").Results.heats[heat].rounds.length)
 	
 			}
 		})
 		const roundsCount = Math.max(...roundByHeat);
 	
-		if(CONSOLE_DEBUG)console.log('roundByHeat', roundByHeat);
+		if(getState('CONSOLE_DEBUG'))console.log('roundByHeat', roundByHeat);
 	
-		if(CONSOLE_DEBUG)console.log('roundsCount', roundsCount);
+		if(getState('CONSOLE_DEBUG'))console.log('roundsCount', roundsCount);
 	*/
 
   /* здесь пробовал сделать пары по хитам, но не получилось как-то, пото понял что не надо
@@ -1805,7 +1805,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 	
 	
 	
-	if(CONSOLE_DEBUG)console.log('classHeats', classHeats);
+	if(getState('CONSOLE_DEBUG'))console.log('classHeats', classHeats);
 	
 	
 	
@@ -1817,7 +1817,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 		let heatArr = [];
 	
 	
-		if(CONSOLE_DEBUG)console.log('checkedHeats1', checkedHeats1);
+		if(getState('CONSOLE_DEBUG'))console.log('checkedHeats1', checkedHeats1);
 	
 		classHeats.forEach(function (heat) {
 			lapsPilot1.forEach(function (lap) {
@@ -1843,13 +1843,13 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 	
 	
 		heatsArr.push(twoPilotsHeat);
-		if(CONSOLE_DEBUG)console.log('twoPilotsHeat', heatsArr);
+		if(getState('CONSOLE_DEBUG'))console.log('twoPilotsHeat', heatsArr);
 	
 	}
 	
 */
 
-  const classHeats = mainObj.heats_by_class[currentClass];
+  const classHeats = getState("mainObj").heats_by_class[currentClass];
 
   let lapsTimeData = [];
   let roundsInAllHeats1 = {};
@@ -1879,8 +1879,8 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     allRoundsInHeats.push(roundsInHeats1, roundsInHeats2);
   });
 
-  if (CONSOLE_DEBUG) console.log("roundsInAllHeats1roundsInAllHeats1", roundsInAllHeats1);
-  if (CONSOLE_DEBUG) console.log("roundsInAllHeats2roundsInAllHeats2", roundsInAllHeats2);
+  if (getState("CONSOLE_DEBUG")) console.log("roundsInAllHeats1roundsInAllHeats1", roundsInAllHeats1);
+  if (getState("CONSOLE_DEBUG")) console.log("roundsInAllHeats2roundsInAllHeats2", roundsInAllHeats2);
 
   const maxRoundsInHeats = Math.max(...allRoundsInHeats);
 

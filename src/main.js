@@ -18,23 +18,26 @@ import {
   smoothTextChange,
   textChange,
 } from "./js/uiChange";
+import { getTabsRounds } from "./js/getDatas";
 import { allLapsShow, pilotsVsShow, roundShow, inRoundShow, spoilerButtonAnimation } from "./js/animations";
 import { EN_DICT, RU_DICT } from "./js/consts";
+import { setState, getState, getButton, addButton } from "./js/sharedStates";
 import "./styles/style.scss";
 const touchZapros = window.matchMedia("((hover: none) and (pointer: coarse))");
-let consecutivesCount = 3;
-const CONSOLE_DEBUG = false;
+// let consecutivesCount = 3;
+// const getState('CONSOLE_DEBUG') = false;
 
-// let textStrings;
+// let getState("textStrings");
 const language = document.querySelector("html").getAttribute("lang");
 
-const textStrings = language == "ru" ? RU_DICT : language == "en" && EN_DICT;
+setState("textStrings", language == "ru" ? RU_DICT : language == "en" && EN_DICT);
+
 // if (language == 'ru') {
 
-// 	textStrings =
+// 	getState("textStrings") =
 // } else if (language == 'en') {
 
-// 	textStrings =
+// 	getState("textStrings") =
 // }
 
 if (touchZapros.matches) {
@@ -63,7 +66,7 @@ async function getLiveData(uuid) {
   const dataJson = await data.json();
   console.log("dataJsondataJson", dataJson);
 
-  mainObj = dataJson.data.data.results;
+  setState("mainObj", dataJson.data.data.results);
 }
 
 async function getEventData(event) {
@@ -72,9 +75,9 @@ async function getEventData(event) {
   const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
   const data = await fetch(url);
   if (!data.ok) throw new Error("Ошибка загрузки");
-  mainObj = await data.json();
+  setState("mainObj", await data.json());
 
-  console.log("EVENT", mainObj);
+  console.log("EVENT", getState("mainObj"));
 }
 
 if (isLive) {
@@ -180,7 +183,7 @@ function calendarRender(filesloaded) {
 
   const monthHeaderElement = document.querySelector(".calendar__current-month");
 
-  monthHeaderElement.innerHTML = `${textStrings.monthsNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+  monthHeaderElement.innerHTML = `${getState("textStrings").monthsNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
 
   // const nextMonthDays = 6 - lastDay.getDay() + ((firstDay.getDay() <= 4) && (firstDay.getDay() != 0) ? 1 + 7 : 1)
 
@@ -322,7 +325,7 @@ async function filesJsonLoad() {
       obj.fileName = file;
       obj.year = date.getFullYear();
       obj.month = date.getMonth();
-      obj.monthName = textStrings.monthsNames[date.getMonth()];
+      obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
       obj.day = date.getDate();
       obj.hours = date.getHours();
       obj.minutes = date.getMinutes();
@@ -404,13 +407,13 @@ function getDayFiles(date) {
         fileItemElement.timeTittle.classList.add("file__time-tittle");
         fileItemElement.timeValue.classList.add("file__time-value");
 
-        fileItemElement.nameTittle.innerHTML = `${textStrings.event}:`;
+        fileItemElement.nameTittle.innerHTML = `${getState("textStrings").event}:`;
         fileItemElement.nameValue.innerHTML = file.displayName;
 
-        fileItemElement.dateTittle.innerHTML = `${textStrings.date}:`;
+        fileItemElement.dateTittle.innerHTML = `${getState("textStrings").date}:`;
         fileItemElement.dateValue.innerHTML = `${file.day} ${file.monthName} ${file.year}`;
 
-        fileItemElement.timeTittle.innerHTML = `${textStrings.time}:`;
+        fileItemElement.timeTittle.innerHTML = `${getState("textStrings").time}:`;
         fileItemElement.timeValue.innerHTML = `${file.hours}:${file.minutes}`;
 
         fileItemElement.item.append(fileItemElement.name, fileItemElement.date, fileItemElement.time);
@@ -438,7 +441,7 @@ async function dateFileUpload(fileName) {
 
     const data = await fetch(url);
     if (!data.ok) throw new Error("Ошибка загрузки");
-    mainObj = await data.json();
+    setState("mainObj", await data.json());
 
     makeRaceClassButtons();
 
@@ -473,11 +476,11 @@ async function dateFileUpload(fileName) {
 
 const lastFileButton = document.querySelector(".last-file__item");
 
-let currentClass; //Переменная класса
-let currentClassChoosed = false; //Первый класс не выбран
+// let currentClass; //Переменная класса
+// let currentClassChoosed = false; //Первый класс не выбран
 
 let notParsedJson; // переменная НЕспарсинного файла
-let mainObj; // переменная спарсинного файла
+// let mainObj; // переменная спарсинного файла
 let parsedOK = false; // Флаг успешного парсинга файла
 
 //////////////////////////////////////////////////////
@@ -499,7 +502,7 @@ async function lastFileUpload() {
 
     if (!data.ok) throw new Error("Ошибка загрузки");
 
-    mainObj = await data.json();
+    setState("mainObj", await data.json());
 
     makeRaceClassButtons();
     lastFileButton.classList.remove("_loading");
@@ -555,15 +558,15 @@ const mainForm = {
   subtittle: document.querySelector(".main-subtittle"),
 };
 
-const buttons = {
-  element: document.querySelector(".buttons"),
-  container: document.querySelector(".buttons__container"),
-  pilots: document.querySelector(".buttons__pilots"),
-  leaderboard: document.querySelector(".buttons__leaderboard"),
-  rounds: document.querySelector(".buttons__rounds"),
-  statistic: document.querySelector(".round__statistic-button"),
-  view: document.querySelector(".round__view-button"),
-};
+// const buttons = {
+//   element: document.querySelector(".buttons"),
+//   container: document.querySelector(".buttons__container"),
+//   pilots: document.querySelector(".buttons__pilots"),
+//   leaderboard: document.querySelector(".buttons__leaderboard"),
+//   rounds: document.querySelector(".buttons__rounds"),
+//   statistic: document.querySelector(".round__statistic-button"),
+//   view: document.querySelector(".round__view-button"),
+// };
 
 let tabsMain;
 let tabsLeader;
@@ -582,9 +585,9 @@ mainForm.input.addEventListener("change", async function () {
 
   if (file) {
     //Проверяем, добавился ли файл
-    if (CONSOLE_DEBUG) console.log("файле есть");
+    if (getState("CONSOLE_DEBUG")) console.log("файле есть");
     mainForm.button.classList.add("_ready");
-    mainForm.label.innerHTML = textStrings.choosed;
+    mainForm.label.innerHTML = getState("textStrings").choosed;
     mainForm.label.classList.add("_active");
     mainForm.button.classList.add("_active");
     if (mainForm.label.classList.contains("_error-parsing")) {
@@ -593,9 +596,9 @@ mainForm.input.addEventListener("change", async function () {
     }
   } else {
     // Если не добавился, убираем стили того, как добавился, т.к. они могут быть
-    if (CONSOLE_DEBUG) console.log("файл нет");
+    if (getState("CONSOLE_DEBUG")) console.log("файл нет");
     mainForm.label.classList.remove("_active");
-    mainForm.label.innerHTML = textStrings.choose;
+    mainForm.label.innerHTML = getState("textStrings").choose;
     mainForm.button.classList.remove("_ready");
   }
 });
@@ -630,12 +633,12 @@ function fileToParse(stringJson) {
   let data;
   try {
     data = JSON.parse(stringJson);
-    if (CONSOLE_DEBUG) console.log(data);
+    if (getState("CONSOLE_DEBUG")) console.log(data);
 
     parsedOK = true;
     return data;
   } catch {
-    if (CONSOLE_DEBUG) console.log("Ошибка Парсинга");
+    if (getState("CONSOLE_DEBUG")) console.log("Ошибка Парсинга");
     parsedOK = false;
   }
 }
@@ -649,8 +652,8 @@ async function startButtonClick(e) {
     //Проверяем, есть ли файл
 
     notParsedJson = await fileLoading(file); //Здесь читаем файл и записываем его в переменную
-    if (CONSOLE_DEBUG) console.log(notParsedJson);
-    mainObj = fileToParse(notParsedJson); // Здесь парсим эту переменную
+    if (getState("CONSOLE_DEBUG")) console.log(notParsedJson);
+    setState("mainObj", fileToParse(notParsedJson)); // Здесь парсим эту переменную
     if (parsedOK) {
       //Проверяем, норм ли спарсилось, и если да, убираем форму ввода и показываем дальнейшие кнопки
 
@@ -658,19 +661,19 @@ async function startButtonClick(e) {
       startFileView("load");
     } else {
       //Если не спарсилось, рисуем ошибку
-      mainForm.button.innerHTML = textStrings.error;
+      mainForm.button.innerHTML = getState("textStrings").error;
       mainForm.button.classList.add("_error-parsing");
-      mainForm.label.innerHTML = textStrings.chooseAnother;
+      mainForm.label.innerHTML = getState("textStrings").chooseAnother;
       mainForm.label.classList.add("_error-parsing");
       mainForm.button.classList.remove("_ready");
       setTimeout(() => {
-        smoothTextChange(mainForm.button, textStrings.load);
+        smoothTextChange(mainForm.button, getState("textStrings").load);
         mainForm.button.classList.remove("_error-parsing");
       }, getAnimationDurationTime(mainForm.button));
     }
   } else {
     //Если нет файла, показываем, как его нет и куда добавить
-    if (CONSOLE_DEBUG) console.log("Файла нет");
+    if (getState("CONSOLE_DEBUG")) console.log("Файла нет");
     mainForm.label.classList.add("_error");
     setTimeout(() => {
       mainForm.label.classList.remove("_error");
@@ -681,11 +684,11 @@ async function startButtonClick(e) {
 function makeRaceClassButtons() {
   //Делаем кнопки Классов
   const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
-  const raceClasses = mainObj.classes;
+  const raceClasses = getState("mainObj").classes;
 
   // let tabsClasses = [];
   for (let raceClass in raceClasses) {
-    if (mainObj.heats_by_class[raceClass].length != 0) {
+    if (getState("mainObj").heats_by_class[raceClass].length != 0) {
       const classSwitchButton = document.createElement("button");
       classSwitchButton.classList.add(`class-switch-buttons__class-${raceClass}`, "_button", "class-switch-buttons__button");
       classSwitchButton.innerHTML = raceClasses[raceClass].name;
@@ -705,14 +708,14 @@ function makeRaceClassButtons() {
   const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
   lastClassButtonSwitch.classList.add("_active", "_no-event");
 
-  currentClass = lastClassButtonSwitch.getAttribute("value");
+  setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
 }
 
 function startFileView(fileType, fileName) {
   try {
-    consecutivesCount = mainObj.consecutives_count;
+    setState("consecutivesCount", getState("mainObj").consecutives_count);
   } catch (error) {
-    if (CONSOLE_DEBUG) console.log("Не найдена информация о consecutives count");
+    if (getState("CONSOLE_DEBUG")) console.log("Не найдена информация о consecutives count");
   }
 
   const tabWrapper = document.querySelector(".tabs-wrapper");
@@ -731,16 +734,17 @@ function startFileView(fileType, fileName) {
     { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
     { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
   ];
-  buttons.lap = document.querySelector(".leaderboard__lap-button");
-  buttons.consecutive = document.querySelector(".leaderboard__consecutive-button");
-  buttons.count = document.querySelector(".leaderboard__count-button");
-  buttons.average = document.querySelector(".leaderboard__average-button");
+
+  addButton("lap", document.querySelector(".leaderboard__lap-button"));
+  addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
+  addButton("count", document.querySelector(".leaderboard__count-button"));
+  addButton("average", document.querySelector(".leaderboard__average-button"));
 
   tabsRounds = getTabsRounds();
 
   tabsRounds.forEach((tab) => {
     const tabName = tab.name;
-    buttons[tabName] = document.querySelector(`.rounds__${tabName}`);
+    addButton(tabName, document.querySelector(`.rounds__${tabName}`));
   });
 
   tabsMain[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
@@ -819,13 +823,13 @@ function startFileView(fileType, fileName) {
         console.log("date", date);
 
         mainDisplayName.innerHTML = displayName.split(".")[0].replace(/-/g, " ");
-        mainDate.innerHTML = `${date.getDate()} ${textStrings.monthsNames[date.getMonth()]} ${date.getFullYear()}`;
+        mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
         mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
       } else if (fileType == "load") {
         const day = getDateinfo("day");
         const year = getDateinfo("year");
         const time = getDateinfo("time");
-        mainDisplayName.innerHTML = `${textStrings.event}`;
+        mainDisplayName.innerHTML = `${getState("textStrings").event}`;
         mainDate.innerHTML = `${day} ${year}`;
         mainTime.innerHTML = `${time}`;
       }
@@ -852,7 +856,7 @@ function startFileView(fileType, fileName) {
       mainForm.button.remove();
       mainForm.form.remove();
       mainForm.subtittle.remove();
-      buttons.container.classList.add("_active");
+      getButton("container").classList.add("_active");
       classButtonsContainer.classList.add("_active");
 
       const homeElement = document.querySelector(".home");
@@ -886,7 +890,7 @@ function pilotTabAction(e) {
     const pilotItem = e.target.parentNode;
     const stats = e.target.nextElementSibling;
     const statsChildren = stats.children;
-    if (CONSOLE_DEBUG) console.log(statsChildren);
+    if (getState("CONSOLE_DEBUG")) console.log(statsChildren);
 
     for (let i = 2; i < statsChildren.length - 2; i++) {
       statsChildren[i].classList.toggle("_active");
@@ -905,7 +909,7 @@ function pilotTabAction(e) {
     const bestTimes = parentElement.querySelectorAll(".pilots__best-lap-time-value");
     const bestConsecutives = parentElement.querySelectorAll(".pilots__best-consecutives-time-value");
 
-    if (CONSOLE_DEBUG) console.log("STAT", statsToOpen);
+    if (getState("CONSOLE_DEBUG")) console.log("STAT", statsToOpen);
 
     let mainTime;
     const firstTime = allStats[0];
@@ -923,9 +927,9 @@ function pilotTabAction(e) {
     if (statsToOpen.classList.contains("_active")) {
       mainTime.style.top = null;
     } else {
-      if (CONSOLE_DEBUG) console.log(mainTime);
+      if (getState("CONSOLE_DEBUG")) console.log(mainTime);
 
-      if (CONSOLE_DEBUG) console.log("top", firstTimePosition - mainTimePosition + 10 + 5);
+      if (getState("CONSOLE_DEBUG")) console.log("top", firstTimePosition - mainTimePosition + 10 + 5);
 
       mainTime.style.top = `${firstTimePosition - mainTimePosition + 10 + 5}px`;
     }
@@ -1041,7 +1045,7 @@ function pilotTabAction(e) {
       const allLapsAreaHalfHeight = allLapsArea.offsetHeight / 2;
       const elem = document.elementFromPoint(e.touches[0].clientX, allLapsAreaPosition + allLapsAreaHalfHeight);
       if (graphTouchFlag) {
-        if (CONSOLE_DEBUG) console.log("ELEM", elem);
+        if (getState("CONSOLE_DEBUG")) console.log("ELEM", elem);
 
         const laps = document.querySelectorAll(".all-laps__lap");
         const currentLap = elem.closest(".all-laps__lap");
@@ -1081,12 +1085,12 @@ function pilotTabAction(e) {
     //Проверяем, круг или подряд
     if (e.target.classList.contains("pilots__best-lap-time-value")) {
       lapData = getLapData(e.target.innerHTML, "lap", name, heat, "current"); //получаем выбранный кргу
-      if (CONSOLE_DEBUG) console.log("LAP DATA", e.target.innerHTML);
+      if (getState("CONSOLE_DEBUG")) console.log("LAP DATA", e.target.innerHTML);
 
       otherLapData = getLapData(e.target.innerHTML, "lap", name, heat, "other"); //получаем отсальные круги раунда
 
-      if (CONSOLE_DEBUG) console.log("G E T L A P", lapData);
-      if (CONSOLE_DEBUG) console.log("G E T O T H E R", otherLapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T L A P", lapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
     }
 
     //Проверяем, круг или подряд
@@ -1094,12 +1098,12 @@ function pilotTabAction(e) {
       lapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "current"); //получаем выбранные круги подряд
       otherLapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "other"); //получаем остальные круги раунда
 
-      if (CONSOLE_DEBUG) console.log("G E T C O N S", lapData);
-      if (CONSOLE_DEBUG) console.log("G E T O T H E R", otherLapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T C O N S", lapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
     }
-    if (CONSOLE_DEBUG) console.log("NAME BEFORE INROUND", lapData);
+    if (getState("CONSOLE_DEBUG")) console.log("NAME BEFORE INROUND", lapData);
 
-    buttons.element.after(writeInRoundHTML(lapData, otherLapData, name)); //Отрисовываем inRound
+    getButton("element").after(writeInRoundHTML(lapData, otherLapData, name)); //Отрисовываем inRound
 
     const inRoundElement = document.querySelector(".in-round");
 
@@ -1145,10 +1149,10 @@ function pilotTabAction(e) {
 
     labelElement.classList.toggle("_active");
     InputElement.checked = !InputElement.checked;
-    if (CONSOLE_DEBUG) console.log("labelSpan", labelSpan);
-    if (CONSOLE_DEBUG) console.log("labelElement", labelElement);
-    if (CONSOLE_DEBUG) console.log("InputElement", InputElement.name);
-    if (CONSOLE_DEBUG) console.log("InputElementCheck", InputElement.checked);
+    if (getState("CONSOLE_DEBUG")) console.log("labelSpan", labelSpan);
+    if (getState("CONSOLE_DEBUG")) console.log("labelElement", labelElement);
+    if (getState("CONSOLE_DEBUG")) console.log("InputElement", InputElement.name);
+    if (getState("CONSOLE_DEBUG")) console.log("InputElementCheck", InputElement.checked);
 
     const pilotsVsLabels = document.querySelectorAll(".pilots-vs-form-input__label");
     const pilotsVsInputs = document.querySelectorAll(".pilots-vs-form-input");
@@ -1200,13 +1204,13 @@ function fromInRoundToRoundAction(buttonPressed) {
   // const heatNum = getHeat(nameText)
   // const roundNum = getNumFromText(roundText)
 
-  // if(CONSOLE_DEBUG)console.log('tittleName', heatNum);
-  // if(CONSOLE_DEBUG)console.log('tittleRound', roundNum);
+  // if(getState('CONSOLE_DEBUG'))console.log('tittleName', heatNum);
+  // if(getState('CONSOLE_DEBUG'))console.log('tittleRound', roundNum);
 
   const heatNumElement = document.querySelector(".in-round__heatNum");
   const roundNumElement = document.querySelector(".in-round__roundNum");
 
-  if (CONSOLE_DEBUG) console.log("VALLLLLLLLUW-123123-1-23-12-312", heatNumElement.getAttribute("value"));
+  if (getState("CONSOLE_DEBUG")) console.log("VALLLLLLLLUW-123123-1-23-12-312", heatNumElement.getAttribute("value"));
   const roundNum = roundNumElement.getAttribute("value");
   const heatNum = heatNumElement.getAttribute("value");
 
@@ -1281,7 +1285,7 @@ function leaderboardTabAction(e) {
     const parent = e.target.parentNode; //Собираем  информацию о раунде
     const nameElement = parent.firstElementChild;
     const name = nameElement.children[1].innerHTML;
-    // if(CONSOLE_DEBUG)console.log(name);
+    // if(getState('CONSOLE_DEBUG'))console.log(name);
 
     const heat = getHeat(name);
 
@@ -1291,12 +1295,12 @@ function leaderboardTabAction(e) {
     //Проверяем, круг или подряд
     if (e.target.classList.contains("leaderboard-lap__time")) {
       lapData = getLapData(e.target.innerHTML, "lap", name, heat, "current"); //получаем выбранный кргу
-      if (CONSOLE_DEBUG) console.log("LAP DATA", e.target.innerHTML);
+      if (getState("CONSOLE_DEBUG")) console.log("LAP DATA", e.target.innerHTML);
 
       otherLapData = getLapData(e.target.innerHTML, "lap", name, heat, "other"); //получаем отсальные круги раунда
 
-      if (CONSOLE_DEBUG) console.log("G E T L A P", lapData);
-      if (CONSOLE_DEBUG) console.log("G E T O T H E R", otherLapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T L A P", lapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
     }
 
     //Проверяем, круг или подряд
@@ -1304,13 +1308,13 @@ function leaderboardTabAction(e) {
       lapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "current"); //получаем выбранные круги подряд
       otherLapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "other"); //получаем остальные круги раунда
 
-      if (CONSOLE_DEBUG) console.log("G E T C O N S", lapData);
-      if (CONSOLE_DEBUG) console.log("G E T O T H E R", otherLapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T C O N S", lapData);
+      if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
     }
 
-    if (CONSOLE_DEBUG) console.log("NAME BEFORE INROUND", lapData);
+    if (getState("CONSOLE_DEBUG")) console.log("NAME BEFORE INROUND", lapData);
 
-    buttons.element.after(writeInRoundHTML(lapData, otherLapData, name)); //Отрисовываем inRound
+    getButton("element").after(writeInRoundHTML(lapData, otherLapData, name)); //Отрисовываем inRound
 
     const inRoundElement = document.querySelector(".in-round");
 
@@ -1375,8 +1379,8 @@ function goToRoundAction(round, heat, buttonPressed) {
     lapState[pilotName] = [];
     pilotsIntervalCount[pilotName] = [];
     pilotsName.push(pilotName);
-    if (CONSOLE_DEBUG) console.log(pilotName);
-    if (CONSOLE_DEBUG) console.log(pilotLaps);
+    if (getState("CONSOLE_DEBUG")) console.log(pilotName);
+    if (getState("CONSOLE_DEBUG")) console.log(pilotLaps);
     let pilotLapsArr = [];
 
     pilotLaps.forEach((element, index) => {
@@ -1408,7 +1412,7 @@ function goToRoundAction(round, heat, buttonPressed) {
           } else {
             const lapTimeFloat = lapTimeConverter(element[i].lapTime, "float");
             const timeStep = +lapTimeFloat;
-            if (CONSOLE_DEBUG) console.log("LAP TIMEEEEEEE", lapTimeFloat);
+            if (getState("CONSOLE_DEBUG")) console.log("LAP TIMEEEEEEE", lapTimeFloat);
 
             times.push(+timeStep.toFixed(0));
             pilotsIntervalCount[pilotName].push(1);
@@ -1429,9 +1433,9 @@ function goToRoundAction(round, heat, buttonPressed) {
     { name: "statistic", opened: false, element: document.querySelector(".round__statistic") },
   ];
 
-  buttons.rounds = document.querySelector(".buttons__rounds");
-  buttons.statistic = document.querySelector(".round__statistic-button");
-  buttons.view = document.querySelector(".round__view-button");
+  addButton("rounds", document.querySelector(".buttons__rounds"));
+  addButton("statistic", document.querySelector(".round__statistic-button"));
+  addButton("view", document.querySelector(".round__view-button"));
 
   const roundButtons = document.querySelector(".round__buttons");
   const roundPlayButton = document.querySelector(".round__play-button");
@@ -1461,11 +1465,11 @@ function goToRoundAction(round, heat, buttonPressed) {
   roundPlayButton.addEventListener("click", function (e) {
     const paragraph = roundPlayButton.firstElementChild;
     if (roundPlayState == "play") {
-      textChange(paragraph, `<p>${textStrings.roundsTab.play}</p>`, 150);
+      textChange(paragraph, `<p>${getState("textStrings").roundsTab.play}</p>`, 150);
       pauseRound();
       roundPlayState = "pause";
     } else if (roundPlayState == "pause") {
-      textChange(paragraph, `<p>${textStrings.roundsTab.pause}</p>`, 150);
+      textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 150);
       startRound();
       roundPlayState = "play";
     } else if (roundPlayState == "end") {
@@ -1487,7 +1491,7 @@ function goToRoundAction(round, heat, buttonPressed) {
       slider.classList.add("_no-event");
 
       setTimeout(() => {
-        textChange(paragraph, `<p>${textStrings.roundsTab.pause}</p>`, 250);
+        textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 250);
       }, 300);
       setTimeout(() => {
         startRound();
@@ -1505,7 +1509,7 @@ function goToRoundAction(round, heat, buttonPressed) {
       for (const holeNames in holeShots) {
         const holeObj = holeShots[holeNames];
         clearInterval(holeObj.interval);
-        if (CONSOLE_DEBUG) console.log("holeObj", holeObj);
+        if (getState("CONSOLE_DEBUG")) console.log("holeObj", holeObj);
       }
 
       lastHoleShot = false;
@@ -1558,7 +1562,7 @@ function roundsTabAction(e) {
 
   heatTabs.forEach((heat, index) => {
     if (e.target.closest(`.rounds__${heat.name} `)) {
-      if (CONSOLE_DEBUG) console.log(`${textStrings.roundsTab.heat} ${heat.name} `);
+      if (getState("CONSOLE_DEBUG")) console.log(`${getState("textStrings").roundsTab.heat} ${heat.name} `);
       tabSwitch(tabsRounds[index].name, tabsRounds);
       tabHeightChange(tabsRounds[index].element, itemsElement, false);
     }
@@ -1592,22 +1596,22 @@ function roundsTabAction(e) {
     // 	}
     // })
 
-    if (CONSOLE_DEBUG) console.log(heatNum);
-    if (CONSOLE_DEBUG) console.log(roundNum);
+    if (getState("CONSOLE_DEBUG")) console.log(heatNum);
+    if (getState("CONSOLE_DEBUG")) console.log(roundNum);
 
     goToRoundAction(roundNum, heatNum, e.target);
   }
 }
 
-buttons.pilots.addEventListener("click", function () {
+getButton("pilots").addEventListener("click", function () {
   tabSwitch(tabsMain[0].name, tabsMain);
 });
 
-buttons.leaderboard.addEventListener("click", function () {
+getButton("leaderboard").addEventListener("click", function () {
   tabSwitch(tabsMain[1].name, tabsMain);
 });
 
-buttons.rounds.addEventListener("click", function () {
+getButton("rounds").addEventListener("click", function () {
   tabSwitch(tabsMain[2].name, tabsMain);
 });
 
@@ -1623,8 +1627,8 @@ function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
   const pilotsVsAllLapsLaps = document.querySelector(".pilots-vs__laps");
   const pilotsVsAllLapsLap = document.querySelectorAll(".pilots-vs__lap");
   const pilotsVsExitBtn = document.querySelector(".pilots-vs__exit-button");
-  buttons.pilotsVsAllLaps = document.querySelector(".pilots-vs__all-laps-button");
-  buttons.pilotsVsStatistic = document.querySelector(".pilots-vs__statistic-button");
+  addButton("pilotsVsAllLaps", document.querySelector(".pilots-vs__all-laps-button"));
+  addButton("pilotsVsStatistic", document.querySelector(".pilots-vs__statistic-button"));
   const name1 = document.querySelector(".pilots-vs_name1");
   const name2 = document.querySelector(".pilots-vs_name2");
 
@@ -1651,12 +1655,12 @@ function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
   name1.classList.add("_active");
   name2.classList.add("_active");
 
-  buttons.pilotsVsAllLaps.addEventListener("click", () => {
+  getButton("pilotsVsAllLaps").addEventListener("click", () => {
     tabSwitch(tabsPilotsVs[0].name, tabsPilotsVs);
     name1.classList.add("_active");
     name2.classList.add("_active");
   });
-  buttons.pilotsVsStatistic.addEventListener("click", () => {
+  getButton("pilotsVsStatistic").addEventListener("click", () => {
     tabSwitch(tabsPilotsVs[1].name, tabsPilotsVs);
     name1.classList.remove("_active");
     name2.classList.remove("_active");
@@ -1711,7 +1715,7 @@ function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
         }
       });
       sliderPilotsVs.value = currentIndex;
-      if (CONSOLE_DEBUG) console.log("sliderPilotsVs.value", sliderPilotsVs.value);
+      if (getState("CONSOLE_DEBUG")) console.log("sliderPilotsVs.value", sliderPilotsVs.value);
 
       pilotsVsGraphChoosing(nameForFunctions1, nameForFunctions2, "_active");
     }
@@ -1759,7 +1763,7 @@ function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
 
     const elem = document.elementFromPoint(e.touches[0].clientX, pilotsVsAreaPosition + pilotsVsAreaHalfHeight);
     if (graphTouchFlag) {
-      if (CONSOLE_DEBUG) console.log("ELEM", elem);
+      if (getState("CONSOLE_DEBUG")) console.log("ELEM", elem);
 
       const laps = document.querySelectorAll(".pilots-vs__lap");
       const currentLap = elem.closest(".pilots-vs__lap");
@@ -1801,45 +1805,13 @@ function setAkcentValues(akcentArrHere) {
     totalLaps2: document.querySelector(".pilots-vs__stat-stroke-value_total-laps-2"),
   };
 
-  if (CONSOLE_DEBUG) console.log("akcentElements", akcentArrHere[2]);
-  // if(CONSOLE_DEBUG)console.log('');
+  if (getState("CONSOLE_DEBUG")) console.log("akcentElements", akcentArrHere[2]);
+  // if(getState('CONSOLE_DEBUG'))console.log('');
 
   akcentElements[`bestLap${akcentArrHere[0]}`].classList.add("_akcent");
   akcentElements[`bestConsecutive${akcentArrHere[1]}`].classList.add("_akcent");
   akcentElements[`average${akcentArrHere[2]}`].classList.add("_akcent");
   akcentElements[`totalLaps${akcentArrHere[3]}`].classList.add("_akcent");
-}
-
-function getRoundsByHeats() {
-  const heatsObj = {};
-
-  // let heats;
-
-  // const fullData = mainObj;
-  // for (objStroke in fullData) {
-  // 	if (objStroke == 'heats') {
-  // 		heats = fullData[objStroke];
-  // 	} else if (fullData[objStroke].heats) {
-  // 		heats = fullData[objStroke].heats
-  // 	}
-  // }
-
-  const classHeats = mainObj.heats_by_class[currentClass];
-  const heats = mainObj.heats;
-
-  for (let heat in heats) {
-    if (classHeats.includes(+heat)) {
-      const rounds = [];
-      const heatNum = heat;
-      const heatRounds = heats[heat].rounds;
-      heatRounds.forEach((round) => {
-        rounds.push(round.id);
-      });
-      heatsObj[heatNum] = rounds;
-    }
-  }
-
-  return heatsObj;
 }
 
 let lastHoleShot;
