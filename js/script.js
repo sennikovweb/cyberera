@@ -4443,6 +4443,7 @@ function getLapsByName(name, noNeed, sorted) {
 		node.forEach(function (node) {	// Находим там ноду
 			if (node.callsign == name) {	// в Ноде ищем определенного пилота
 				const laps = node.laps		// и ищем его круги
+console.log('lapslapslaps',laps);
 
 				let lapCount;		//переменная чтобы считать круги
 				let previousLapTime;			//Переменная для хранения предыдущего времени круга
@@ -4506,8 +4507,10 @@ function getLapsByName(name, noNeed, sorted) {
 
 		allLapsFloat.sort((a, b) => a - b);			//Сортировка по лучшим кругам, значения Float
 
+console.log('FLOAT',allLapsFloat);
 
 		allLapsTime = fromFloatToString(allLapsFloat);			//превращаем Float в человечиские цифры в виде String
+console.log('allLapsTime',allLapsTime);
 
 
 
@@ -4869,7 +4872,11 @@ function lapTimeSumer(data = [], formfated) {			//посчитать неско�
 
 function fromFloatToString(array) {			//превращаем массив времени Float в массив человечиских цифр в виде String
 	const allLapsTime = array.map((lap) => {
-		if (lap < 60) {
+		if (lap < 60) {	
+			if(lap<10){
+				lap = `0:0${lap}`;
+				return lap
+			}
 			lap = `0:${lap}`;
 		} else if (lap >= 60 && lap < 120) {
 			lapWithoutMinute = lap - 60;
