@@ -72,7 +72,7 @@ export default async (req, res) => {
 
       // 2. Устанавливаем TTL 14 дней (1209600 секунд)
       const expireResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(uuid)}/60`,
+        `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(uuid)}/1209600`,
         {
           method: 'POST',
           headers: {
