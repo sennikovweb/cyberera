@@ -339,7 +339,7 @@ async function urlUpload(type) {
 			const mainTime = document.querySelector('.main-tittle__time')
 
 	
-			mainDisplayName.innerHTML = `${fullLive.GlobalSettings[5]['option_value']}`;
+			mainDisplayName.innerHTML = `${fullLive.eventName}`;
 			mainDate.innerHTML = getMinutesSinceUpload(fullLive.date)
 			mainTime.remove();
 
