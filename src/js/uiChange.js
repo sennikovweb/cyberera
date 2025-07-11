@@ -1,6 +1,184 @@
-import { getButton,getState } from "./sharedStates";
-import { getTransitionDurationTime} from "./utils";
-import { getHeat,getLapsByName } from "./getDatas";
+import { getButton, getState, setState, addButton, getLocalFileElement } from "./sharedStates";
+import { getTransitionDurationTime } from "./utils";
+import { getHeat, getLapsByName, getTabsRounds } from "./getDatas";
+import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender } from "./htmlWriters";
+import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
+
+
+let tabsMain;
+let tabsLeader;
+let tabsRounds;
+export function startFileView(fileType, fileName) {
+  try {
+    setState("consecutivesCount", getState("mainObj").consecutives_count);
+  } catch (error) {
+    if (getState("CONSOLE_DEBUG")) console.log("Не найдена информация о consecutives count");
+  }
+
+  const tabWrapper = document.querySelector(".tabs-wrapper");
+  tabWrapper.append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
+
+  //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
+  tabsMain = [
+    { name: "pilots", opened: false, element: document.querySelector(".pilots") },
+    { name: "leaderboard", opened: false, element: document.querySelector(".leaderboard") },
+    { name: "rounds", opened: false, element: document.querySelector(".rounds") },
+  ];
+
+  tabsLeader = [
+    { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
+    { name: "consecutive", opened: false, element: document.querySelector(".leaderboard-consecutive") },
+    { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
+    { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
+  ];
+
+  addButton("lap", document.querySelector(".leaderboard__lap-button"));
+  addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
+  addButton("count", document.querySelector(".leaderboard__count-button"));
+  addButton("average", document.querySelector(".leaderboard__average-button"));
+
+  tabsRounds = getTabsRounds();
+
+  tabsRounds.forEach((tab) => {
+    const tabName = tab.name;
+    addButton(tabName, document.querySelector(`.rounds__${tabName}`));
+  });
+
+  tabsMain[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
+  tabsMain[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
+
+  tabsMain[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
+
+  tabSwitch(tabsLeader[0].name, tabsLeader);
+  const leaderboardItemsElement = document.querySelector(".leaderboard__items");
+  tabHeightChange(tabsLeader[0].element, leaderboardItemsElement, true);
+
+  tabSwitch(tabsRounds[0].name, tabsRounds);
+  const roundsItemsElement = document.querySelector(".rounds__items");
+
+  tabHeightChange(tabsRounds[0].element, roundsItemsElement, true);
+
+  if (fileType != "classSwitch") {
+    const shareElement = document.querySelector(".author__share");
+
+    shareElement.classList.remove("_hide");
+
+    shareElement.addEventListener("click", async function () {
+      const urlToCopy = document.querySelector(".author__share-url").textContent;
+      try {
+        await navigator.clipboard.writeText(urlToCopy);
+
+        shareElement.classList.add("_success");
+        const timer = setTimeout(() => {
+          shareElement.classList.remove("_success");
+          clearTimeout(timer);
+        }, 1000);
+      } catch (error) {
+        shareElement.classList.add("_error");
+        const timer = setTimeout(() => {
+          shareElement.classList.remove("_error");
+          clearTimeout(timer);
+        }, 1000);
+      }
+    });
+
+
+
+
+    const windowWidth = window.innerWidth; // ширина окна, сколько надо проехаться кнопками за границу
+    const buttonWidth = getLocalFileElement('button').offsetWidth; //ширина кнопки, чтобы не торчали края
+    const labelWidth = getLocalFileElement('label').offsetWidth; //ширина label чтобы не торчали края
+
+    const lastFileElement = document.querySelector(".last-file");
+    const dateFilesElement = document.querySelector(".date-files");
+    const calendarElement = document.querySelector(".calendar");
+
+    if (fileType == "load") {
+      lastFileElement.classList.add("_hidden");
+      getLocalFileElement('button').style.transition = "all 1s ease";
+      getLocalFileElement('button').style.transform = `translate(${windowWidth / 2 + buttonWidth}px, 0px)`; //едем
+      getLocalFileElement('label').style.transition = "all 1s ease";
+      getLocalFileElement('label').style.transform = `translate(-${windowWidth / 2 + labelWidth}px, 0px)`; //едем
+      getLocalFileElement('tittle').classList.add("_hidden");
+      dateFilesElement.classList.add("_hidden");
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }, 300);
+    }
+
+    getLocalFileElement('tittle').classList.add("_hidden");
+
+    setTimeout(() => {
+      //меняем после анимации кнопки и label, которые ниже.
+      const mainDisplayName = document.querySelector(".main-tittle__display-name");
+      const mainDate = document.querySelector(".main-tittle__date");
+      const mainTime = document.querySelector(".main-tittle__time");
+      if (fileType != "load" && fileType != "live") {
+        const [datePart, timePart, displayName] = fileName.split("_");
+        const isoString = `${datePart}T${timePart.replace("-", ":")}`;
+        const date = new Date(isoString);
+        console.log("date", date);
+
+        mainDisplayName.innerHTML = displayName.split(".")[0].replace(/-/g, " ");
+        mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
+        mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
+      } else if (fileType == "load") {
+        const day = getDateinfo("day");
+        const year = getDateinfo("year");
+        const time = getDateinfo("time");
+        mainDisplayName.innerHTML = `${getState("textStrings").event}`;
+        mainDate.innerHTML = `${day} ${year}`;
+        mainTime.innerHTML = `${time}`;
+      }
+      document.querySelector('.main-tittle').classList.remove("_hidden");
+      lastFileElement.remove();
+      calendarElement.remove();
+      dateFilesElement.remove();
+      if (fileType == "url" || fileType == "live") {
+        const mainElement = document.querySelector(".main");
+        const wrapperElement = document.querySelector(".wrapper");
+
+        mainElement.classList.remove("_hide");
+        wrapperElement.classList.add("_to-hide");
+        const hideEnd = setTimeout(() => {
+          wrapperElement.classList.remove("_to-hide");
+          wrapperElement.classList.remove("_hide");
+          clearTimeout(hideEnd);
+        }, 1000);
+      }
+    }, 500);
+
+    setTimeout(() => {
+      const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
+      getLocalFileElement('button').remove();
+      getLocalFileElement('form').remove();
+      getLocalFileElement('tittle').remove();
+      getButton("container").classList.add("_active");
+      classButtonsContainer.classList.add("_active");
+
+      const homeElement = document.querySelector(".home");
+      homeElement.classList.remove("_hidden");
+    }, 500);
+  } else {
+    setTimeout(() => {
+      const buttonsContainer = document.querySelector(".class-switch-buttons__container");
+      buttonsContainer.classList.remove("_no-event");
+
+      const buttonPilots = document.querySelector(".buttons__pilots");
+      const buttonLeaderboard = document.querySelector(".buttons__leaderboard");
+      const buttonRounds = document.querySelector(".buttons__rounds");
+      buttonPilots.classList.add("_ready");
+      buttonLeaderboard.classList.add("_ready");
+      buttonRounds.classList.add("_ready");
+    }, 450);
+  }
+  setTimeout(() => {
+    tabSwitch(tabsMain[1].name, tabsMain);
+  }, 550);
+}
 
 export function classSwitch(e) {
   const curentButton = e.target;
@@ -10,7 +188,7 @@ export function classSwitch(e) {
   buttonsContainer.classList.add("_no-event");
 
   allButtons.forEach((button) => {
-    if (getState('CONSOLE_DEBUG')) console.log("button", button);
+    if (getState("CONSOLE_DEBUG")) console.log("button", button);
     button.classList.remove("_active", "_no-event");
   });
   curentButton.classList.add("_active", "_no-event");
@@ -44,7 +222,7 @@ export function tabSwitch(toOpen, tabss) {
 
   tabss.forEach((tab) => {
     if (getButton([tab.name]).classList.contains("_ready")) {
-      if (getState('CONSOLE_DEBUG')) console.log("TRUUUUUE");
+      if (getState("CONSOLE_DEBUG")) console.log("TRUUUUUE");
       getButton([tab.name]).classList.remove("_ready");
     }
   });
@@ -60,7 +238,7 @@ export function tabSwitch(toOpen, tabss) {
       tab.opened = false; //закрыта
       getButton([tab.name]).classList.remove("_active", "_no-event"); //отжимаем кнопку вкладки и позволяем нажиматься
 
-      if (getState('CONSOLE_DEBUG')) console.log("T A B C L O S I N G", tab.element);
+      if (getState("CONSOLE_DEBUG")) console.log("T A B C L O S I N G", tab.element);
     }
   });
 
@@ -78,7 +256,7 @@ export function tabSwitch(toOpen, tabss) {
           //возвращаем кнопки
           btn.classList.remove("_no-event");
         });
-        if (getState('CONSOLE_DEBUG')) console.log("T A B O P E N", tab);
+        if (getState("CONSOLE_DEBUG")) console.log("T A B O P E N", tab);
       }, closingtime);
     }
   });
@@ -164,7 +342,7 @@ export function lapNodeShow(node, column, time) {
   const lapLeft = lap.offsetLeft;
   const lapWidth = lap.offsetWidth;
   const columnHeight = column.offsetTop;
-  if (getState('CONSOLE_DEBUG')) console.log(columnHeight);
+  if (getState("CONSOLE_DEBUG")) console.log(columnHeight);
 
   node.style.left = `${lapLeft + lapWidth / 2}px`;
   node.style.top = `${columnHeight}px`;
@@ -350,7 +528,7 @@ export function pilotsVsGraphScale(minusPlus) {
   const padding = parseInt(getComputedStyle(allLapsArea).paddingRight); //отступ для контейнера
   const fullWidth = allLapsArea.offsetWidth - padding * 2; //ширина контейнера
   let lapWidth = laps[0].offsetWidth; //текущая ширина одного круга
-  if (getState('CONSOLE_DEBUG')) console.log("laps", laps[0]);
+  if (getState("CONSOLE_DEBUG")) console.log("laps", laps[0]);
 
   const scroll = allLapsArea.scrollLeft; //текущее положение скроллла
   if (minusPlus == "minus") {
@@ -418,14 +596,14 @@ export function pilotsVsGraphScale(minusPlus) {
     //увеличение масштаба
     const scaleStep = lapWidth / 2; //шаг увеличения
     buttons.minus.classList.remove("_no-event"); //открываем кнопку МИНУС. Иногда она может быть блокирована
-    if (getState('CONSOLE_DEBUG')) console.log("lapWidth", lapWidth);
+    if (getState("CONSOLE_DEBUG")) console.log("lapWidth", lapWidth);
 
-    if (getState('CONSOLE_DEBUG')) console.log("scaleStep", scaleStep);
+    if (getState("CONSOLE_DEBUG")) console.log("scaleStep", scaleStep);
 
     const slider = document.querySelector(".pilots-vs__slider");
     const lapsShow = fullWidth / (lapWidth + scaleStep); //вычисляем, сколько сейчас влезает кругов в контейнер
     const lapChoosed = slider.value; //круг, который выбран ползунком
-    if (getState('CONSOLE_DEBUG')) console.log("lapChoosed", lapChoosed);
+    if (getState("CONSOLE_DEBUG")) console.log("lapChoosed", lapChoosed);
 
     allLaps.style.gridTemplateColumns = `7px repeat(${laps.length - 1},${lapWidth + scaleStep}px)7px`; //увеличиваем все все круги
     let paddingScroll;
@@ -550,7 +728,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
   const roundCounts = {};
   currentLapsData.forEach((lapData, index) => {
     const roundCount = lapData.round;
-    if (getState('CONSOLE_DEBUG')) console.log("lapData.round", lapData.round);
+    if (getState("CONSOLE_DEBUG")) console.log("lapData.round", lapData.round);
 
     if (roundCount) {
       roundCounts[index] = roundCount;
@@ -602,7 +780,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
   stat.lapTime.innerHTML = `<p>${lapTimes[0]}</p><p>${lapTimes[1]}</p>`;
 
   laps[vsSlider.value].classList.add(classForSpan);
-  if (getState('CONSOLE_DEBUG')) console.log("vsSlider.value", vsSlider.value);
+  if (getState("CONSOLE_DEBUG")) console.log("vsSlider.value", vsSlider.value);
 
   laps.forEach((lap, index) => {
     if (index != vsSlider.value) {
@@ -613,15 +791,15 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
 }
 
 export function startRound() {
-  if (getState('CONSOLE_DEBUG')) console.log("NAMES", pilotsName);
-  if (getState('CONSOLE_DEBUG')) console.log("lapsByPilot", lapsByPilot);
-  if (getState('CONSOLE_DEBUG')) console.log("intervals", intervals);
-  if (getState('CONSOLE_DEBUG')) console.log("lapTimeStep", lapTimeStep);
-  if (getState('CONSOLE_DEBUG')) console.log("holeShots", holeShots);
-  if (getState('CONSOLE_DEBUG')) console.log("pilotsIntervalCount", pilotsIntervalCount);
-  if (getState('CONSOLE_DEBUG')) console.log("lapState", lapState);
-  if (getState('CONSOLE_DEBUG')) console.log("roundSpeed", roundSpeed);
-  if (getState('CONSOLE_DEBUG')) console.log("playState", roundPlayState);
+  if (getState("CONSOLE_DEBUG")) console.log("NAMES", pilotsName);
+  if (getState("CONSOLE_DEBUG")) console.log("lapsByPilot", lapsByPilot);
+  if (getState("CONSOLE_DEBUG")) console.log("intervals", intervals);
+  if (getState("CONSOLE_DEBUG")) console.log("lapTimeStep", lapTimeStep);
+  if (getState("CONSOLE_DEBUG")) console.log("holeShots", holeShots);
+  if (getState("CONSOLE_DEBUG")) console.log("pilotsIntervalCount", pilotsIntervalCount);
+  if (getState("CONSOLE_DEBUG")) console.log("lapState", lapState);
+  if (getState("CONSOLE_DEBUG")) console.log("roundSpeed", roundSpeed);
+  if (getState("CONSOLE_DEBUG")) console.log("playState", roundPlayState);
 
   if (!lastHoleShot) {
     intervalButtonsAccept = setInterval(() => {
@@ -638,7 +816,7 @@ export function startRound() {
       }
 
       if (lastHoleShot == true) {
-        if (getState('CONSOLE_DEBUG')) console.log("RJYTWWWWW");
+        if (getState("CONSOLE_DEBUG")) console.log("RJYTWWWWW");
         const roundPlayButton = document.querySelector(".round__play-button");
         const slider = document.querySelector(".round__slider");
         roundPlayButton.classList.remove("_no-event");
@@ -668,7 +846,7 @@ export function startRound() {
       }
 
       if (!holeShots[pilotName].state) {
-        if (getState('CONSOLE_DEBUG')) console.log("HOLESHOTTTTTTTTTT", pilotName);
+        if (getState("CONSOLE_DEBUG")) console.log("HOLESHOTTTTTTTTTT", pilotName);
         holeShots[pilotName].state = true;
 
         let timeoutMultiplier;
@@ -681,7 +859,7 @@ export function startRound() {
         holeShots[pilotName].interval = setTimeout(() => {
           lapState[pilotName][0] = true;
           // holeShots[pilotName].state = false;
-          if (getState('CONSOLE_DEBUG')) console.log("SETT TIME");
+          if (getState("CONSOLE_DEBUG")) console.log("SETT TIME");
         }, holeShots[pilotName].timeout * +fixedRoundSpeed * timeoutMultiplier);
       }
 
@@ -784,7 +962,7 @@ export function speedChange(sliderElement) {
   const speedValue = document.querySelector(".round__speed-value");
   const sliderValue = sliderElement.value;
   roundSpeed = speedValues[sliderValue];
-  if (getState('CONSOLE_DEBUG')) console.log("LOGG", roundSpeed);
+  if (getState("CONSOLE_DEBUG")) console.log("LOGG", roundSpeed);
 
   speedValue.innerHTML = `x${speedNames[roundSpeed]}`;
 
@@ -798,14 +976,14 @@ export function roundStatsStrokeWidthChange() {
     const allNames = document.querySelectorAll(".statistic__names-item");
     const statWindowWidth = statWindow.clientWidth;
 
-    if (getState('CONSOLE_DEBUG')) console.log("statWindowWidth", statWindowWidth);
+    if (getState("CONSOLE_DEBUG")) console.log("statWindowWidth", statWindowWidth);
 
     const padding = parseInt(getComputedStyle(statWindow).paddingLeft);
 
     allNames.forEach((stroke) => {
       const span = stroke.firstElementChild;
       span.style.width = `${statWindowWidth - padding * 2}px`;
-      if (getState('CONSOLE_DEBUG')) console.log("span", span);
+      if (getState("CONSOLE_DEBUG")) console.log("span", span);
     });
   }
 }
@@ -835,4 +1013,83 @@ export function textChange(elementWithText, textToChange, time) {
       elementWithText.style.transition = null;
     }, time);
   }, time);
+}
+
+export function setAkcentValues(akcentArrHere) {
+  const akcentElements = {
+    bestLap1: document.querySelector(".pilots-vs__stat-stroke-value_best-lap-1"),
+    bestLap2: document.querySelector(".pilots-vs__stat-stroke-value_best-lap-2"),
+
+    bestConsecutive1: document.querySelector(".pilots-vs__stat-stroke-value_best-consecutive-1"),
+    bestConsecutive2: document.querySelector(".pilots-vs__stat-stroke-value_best-consecutive-2"),
+
+    average1: document.querySelector(".pilots-vs__stat-stroke-value_average-1"),
+    average2: document.querySelector(".pilots-vs__stat-stroke-value_average-2"),
+
+    totalLaps1: document.querySelector(".pilots-vs__stat-stroke-value_total-laps-1"),
+    totalLaps2: document.querySelector(".pilots-vs__stat-stroke-value_total-laps-2"),
+  };
+
+  if (getState("CONSOLE_DEBUG")) console.log("akcentElements", akcentArrHere[2]);
+  // if(getState('CONSOLE_DEBUG'))console.log('');
+
+  akcentElements[`bestLap${akcentArrHere[0]}`].classList.add("_akcent");
+  akcentElements[`bestConsecutive${akcentArrHere[1]}`].classList.add("_akcent");
+  akcentElements[`average${akcentArrHere[2]}`].classList.add("_akcent");
+  akcentElements[`totalLaps${akcentArrHere[3]}`].classList.add("_akcent");
+}
+
+export async function moveMonth(start, stop) {
+  const daysElement = document.querySelector(".calendar__days");
+  const prevButton = document.querySelector(".calendar__prev-month");
+  const nextButton = document.querySelector(".calendar__next-month");
+
+  prevButton.classList.remove("_disabled");
+  nextButton.classList.remove("_disabled");
+  prevButton.classList.add("_no-event");
+  nextButton.classList.add("_no-event");
+
+  const dateFilesElement = document.querySelector(".date-files__items");
+  dateFilesElement.classList.add("_hidden");
+
+  const monthHeaderElement = document.querySelector(".calendar__current-month");
+
+  monthHeaderElement.classList.add(`_hidden-${start}`);
+  daysElement.classList.add(`_hidden-${start}`);
+
+  await new Promise((resolve) => {
+    daysElement.addEventListener("transitionend", resolve, { once: true });
+  });
+
+  daysElement.style.transition = "none";
+  monthHeaderElement.style.transition = "none";
+  daysElement.classList.remove(`_hidden-${start}`);
+  monthHeaderElement.classList.remove(`_hidden-${start}`);
+  monthHeaderElement.classList.add(`_hidden-${stop}`);
+  daysElement.classList.add(`_hidden-${stop}`);
+
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  if (start == "right") {
+    getState("currentMonth").setMonth(getState("currentMonth").getMonth() - 1);
+  } else if (start == "left") {
+    getState("currentMonth").setMonth(getState("currentMonth").getMonth() + 1);
+  }
+  calendarRender(true);
+
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  dateFilesElement.innerHTML = "";
+  daysElement.style.transition = "";
+  monthHeaderElement.style.transition = "";
+  monthHeaderElement.classList.remove(`_hidden-${stop}`);
+  daysElement.classList.remove(`_hidden-${stop}`);
+  prevButton.classList.remove("_no-event");
+  nextButton.classList.remove("_no-event");
+  const present = new Date();
+  console.log(getState("currentMonth").getMonth() - present.getMonth() < 0);
+
+  if (getState("currentMonth").getMonth() - present.getMonth() >= 0) {
+    nextButton.classList.add("_disabled");
+  }
 }

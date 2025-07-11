@@ -7,7 +7,7 @@ export function getLapsByName(name, noNeed, sorted) {
   const heatsData = getState("mainObj").heats;
 
   //Тут будет переменная для Heatов класса;
-  const classHeats = getState("mainObj").heats_by_class[getState('currentClass')];
+  const classHeats = getState("mainObj").heats_by_class[getState("currentClass")];
 
   let allLapsFloat = [];
   let allLapsTime = [];
@@ -27,7 +27,7 @@ export function getLapsByName(name, noNeed, sorted) {
       });
     }
   }
-  if (getState('CONSOLE_DEBUG')) console.log("allRounsData", allRoundsData);
+  if (getState("CONSOLE_DEBUG")) console.log("allRounsData", allRoundsData);
 
   allRoundsData.forEach(function (round) {
     //Заходим в каждый раунд
@@ -110,7 +110,7 @@ export function getLapsByName(name, noNeed, sorted) {
   });
 
   if (sorted == false) {
-    if (getState('CONSOLE_DEBUG')) console.log("allLapsData", allLapsData);
+    if (getState("CONSOLE_DEBUG")) console.log("allLapsData", allLapsData);
 
     return allLapsData; //Возвращаем сортировкой по раундам
   } else {
@@ -249,7 +249,7 @@ export function getRound(roundNum, heatNum) {
       //избираем круги только нужного раунда
       return element.roundId == roundNum && element.heatId == heatNum;
     });
-    if (getState('CONSOLE_DEBUG')) console.log("roundLapsroundLaps--------===============================", roundLaps);
+    if (getState("CONSOLE_DEBUG")) console.log("roundLapsroundLaps--------===============================", roundLaps);
 
     if (roundLaps.length > 0) {
       //Если круги есть в этом раунде у этого пилота, то....
@@ -283,7 +283,7 @@ export function getRound(roundNum, heatNum) {
       let lapsTimeFloat = []; //Массив, где все времена во float 1 пилот;
       lapsTimeFloat.push(+lapTimeConverter(pilot[0], "float")); //Добавляем Hole shot
 
-      for (let i = 1; i <= getState('consecutivesCount'); i++) {
+      for (let i = 1; i <= getState("consecutivesCount"); i++) {
         //Добавляем 3 круга (3 через consecutivesCount)
         try {
           lapsTimeFloat.push(+lapTimeConverter(pilot[i].lapTime, "float"));
@@ -329,13 +329,13 @@ export function getRound(roundNum, heatNum) {
     });
   });
 
-  if (getState('CONSOLE_DEBUG')) console.log("roundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSorted", roundPilotsLapsSorted);
+  if (getState("CONSOLE_DEBUG")) console.log("roundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSortedroundPilotsLapsSorted", roundPilotsLapsSorted);
 
   return roundPilotsLapsSorted;
 }
 
 export function getHoleShot(name, heat, round) {
-  if (getState('CONSOLE_DEBUG')) console.log("ИМЯяяя", name);
+  if (getState("CONSOLE_DEBUG")) console.log("ИМЯяяя", name);
 
   let heats;
 
@@ -379,16 +379,16 @@ export function getLapData(targetTime, lapOrConsecutive, name, heat, getLap) {
 
       singleLapsData.forEach((lap) => {
         //перебираем все круги и ищем совпадение по round с выбранным для otherLap
-        if (getState('CONSOLE_DEBUG')) console.log("O T H E R L A P S");
+        if (getState("CONSOLE_DEBUG")) console.log("O T H E R L A P S");
         if (lap.round == lapData.round) {
           otherLapData.push(lap); //добавляем найденный в массив otherLap
         }
       });
-      if (getState('CONSOLE_DEBUG')) console.log("L A P = NE LAP");
+      if (getState("CONSOLE_DEBUG")) console.log("L A P = NE LAP");
     }
-    if (getState('CONSOLE_DEBUG')) console.log("L A P D A T A");
+    if (getState("CONSOLE_DEBUG")) console.log("L A P D A T A");
   });
-  if (getState('CONSOLE_DEBUG')) console.log("F I N A L R E T U R N");
+  if (getState("CONSOLE_DEBUG")) console.log("F I N A L R E T U R N");
 
   if (getLap == "current") {
     //возвращаем нужные значение
@@ -407,9 +407,9 @@ export function getPilotsStats() {
 
   const classes = fullData.classes;
 
-  const data = fullData.classes[getState('currentClass')].leaderboard.by_race_time;
+  const data = fullData.classes[getState("currentClass")].leaderboard.by_race_time;
 
-  if (getState('CONSOLE_DEBUG')) console.log("datadatadata", data);
+  if (getState("CONSOLE_DEBUG")) console.log("datadatadata", data);
 
   let pilots = [];
   data.forEach(function (pilot) {
@@ -448,7 +448,7 @@ export function getTabsRounds() {
 export function getRoundsByHeats() {
   const heatsObj = {};
 
-  const classHeats = getState("mainObj").heats_by_class[getState('currentClass')];
+  const classHeats = getState("mainObj").heats_by_class[getState("currentClass")];
   const heats = getState("mainObj").heats;
 
   for (let heat in heats) {
@@ -490,7 +490,7 @@ export function getDateinfo(dateOrTime) {
     let mounth;
     let day;
     let time;
-    if (getState('CONSOLE_DEBUG')) console.log("ДАТА", dateString);
+    if (getState("CONSOLE_DEBUG")) console.log("ДАТА", dateString);
 
     // let monthArr;
     // if (language == 'ru') {
@@ -532,7 +532,7 @@ export function getDateinfo(dateOrTime) {
       return time;
     }
   } catch (error) {
-    if (getState('CONSOLE_DEBUG')) console.log("Ошибка при формировании даты", error);
+    if (getState("CONSOLE_DEBUG")) console.log("Ошибка при формировании даты", error);
   }
 }
 
@@ -547,4 +547,68 @@ export function getHeat(name) {
     }
   });
   return heat;
+}
+
+export function getDayFiles(date) {
+  const dayButtons = document.querySelectorAll(".calendar__day");
+  dayButtons.forEach((button) => {
+    if (button.classList.contains("_active")) button.classList.remove("_active");
+  });
+
+  const dateFilesElement = document.querySelector(".date-files__items");
+  if (!dateFilesElement.classList.contains("_hidden")) dateFilesElement.classList.add("_hidden");
+
+  setTimeout(() => {
+    dateFilesElement.innerHTML = "";
+
+    filesJson.forEach((file) => {
+      const fileDateArr = `${file.year}-${file.month}-${file.day}`;
+
+      if (date == fileDateArr) {
+        const fileItemElement = {
+          item: document.createElement("div"),
+          name: document.createElement("div"),
+          nameTittle: document.createElement("div"),
+          nameValue: document.createElement("div"),
+          date: document.createElement("div"),
+          dateTittle: document.createElement("div"),
+          dateValue: document.createElement("div"),
+          time: document.createElement("div"),
+          timeTittle: document.createElement("div"),
+          timeValue: document.createElement("div"),
+        };
+
+        fileItemElement.item.classList.add("file__item", "pseudo-button");
+        fileItemElement.item.id = file.fileName;
+        fileItemElement.name.classList.add("file__file-name");
+        fileItemElement.nameTittle.classList.add("file__file-name-tittle");
+        fileItemElement.nameValue.classList.add("file__file-name-value");
+        fileItemElement.date.classList.add("file__date");
+        fileItemElement.dateTittle.classList.add("file__date-tittle");
+        fileItemElement.dateValue.classList.add("file__date-value");
+        fileItemElement.time.classList.add("file__time");
+        fileItemElement.timeTittle.classList.add("file__time-tittle");
+        fileItemElement.timeValue.classList.add("file__time-value");
+
+        fileItemElement.nameTittle.innerHTML = `${getState("textStrings").event}:`;
+        fileItemElement.nameValue.innerHTML = file.displayName;
+
+        fileItemElement.dateTittle.innerHTML = `${getState("textStrings").date}:`;
+        fileItemElement.dateValue.innerHTML = `${file.day} ${file.monthName} ${file.year}`;
+
+        fileItemElement.timeTittle.innerHTML = `${getState("textStrings").time}:`;
+        fileItemElement.timeValue.innerHTML = `${file.hours}:${file.minutes}`;
+
+        fileItemElement.item.append(fileItemElement.name, fileItemElement.date, fileItemElement.time);
+        fileItemElement.name.append(fileItemElement.nameTittle, fileItemElement.nameValue);
+        fileItemElement.date.append(fileItemElement.dateTittle, fileItemElement.dateValue);
+        fileItemElement.time.append(fileItemElement.timeTittle, fileItemElement.timeValue);
+
+        dateFilesElement.append(fileItemElement.item);
+      }
+    });
+    setTimeout(() => {
+      dateFilesElement.classList.remove("_hidden");
+    }, 20);
+  }, 310);
 }

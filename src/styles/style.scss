@@ -809,6 +809,21 @@ body {
 		width: 40px;
 		height: 40px;
 
+		&._no-event {
+			pointer-events: none;
+			cursor: default;
+		}
+
+		&._disabled {
+			pointer-events: none;
+			cursor: default;
+
+			&::after,
+			&::before {
+				background-color: $color-grey;
+			}
+		}
+
 		&::after,
 		&::before {
 			content: '';
@@ -1184,17 +1199,18 @@ body {
 			visibility: visible;
 			opacity: 1;
 		}
+
 		@media(hover:hover) {
-		&._ready {
-			
+			&._ready {
+
 				&:hover {
 					transform: perspective(3000) translate3d(0px, 0px, 100px);
 				}
-			
 
-			box-shadow: 0px 0px 10px $color-akcent2;
-			animation: ready-animation 1s ease 0.3s infinite normal forwards;
-		}
+
+				box-shadow: 0px 0px 10px $color-akcent2;
+				animation: ready-animation 1s ease 0.3s infinite normal forwards;
+			}
 		}
 
 		&._error-parsing {
@@ -2647,8 +2663,10 @@ body {
 	&__slider {
 		align-self: center;
 		grid-row: 4/5;
-		appearance: none; /* Стандартное свойство */
-		-webkit-appearance: none; /* Для старых версий Safari и Chrome */		
+		appearance: none;
+		/* Стандартное свойство */
+		-webkit-appearance: none;
+		/* Для старых версий Safari и Chrome */
 		width: 100%;
 		background-color: $color-dark;
 		height: 2px;
@@ -3333,8 +3351,10 @@ body {
 	}
 
 	&__slider {
-		appearance: none; /* Стандартное свойство */
-		-webkit-appearance: none; /* Для старых версий Safari и Chrome */		
+		appearance: none;
+		/* Стандартное свойство */
+		-webkit-appearance: none;
+		/* Для старых версий Safari и Chrome */
 		width: 100%;
 		background-color: $color-grey;
 		height: 2px;
@@ -3967,8 +3987,10 @@ body {
 	&__slider {
 		align-self: center;
 		grid-row: 4/5;
-		appearance: none; /* Стандартное свойство */
-		-webkit-appearance: none; /* Для старых версий Safari и Chrome */
+		appearance: none;
+		/* Стандартное свойство */
+		-webkit-appearance: none;
+		/* Для старых версий Safari и Chrome */
 		width: 100%;
 		background-color: $color-dark;
 		height: 2px;
@@ -4275,36 +4297,36 @@ body {
 	}
 
 	// &__lap-count-value {
-		// display: flex;
-		// gap: 20px;
+	// display: flex;
+	// gap: 20px;
 
-		// :nth-child(1) {
-		// 	position: relative;
+	// :nth-child(1) {
+	// 	position: relative;
 
-		// 	&::after {
-		// 		content: '';
-		// 		position: absolute;
-		// 		bottom: -5px;
-		// 		left: 0;
-		// 		width: 100%;
-		// 		height: 3px;
-		// 		background-color: $color-akcent1;
-		// 	}
-		// }
+	// 	&::after {
+	// 		content: '';
+	// 		position: absolute;
+	// 		bottom: -5px;
+	// 		left: 0;
+	// 		width: 100%;
+	// 		height: 3px;
+	// 		background-color: $color-akcent1;
+	// 	}
+	// }
 
-		// :nth-child(2) {
-		// 	position: relative;
+	// :nth-child(2) {
+	// 	position: relative;
 
-		// 	&::after {
-		// 		content: '';
-		// 		position: absolute;
-		// 		bottom: -5px;
-		// 		left: 0;
-		// 		width: 100%;
-		// 		height: 3px;
-		// 		background-color: $color-akcent2;
-		// 	}
-		// }
+	// 	&::after {
+	// 		content: '';
+	// 		position: absolute;
+	// 		bottom: -5px;
+	// 		left: 0;
+	// 		width: 100%;
+	// 		height: 3px;
+	// 		background-color: $color-akcent2;
+	// 	}
+	// }
 
 	// }
 
@@ -4851,7 +4873,7 @@ body {
 
 	&__button {
 		font-size: 16px;
-		padding:5px 10px 5px 10px;
+		padding: 5px 10px 5px 10px;
 		border-radius: 4px;
 		height: 35px;
 	}

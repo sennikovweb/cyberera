@@ -1,7 +1,8 @@
 import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getHeat, getRoundsByHeats } from "./getDatas";
 import { lapTimeConverter } from "./utils";
-import { lapNodeShow } from "./uiChange";
-import { getState } from "./sharedStates";
+import { lapNodeShow,classSwitch} from "./uiChange";
+import { getState,setState } from "./sharedStates";
+
 export function writePilotsHTML() {
   // Рисуем страницу пилотов
   const pilots = {
@@ -2052,4 +2053,95 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
   pilotsVsStatistic.totalTime.append(pilotsVsStatistic.totalTimeTittle);
 
   return pilotsVs.pilotsVs;
+}
+
+export function calendarRender(filesloaded) {
+  const daysElement = document.querySelector(".calendar__days");
+  const firstDay = new Date(getState("currentMonth").getFullYear(), getState("currentMonth").getMonth(), 1);
+  const lastDay = new Date(getState("currentMonth").getFullYear(), getState("currentMonth").getMonth() + 1, 0);
+
+  const monthHeaderElement = document.querySelector(".calendar__current-month");
+
+  monthHeaderElement.innerHTML = `${getState("textStrings").monthsNames[getState("currentMonth").getMonth()]} ${getState("currentMonth").getFullYear()}`;
+
+  const prevMonthDays = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+
+  const totalDays = 42;
+  const nextMonthDays = totalDays - lastDay.getDate() - prevMonthDays;
+
+  const today = new Date();
+
+  daysElement.innerHTML = "";
+
+  for (let i = 1; i <= totalDays; i++) {
+    const dayElement = document.createElement("button");
+    dayElement.classList.add("calendar__day");
+
+    let dayNumber, isCurrentMonth;
+
+    if (i <= prevMonthDays) {
+      dayNumber = new Date(getState('currentMonth').getFullYear(), getState('currentMonth').getMonth(), 0).getDate() - prevMonthDays + i;
+      isCurrentMonth = false;
+    } else if (i > prevMonthDays + lastDay.getDate()) {
+      dayNumber = i - (prevMonthDays + lastDay.getDate());
+      isCurrentMonth = false;
+    } else {
+      dayNumber = i - prevMonthDays;
+      isCurrentMonth = true;
+    }
+
+    if (getState("currentMonth").getFullYear() == today.getFullYear() && getState("currentMonth").getMonth() == today.getMonth() && dayNumber == today.getDate() && isCurrentMonth) {
+      dayElement.classList.add("_day__today");
+    }
+
+    let isHaveFiles;
+    getState('filesJson').forEach((file) => {
+      if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
+        isHaveFiles = true;
+        dayElement.classList.add("_day__file");
+      }
+    });
+
+    const dateStr = `${getState("currentMonth").getFullYear()}-${getState("currentMonth").getMonth()}-${dayNumber}`;
+
+    if (isHaveFiles) dayElement.id = dateStr;
+
+    if (!isCurrentMonth) {
+      dayElement.classList.add("_day__other-month");
+    }
+    dayElement.innerHTML = dayNumber;
+
+    if (!filesloaded) {
+      dayElement.classList.add("_no-files");
+    } else {
+      const calendarHeaderElement = document.querySelector(".calendar__header");
+      calendarHeaderElement.classList.remove("_no-files");
+    }
+    daysElement.append(dayElement);
+  }
+}
+
+export function makeRaceClassButtons() {
+  //Делаем кнопки Классов
+  const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
+  const raceClasses = getState("mainObj").classes;
+
+
+  // let tabsClasses = [];
+  for (let raceClass in raceClasses) {
+    if (getState("mainObj").heats_by_class[raceClass].length != 0) {
+      const classSwitchButton = document.createElement("button");
+      classSwitchButton.classList.add(`class-switch-buttons__class-${raceClass}`, "_button", "class-switch-buttons__button");
+      classSwitchButton.innerHTML = raceClasses[raceClass].name;
+      classButtonsContainer.append(classSwitchButton);
+      classSwitchButton.setAttribute("value", `${raceClass}`);
+      classSwitchButton.addEventListener("click", classSwitch);
+    }
+  }
+
+  const classSwitchButtons = document.querySelectorAll(".class-switch-buttons__button");
+  const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
+  lastClassButtonSwitch.classList.add("_active", "_no-event");
+
+  setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
 }
