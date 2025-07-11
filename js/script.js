@@ -4443,9 +4443,9 @@ function getLapsByName(name, noNeed, sorted) {
 		node.forEach(function (node) {	// Находим там ноду
 			if (node.callsign == name) {	// в Ноде ищем определенного пилота
 				const laps = node.laps		// и ищем его круги
-console.log('lapslapslaps',laps);
 
 				let lapCount;		//переменная чтобы считать круги
+				let holeShotStatus;			//Переменная, чтобы знать, был ли holeShot(Он может быть не только под index=0)
 				let previousLapTime;			//Переменная для хранения предыдущего времени круга
 				let previousLapTimeStart;			//переменная для хранения старта предущего круга
 
@@ -4453,15 +4453,17 @@ console.log('lapslapslaps',laps);
 					const lapDataObj = {};
 					if (index == 0) {
 						lapCount = 0;			//Начинаем считать круги заново, как только индекс круга 0
-
 						const lapTimeSpread = [...lap.lap_time_formatted];
 						lapTimeSpread.splice(0, 2);
 						const lapFloat = parseFloat(lapTimeSpread.join(''));
-						previousLapTime = lapFloat.toFixed(3);			//здесь начинаем брать Hole Shot за время предыдущего круга
+						previousLapTime = lapFloat.toFixed(3);			//здесь начинаем брать Hole Shot за время предыдущего круга(спустя время не понимаю этот коментарий:) )
 						previousLapTimeStart = roundStartTimeFormated;
+						holeShotStatus = false;
 					}
-
-					if (lap.deleted == false && index > 0) {			// отсекаем  Hole Shot и удаленные круги;
+					if (index == 0 && lap.deleted != false){						
+						holeShotStatus = true;			//Если нулевой круг не удален, значит он был holeshot;
+					}
+					if (lap.deleted == false && index > 0 && !holeShotStatus) {			// отсекаем  Hole Shot и удаленные круги.
 						lapDataObj.round = currentRound;			//Название раунда, который строка в роторхазарде
 						lapDataObj.roundId = round.id;			//Id раунда
 						lapDataObj.heatId = round.heatId;
