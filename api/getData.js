@@ -84,6 +84,15 @@ export default async (req, res) => {
       }
 
       const responseData = await redisResponse.json();
+
+		// Если ключ не существует, Redis вернет { result: null }
+      if (responseData.result === null) {
+			return res.status(404).json({
+			  success: false,
+			  error: 'Данные не найдены или истек срок хранения'
+			});
+		 }
+
       
       // Парсим результат (если он пришел как строка)
       const data = typeof responseData.result === 'string' 
