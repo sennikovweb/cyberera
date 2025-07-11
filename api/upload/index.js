@@ -90,7 +90,7 @@ export default async (req, res) => {
 
       res.status(200).json({ 
         status: 'success',
-        message: 'import successful',
+        message: 'Export successful',
         dataUrl: dataUrl,
         yourData: data
       });
