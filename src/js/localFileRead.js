@@ -3,25 +3,25 @@ import { getAnimationDurationTime } from "./utils";
 import { makeRaceClassButtons } from "./htmlWriters";
 
 export async function addLocalFile() {
-  const file = mainForm.input.files[0];
+  const file = getLocalFileElement("input").files[0];
 
   if (file) {
     //Проверяем, добавился ли файл
     if (getState("CONSOLE_DEBUG")) console.log("файле есть");
-    mainForm.button.classList.add("_ready");
-    mainForm.label.innerHTML = getState("textStrings").choosed;
-    mainForm.label.classList.add("_active");
-    mainForm.button.classList.add("_active");
-    if (mainForm.label.classList.contains("_error-parsing")) {
+    getLocalFileElement("button").classList.add("_ready");
+    getLocalFileElement("label").innerHTML = getState("textStrings").choosed;
+    getLocalFileElement("label").classList.add("_active");
+    getLocalFileElement("button").classList.add("_active");
+    if (getLocalFileElement("label").classList.contains("_error-parsing")) {
       //Если добавляем файл после ошибки парсинга, убираем стили ошибки
-      mainForm.label.classList.remove("_error-parsing");
+      getLocalFileElement("label").classList.remove("_error-parsing");
     }
   } else {
     // Если не добавился, убираем стили того, как добавился, т.к. они могут быть
     if (getState("CONSOLE_DEBUG")) console.log("файл нет");
-    mainForm.label.classList.remove("_active");
-    mainForm.label.innerHTML = getState("textStrings").choose;
-    mainForm.button.classList.remove("_ready");
+    getLocalFileElement("label").classList.remove("_active");
+    getLocalFileElement("label").innerHTML = getState("textStrings").choose;
+    getLocalFileElement("button").classList.remove("_ready");
   }
 }
 
@@ -68,7 +68,7 @@ export function parseLocalFile(stringJson) {
 export async function startLocalFile(e) {
   //Нажатие на кнопку Загрузить - Самое начало
   e.preventDefault();
-  const file = mainForm.input.files[0];
+  const file = getLocalFileElement("").input.files[0];
 
   if (file) {
     //Проверяем, есть ли файл
@@ -82,22 +82,22 @@ export async function startLocalFile(e) {
       startFileView("load");
     } else {
       //Если не спарсилось, рисуем ошибку
-      mainForm.button.innerHTML = getState("textStrings").error;
-      mainForm.button.classList.add("_error-parsing");
-      mainForm.label.innerHTML = getState("textStrings").chooseAnother;
-      mainForm.label.classList.add("_error-parsing");
-      mainForm.button.classList.remove("_ready");
+      getLocalFileElement("button").innerHTML = getState("textStrings").error;
+      getLocalFileElement("button").classList.add("_error-parsing");
+      getLocalFileElement("label").innerHTML = getState("textStrings").chooseAnother;
+      getLocalFileElement("label").classList.add("_error-parsing");
+      getLocalFileElement("button").classList.remove("_ready");
       setTimeout(() => {
-        smoothTextChange(mainForm.button, getState("textStrings").load);
-        mainForm.button.classList.remove("_error-parsing");
-      }, getAnimationDurationTime(mainForm.button));
+        smoothTextChange(getLocalFileElement("button"), getState("textStrings").load);
+        getLocalFileElement("button").classList.remove("_error-parsing");
+      }, getAnimationDurationTime(getLocalFileElement("button")));
     }
   } else {
     //Если нет файла, показываем, как его нет и куда добавить
     if (getState("CONSOLE_DEBUG")) console.log("Файла нет");
-    mainForm.label.classList.add("_error");
+    getLocalFileElement("label").classList.add("_error");
     setTimeout(() => {
-      mainForm.label.classList.remove("_error");
-    }, getAnimationDurationTime(mainForm.label));
+      getLocalFileElement("label").classList.remove("_error");
+    }, getAnimationDurationTime(getLocalFileElement("label")));
   }
 }

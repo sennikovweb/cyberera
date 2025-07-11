@@ -82,8 +82,8 @@ document.querySelector(".calendar__days").addEventListener("click", function (e)
   const day = e.target.closest(".calendar__day");
 
   if (e.target == day && day.classList.contains("_day__file")) {
-    mainForm.subtittle.classList.add("_hidden");
-    mainForm.label.classList.add("_hidden");
+	getLocalFileElement("tittle").classList.add("_hidden");
+	getLocalFileElement('label').classList.add("_hidden");
     const dateStr = e.target.id;
     getDayFiles(dateStr);
     e.target.classList.add("_active");
