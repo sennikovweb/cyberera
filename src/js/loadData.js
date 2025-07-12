@@ -5,8 +5,8 @@ import { startFileView } from "./uiChange";
 export async function urlUpload(type) {
   try {
     const eventUrl = new URL(window.location.href);
-	 console.log('type',type);
-	 
+    console.log("type", type);
+
     if (type == "live") {
       await getLiveData(getState("isLive"));
       makeRaceClassButtons();
@@ -17,6 +17,7 @@ export async function urlUpload(type) {
       await getEventData(getState("isEvent"));
       makeRaceClassButtons();
       startFileView("url", getState("isEvent"));
+      console.log("", getState("mainObj"));
 
       eventUrl.searchParams.set(type, `${getState("isEvent")}`);
     }

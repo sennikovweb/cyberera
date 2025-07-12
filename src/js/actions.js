@@ -1,3 +1,10 @@
+import { getState, getTab, setTab, getButton, setState, getDuel, setDuel, getAkcent, addButton } from "./sharedStates";
+import { writeInRoundHTML, writeAllLapsHTML, writePilotsVs } from "./htmlWriters";
+import { tabSwitch, tabHeightChange, spoilerOnOff, modalOnOff, lapNodeShow, allLapsGraphScale, pilotsVsGraphScale, allLapsGraphChoosing, pilotsVsGraphChoosing, setAkcentValues } from "./uiChange";
+import { spoilerButtonAnimation, inRoundShow, allLapsShow, pilotsVsShow } from "./animations";
+import {  getLapData,getTabsRounds} from "./getDatas";
+import { getNumFromText } from "./utils";
+import { goToRoundAction } from "./playRound";
 export function pilotTabAction(e) {
   //Это события вкладки Pilots
 
@@ -135,7 +142,7 @@ export function pilotTabAction(e) {
         const allLapsAreaHeightScroll = allLapsArea.clientHeight;
         allLapsArea.style.paddingBottom = `${allLapsAreaHeight - allLapsAreaHeightScroll}px`;
         allLapsArea.classList.add("_lock");
-        graphTouchFlag = true;
+        setState("graphTouchFlag", true);
       }
     });
 
@@ -152,7 +159,7 @@ export function pilotTabAction(e) {
       });
       allLapsArea.classList.remove("_lock");
       allLapsArea.style.paddingBottom = null;
-      graphTouchFlag = false;
+      setState("graphTouchFlag", false);
     });
 
     allLapsArea.addEventListener("touchmove", function (e) {
@@ -160,7 +167,7 @@ export function pilotTabAction(e) {
       const allLapsAreaPosition = allLapsArea.offsetTop;
       const allLapsAreaHalfHeight = allLapsArea.offsetHeight / 2;
       const elem = document.elementFromPoint(e.touches[0].clientX, allLapsAreaPosition + allLapsAreaHalfHeight);
-      if (graphTouchFlag) {
+      if (getState("graphTouchFlag")) {
         if (getState("CONSOLE_DEBUG")) console.log("ELEM", elem);
 
         const laps = document.querySelectorAll(".all-laps__lap");
@@ -193,17 +200,17 @@ export function pilotTabAction(e) {
     const nameElement = parent.querySelector(".pilots__pilot-name");
     const name = nameElement.innerHTML;
 
-    const heat = getHeat(name);
+  
 
     let lapData; //выбраный круг
     let otherLapData; //круги в раунде выбранного
 
     //Проверяем, круг или подряд
     if (e.target.classList.contains("pilots__best-lap-time-value")) {
-      lapData = getLapData(e.target.innerHTML, "lap", name, heat, "current"); //получаем выбранный кргу
+      lapData = getLapData(e.target.innerHTML, "lap", name, "current"); //получаем выбранный кргу
       if (getState("CONSOLE_DEBUG")) console.log("LAP DATA", e.target.innerHTML);
 
-      otherLapData = getLapData(e.target.innerHTML, "lap", name, heat, "other"); //получаем отсальные круги раунда
+      otherLapData = getLapData(e.target.innerHTML, "lap", name, "other"); //получаем отсальные круги раунда
 
       if (getState("CONSOLE_DEBUG")) console.log("G E T L A P", lapData);
       if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
@@ -211,8 +218,8 @@ export function pilotTabAction(e) {
 
     //Проверяем, круг или подряд
     if (e.target.classList.contains("pilots__best-consecutives-time-value")) {
-      lapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "current"); //получаем выбранные круги подряд
-      otherLapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "other"); //получаем остальные круги раунда
+      lapData = getLapData(e.target.innerHTML, "consecutive", name, "current"); //получаем выбранные круги подряд
+      otherLapData = getLapData(e.target.innerHTML, "consecutive", name, "other"); //получаем остальные круги раунда
 
       if (getState("CONSOLE_DEBUG")) console.log("G E T C O N S", lapData);
       if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
@@ -274,20 +281,20 @@ export function pilotTabAction(e) {
     const pilotsVsInputs = document.querySelectorAll(".pilots-vs-form-input");
 
     pilotsVsInputs.forEach((value, key) => {
-      if (pilotsVsInputs[key].checked && pilotsVsInputs[key].name != pilotsVsDuel[0]) {
-        pilotsVsDuel.push(value.name);
+      if (pilotsVsInputs[key].checked && pilotsVsInputs[key].name != getDuel()[0]) {
+        setDuel(value.name);
       } else if (!pilotsVsInputs[key].checked && pilotsVsInputs[key].name == InputElement.name) {
-        pilotsVsDuel = [];
+        setDuel([]);
       }
     });
 
-    if (pilotsVsDuel.length == 2) {
-      console.log(pilotsVsDuel[0]);
-      console.log(pilotsVsDuel[1]);
+    if (getDuel().length == 2) {
+      console.log(getDuel()[0]);
+      console.log(getDuel()[1]);
 
-      console.log("pilotsVsDuel[0], pilotsVsDuel[1]", pilotsVsDuel[0], pilotsVsDuel[1]);
+      console.log("pilotsVsDuel[0], pilotsVsDuel[1]", getDuel()[0], getDuel()[1]);
 
-      pilotsVsActions(pilotsVsDuel[0], pilotsVsDuel[1]);
+      pilotsVsActions(getDuel()[0], getDuel()[1]);
 
       setTimeout(() => {
         pilotsVsLabels.forEach((label) => {
@@ -295,7 +302,7 @@ export function pilotTabAction(e) {
         });
         pilotsVsInputs.forEach((value, key) => {
           pilotsVsInputs[key].checked = false;
-          pilotsVsDuel = [];
+          setDuel([]);
         });
       }, 500);
     }
@@ -346,9 +353,9 @@ export function fromInRoundToRoundAction(buttonPressed) {
 export function leaderboardTabAction(e) {
   const itemsElement = document.querySelector(".leaderboard__items");
   if (e.target.closest(".leaderboard__lap-button")) {
-    tabSwitch(tabsLeader[0].name, tabsLeader);
+    tabSwitch(getTab("leader")[0].name, getTab("leader"));
 
-    tabHeightChange(tabsLeader[0].element, itemsElement, false);
+    tabHeightChange(getTab("leader")[0].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[0].element.offsetHeight;
@@ -359,9 +366,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[0].element));
   }
   if (e.target.closest(".leaderboard__consecutive-button")) {
-    tabSwitch(tabsLeader[1].name, tabsLeader);
+    tabSwitch(getTab("leader")[1].name, getTab("leader"));
 
-    tabHeightChange(tabsLeader[1].element, itemsElement, false);
+    tabHeightChange(getTab("leader")[1].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[1].element.offsetHeight;
@@ -372,9 +379,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[1].element));
   }
   if (e.target.closest(".leaderboard__count-button")) {
-    tabSwitch(tabsLeader[2].name, tabsLeader);
+    tabSwitch(getTab("leader")[2].name, getTab("leader"));
 
-    tabHeightChange(tabsLeader[2].element, itemsElement, false);
+    tabHeightChange(getTab("leader")[2].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[2].element.offsetHeight;
@@ -384,9 +391,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[2].element));
   }
   if (e.target.closest(".leaderboard__average-button")) {
-    tabSwitch(tabsLeader[3].name, tabsLeader);
+    tabSwitch(getTab("leader")[3].name, getTab("leader"));
 
-    tabHeightChange(tabsLeader[3].element, itemsElement, false);
+    tabHeightChange(getTab("leader")[3].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[3].element.offsetHeight;
@@ -403,17 +410,16 @@ export function leaderboardTabAction(e) {
     const name = nameElement.children[1].innerHTML;
     // if(getState('CONSOLE_DEBUG'))console.log(name);
 
-    const heat = getHeat(name);
 
     let lapData; //выбраный круг
     let otherLapData; //круги в раунде выбранного
 
     //Проверяем, круг или подряд
     if (e.target.classList.contains("leaderboard-lap__time")) {
-      lapData = getLapData(e.target.innerHTML, "lap", name, heat, "current"); //получаем выбранный кргу
+      lapData = getLapData(e.target.innerHTML, "lap", name, "current"); //получаем выбранный кргу
       if (getState("CONSOLE_DEBUG")) console.log("LAP DATA", e.target.innerHTML);
 
-      otherLapData = getLapData(e.target.innerHTML, "lap", name, heat, "other"); //получаем отсальные круги раунда
+      otherLapData = getLapData(e.target.innerHTML, "lap", name, "other"); //получаем отсальные круги раунда
 
       if (getState("CONSOLE_DEBUG")) console.log("G E T L A P", lapData);
       if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
@@ -421,8 +427,8 @@ export function leaderboardTabAction(e) {
 
     //Проверяем, круг или подряд
     if (e.target.classList.contains("leaderboard-consecutive__time")) {
-      lapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "current"); //получаем выбранные круги подряд
-      otherLapData = getLapData(e.target.innerHTML, "consecutive", name, heat, "other"); //получаем остальные круги раунда
+      lapData = getLapData(e.target.innerHTML, "consecutive", name, "current"); //получаем выбранные круги подряд
+      otherLapData = getLapData(e.target.innerHTML, "consecutive", name, "other"); //получаем остальные круги раунда
 
       if (getState("CONSOLE_DEBUG")) console.log("G E T C O N S", lapData);
       if (getState("CONSOLE_DEBUG")) console.log("G E T O T H E R", otherLapData);
@@ -469,187 +475,6 @@ export function leaderboardTabAction(e) {
   }
 }
 
-export function goToRoundAction(round, heat, buttonPressed) {
-  const tabWrap = document.querySelector(".tabs-wrapper");
-  currentRoundInfo = getRound(+round, +heat);
-  tabWrap.after(writeRound(+round, +heat));
-  const roundElement = document.querySelector(".round");
-  const exitButton = document.querySelector(".round__exit-button");
-
-  setTimeout(() => {
-    modalOnOff(roundElement, true);
-    roundShow(roundElement, buttonPressed);
-  }, 10);
-  const pilotsElement = document.querySelector(".round__graph-area-pilots");
-  const pilotsPadding = parseInt(getComputedStyle(pilotsElement).paddingRight);
-  const scrollWidth = pilotsElement.offsetWidth - pilotsElement.clientWidth;
-
-  pilotsElement.style.paddingRight = `${pilotsPadding - scrollWidth}px`;
-
-  const pilots = document.querySelectorAll(".round__graph-area-pilot");
-
-  pilots.forEach((pilotElement, pilotIndex) => {
-    const pilotName = pilotElement.querySelector(".round__graph-area-name").innerHTML;
-    const pilotLaps = pilotElement.querySelectorAll(".round__graph-area-lap");
-    intervals[pilotName] = [];
-    lapState[pilotName] = [];
-    pilotsIntervalCount[pilotName] = [];
-    pilotsName.push(pilotName);
-    if (getState("CONSOLE_DEBUG")) console.log(pilotName);
-    if (getState("CONSOLE_DEBUG")) console.log(pilotLaps);
-    let pilotLapsArr = [];
-
-    pilotLaps.forEach((element, index) => {
-      pilotLapsArr.push(element);
-      intervals[pilotName].push(null);
-      if (index == 0) {
-        lapState[pilotName].push(false);
-      } else {
-        lapState[pilotName].push(false);
-      }
-
-      if (index == pilotLaps.length - 1) {
-        lapsByPilot[pilotName] = pilotLapsArr;
-      }
-    });
-
-    currentRoundInfo.forEach((element, index) => {
-      if (element[element.length - 1] == pilotName) {
-        const lapQuantity = element.length - 2;
-        const times = [];
-        for (let i = 0; i <= lapQuantity; i++) {
-          if (i == 0) {
-            const holeFloat = lapTimeConverter(element[i], "float");
-            const holeStep = +holeFloat;
-            holeShots[pilotName] = {};
-            holeShots[pilotName].timeout = +holeStep.toFixed(0) * 100;
-            holeShots[pilotName].state = false;
-            holeShots[pilotName].state = null;
-          } else {
-            const lapTimeFloat = lapTimeConverter(element[i].lapTime, "float");
-            const timeStep = +lapTimeFloat;
-            if (getState("CONSOLE_DEBUG")) console.log("LAP TIMEEEEEEE", lapTimeFloat);
-
-            times.push(+timeStep.toFixed(0));
-            pilotsIntervalCount[pilotName].push(1);
-          }
-        }
-        lapTimeStep[pilotName] = times;
-      }
-    });
-  });
-
-  const slider = document.querySelector(".round__slider");
-  slider.oninput = () => speedChange(slider);
-
-  speedChange(slider);
-
-  tabsRound = [
-    { name: "view", opened: false, element: document.querySelector(".round__view") },
-    { name: "statistic", opened: false, element: document.querySelector(".round__statistic") },
-  ];
-
-  addButton("rounds", document.querySelector(".buttons__rounds"));
-  addButton("statistic", document.querySelector(".round__statistic-button"));
-  addButton("view", document.querySelector(".round__view-button"));
-
-  const roundButtons = document.querySelector(".round__buttons");
-  const roundPlayButton = document.querySelector(".round__play-button");
-  const paragraph = roundPlayButton.firstElementChild;
-
-  roundButtons.addEventListener("click", function (e) {
-    const viewButton = roundButtons.querySelector(".round__view-button");
-    const statisticButton = roundButtons.querySelector(".round__statistic-button");
-    if (e.target == viewButton) {
-      tabSwitch(tabsRound[0].name, tabsRound);
-      // if (roundPlayState != 'end') {
-      // 	textChange(paragraph, `< p > Пауза</ > `, 150);
-      // 	startRound();
-      // 	roundPlayState = 'play';
-      // }
-    }
-    if (e.target == statisticButton) {
-      tabSwitch(tabsRound[1].name, tabsRound);
-      // if (roundPlayState != 'end') {
-      // 	textChange(paragraph, `< p > Старт</ > `, 150);
-      // 	pauseRound();
-      // 	roundPlayState = 'pause';
-      // }
-    }
-  });
-
-  roundPlayButton.addEventListener("click", function (e) {
-    const paragraph = roundPlayButton.firstElementChild;
-    if (roundPlayState == "play") {
-      textChange(paragraph, `<p>${getState("textStrings").roundsTab.play}</p>`, 150);
-      pauseRound();
-      roundPlayState = "pause";
-    } else if (roundPlayState == "pause") {
-      textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 150);
-      startRound();
-      roundPlayState = "play";
-    } else if (roundPlayState == "end") {
-      for (nameForLap in lapsByPilot) {
-        const laps = lapsByPilot[nameForLap];
-        laps.forEach((lap) => {
-          lap.style.transition = `all 0.8s ease`;
-          lap.style.width = `0%`;
-          lap.classList.remove("_akcent");
-          setTimeout(() => {
-            lap.style.transition = null;
-          }, 800);
-        });
-      }
-
-      const roundPlayButton = document.querySelector(".round__play-button");
-      const slider = document.querySelector(".round__slider");
-      roundPlayButton.classList.add("_no-event");
-      slider.classList.add("_no-event");
-
-      setTimeout(() => {
-        textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 250);
-      }, 300);
-      setTimeout(() => {
-        startRound();
-      }, 800);
-      roundPlayState = "play";
-    }
-  });
-
-  exitButton.addEventListener("click", function () {
-    //Нажимае на крест - выходим
-    pauseRound();
-    modalOnOff(roundElement, false);
-    setTimeout(() => {
-      clearInterval(intervalButtonsAccept);
-      for (const holeNames in holeShots) {
-        const holeObj = holeShots[holeNames];
-        clearInterval(holeObj.interval);
-        if (getState("CONSOLE_DEBUG")) console.log("holeObj", holeObj);
-      }
-
-      lastHoleShot = false;
-      tabsRound = [];
-      pilotsName = [];
-      lapsByPilot = {};
-      intervals = {};
-      lapTimeStep = {};
-      lapState = {};
-      holeShots = {};
-      pilotsIntervalCount = {};
-      currentRoundInfo = null;
-      roundPlayState = "pause";
-    }, 400);
-
-    setTimeout(() => {
-      roundElement.remove();
-    }, 500);
-  });
-
-  tabSwitch(tabsRound[0].name, tabsRound);
-  roundStatsStrokeWidthChange();
-}
-
 export function roundsTabAction(e) {
   const itemsElement = document.querySelector(".rounds__items");
 
@@ -658,8 +483,8 @@ export function roundsTabAction(e) {
   heatTabs.forEach((heat, index) => {
     if (e.target.closest(`.rounds__${heat.name} `)) {
       if (getState("CONSOLE_DEBUG")) console.log(`${getState("textStrings").roundsTab.heat} ${heat.name} `);
-      tabSwitch(tabsRounds[index].name, tabsRounds);
-      tabHeightChange(tabsRounds[index].element, itemsElement, false);
+      tabSwitch(getTab("rounds")[index].name, getTab("rounds"));
+      tabHeightChange(getTab("rounds")[index].element, itemsElement, false);
     }
   });
 
@@ -702,7 +527,7 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
   const html = writePilotsVs(nameForFunctions1, nameForFunctions2);
   const tabwrap = document.querySelector(".tabs-wrapper");
   tabwrap.after(html);
-  setAkcentValues(akcentArr);
+  setAkcentValues(getAkcent());
 
   const pilotsVsElement = document.querySelector(".pilots-vs");
   const pilotsVsPseudoLap = document.querySelector(".pilots-vs__pseudo-lap");
@@ -729,22 +554,22 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
     pilotsVsShow(pilotsVsElement);
   }, 10);
 
-  tabsPilotsVs = [
+  setTab("tabsPilotsVs", [
     { name: "pilotsVsAllLaps", opened: false, element: document.querySelector(".pilots-vs__all-laps-tab") },
     { name: "pilotsVsStatistic", opened: false, element: document.querySelector(".pilots-vs__statistic-tab") },
-  ];
+  ]);
 
-  tabSwitch(tabsPilotsVs[0].name, tabsPilotsVs);
+  tabSwitch(getTab("tabsPilotsVs")[0].name, getTab("tabsPilotsVs"));
   name1.classList.add("_active");
   name2.classList.add("_active");
 
   getButton("pilotsVsAllLaps").addEventListener("click", () => {
-    tabSwitch(tabsPilotsVs[0].name, tabsPilotsVs);
+    tabSwitch(getTab("tabsPilotsVs")[0].name, getTab("tabsPilotsVs"));
     name1.classList.add("_active");
     name2.classList.add("_active");
   });
   getButton("pilotsVsStatistic").addEventListener("click", () => {
-    tabSwitch(tabsPilotsVs[1].name, tabsPilotsVs);
+    tabSwitch(getTab("tabsPilotsVs")[1].name, getTab("tabsPilotsVs"));
     name1.classList.remove("_active");
     name2.classList.remove("_active");
   });
@@ -813,7 +638,7 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
       const allLapsAreaHeightScroll = pilotsVsAllLapsArea.clientHeight;
       pilotsVsAllLapsArea.style.paddingBottom = `${allLapsAreaHeight - allLapsAreaHeightScroll}px`;
       pilotsVsAllLapsArea.classList.add("_lock");
-      graphTouchFlag = true;
+      setState("graphTouchFlag", true);
     }
   });
 
@@ -831,7 +656,7 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
 
     pilotsVsAllLapsArea.classList.remove("_lock");
     pilotsVsAllLapsArea.style.paddingBottom = null;
-    graphTouchFlag = false;
+    setState("graphTouchFlag", false);
   });
 
   pilotsVsAllLapsArea.addEventListener("touchmove", function (e) {
@@ -845,7 +670,7 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
     const pilotsVsAreaHalfHeight = tabContainer.offsetHeight / 2;
 
     const elem = document.elementFromPoint(e.touches[0].clientX, pilotsVsAreaPosition + pilotsVsAreaHalfHeight);
-    if (graphTouchFlag) {
+    if (getState("graphTouchFlag")) {
       if (getState("CONSOLE_DEBUG")) console.log("ELEM", elem);
 
       const laps = document.querySelectorAll(".pilots-vs__lap");
@@ -867,7 +692,7 @@ export function pilotsVsActions(nameForFunctions1, nameForFunctions2) {
     //Нажимае на крест - выходим
     modalOnOff(pilotsVsElement, false);
     setTimeout(() => {
-      lapsIdData = [];
+      setState("lapsIdData", []);
       pilotsVsElement.remove();
     }, 500);
   });

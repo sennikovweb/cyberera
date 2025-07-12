@@ -1,13 +1,9 @@
-import { getButton, getState, setState, addButton, getLocalFileElement } from "./sharedStates";
+import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
 import { getTransitionDurationTime } from "./utils";
-import { getHeat, getLapsByName, getTabsRounds } from "./getDatas";
+import {  getLapsByName, getTabsRounds, getDateinfo } from "./getDatas";
 import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender } from "./htmlWriters";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
 
-
-let tabsMain;
-let tabsLeader;
-let tabsRounds;
 export function startFileView(fileType, fileName) {
   try {
     setState("consecutivesCount", getState("mainObj").consecutives_count);
@@ -19,44 +15,43 @@ export function startFileView(fileType, fileName) {
   tabWrapper.append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
 
   //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
-  tabsMain = [
+  setTab("main", [
     { name: "pilots", opened: false, element: document.querySelector(".pilots") },
     { name: "leaderboard", opened: false, element: document.querySelector(".leaderboard") },
     { name: "rounds", opened: false, element: document.querySelector(".rounds") },
-  ];
+  ]);
 
-  tabsLeader = [
+  setTab("leader", [
     { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
     { name: "consecutive", opened: false, element: document.querySelector(".leaderboard-consecutive") },
     { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
     { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
-  ];
+  ]);
 
   addButton("lap", document.querySelector(".leaderboard__lap-button"));
   addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
   addButton("count", document.querySelector(".leaderboard__count-button"));
   addButton("average", document.querySelector(".leaderboard__average-button"));
 
-  tabsRounds = getTabsRounds();
+  setTab("rounds", getTabsRounds());
 
-  tabsRounds.forEach((tab) => {
+  getTab("rounds").forEach((tab) => {
     const tabName = tab.name;
     addButton(tabName, document.querySelector(`.rounds__${tabName}`));
   });
 
-  tabsMain[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
-  tabsMain[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
+  getTab("main")[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
+  getTab("main")[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
+  getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
 
-  tabsMain[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
-
-  tabSwitch(tabsLeader[0].name, tabsLeader);
+  tabSwitch(getTab("leader")[0].name, getTab("leader"));
   const leaderboardItemsElement = document.querySelector(".leaderboard__items");
-  tabHeightChange(tabsLeader[0].element, leaderboardItemsElement, true);
+  tabHeightChange(getTab("leader")[0].element, leaderboardItemsElement, true);
 
-  tabSwitch(tabsRounds[0].name, tabsRounds);
+  tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
   const roundsItemsElement = document.querySelector(".rounds__items");
 
-  tabHeightChange(tabsRounds[0].element, roundsItemsElement, true);
+  tabHeightChange(getTab("rounds")[0].element, roundsItemsElement, true);
 
   if (fileType != "classSwitch") {
     const shareElement = document.querySelector(".author__share");
@@ -82,12 +77,9 @@ export function startFileView(fileType, fileName) {
       }
     });
 
-
-
-
     const windowWidth = window.innerWidth; // ширина окна, сколько надо проехаться кнопками за границу
-    const buttonWidth = getLocalFileElement('button').offsetWidth; //ширина кнопки, чтобы не торчали края
-    const labelWidth = getLocalFileElement('label').offsetWidth; //ширина label чтобы не торчали края
+    const buttonWidth = getLocalFileElement("button").offsetWidth; //ширина кнопки, чтобы не торчали края
+    const labelWidth = getLocalFileElement("label").offsetWidth; //ширина label чтобы не торчали края
 
     const lastFileElement = document.querySelector(".last-file");
     const dateFilesElement = document.querySelector(".date-files");
@@ -95,11 +87,11 @@ export function startFileView(fileType, fileName) {
 
     if (fileType == "load") {
       lastFileElement.classList.add("_hidden");
-      getLocalFileElement('button').style.transition = "all 1s ease";
-      getLocalFileElement('button').style.transform = `translate(${windowWidth / 2 + buttonWidth}px, 0px)`; //едем
-      getLocalFileElement('label').style.transition = "all 1s ease";
-      getLocalFileElement('label').style.transform = `translate(-${windowWidth / 2 + labelWidth}px, 0px)`; //едем
-      getLocalFileElement('tittle').classList.add("_hidden");
+      getLocalFileElement("button").style.transition = "all 1s ease";
+      getLocalFileElement("button").style.transform = `translate(${windowWidth / 2 + buttonWidth}px, 0px)`; //едем
+      getLocalFileElement("label").style.transition = "all 1s ease";
+      getLocalFileElement("label").style.transform = `translate(-${windowWidth / 2 + labelWidth}px, 0px)`; //едем
+      getLocalFileElement("tittle").classList.add("_hidden");
       dateFilesElement.classList.add("_hidden");
       setTimeout(() => {
         window.scrollTo({
@@ -109,7 +101,7 @@ export function startFileView(fileType, fileName) {
       }, 300);
     }
 
-    getLocalFileElement('tittle').classList.add("_hidden");
+    getLocalFileElement("tittle").classList.add("_hidden");
 
     setTimeout(() => {
       //меняем после анимации кнопки и label, которые ниже.
@@ -133,7 +125,7 @@ export function startFileView(fileType, fileName) {
         mainDate.innerHTML = `${day} ${year}`;
         mainTime.innerHTML = `${time}`;
       }
-      document.querySelector('.main-tittle').classList.remove("_hidden");
+      document.querySelector(".main-tittle").classList.remove("_hidden");
       lastFileElement.remove();
       calendarElement.remove();
       dateFilesElement.remove();
@@ -153,9 +145,9 @@ export function startFileView(fileType, fileName) {
 
     setTimeout(() => {
       const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
-      getLocalFileElement('button').remove();
-      getLocalFileElement('form').remove();
-      getLocalFileElement('tittle').remove();
+      getLocalFileElement("button").remove();
+      getLocalFileElement("form").remove();
+      getLocalFileElement("tittle").remove();
       getButton("container").classList.add("_active");
       classButtonsContainer.classList.add("_active");
 
@@ -176,7 +168,7 @@ export function startFileView(fileType, fileName) {
     }, 450);
   }
   setTimeout(() => {
-    tabSwitch(tabsMain[1].name, tabsMain);
+    tabSwitch(getTab("main")[1].name, getTab("main"));
   }, 550);
 }
 
@@ -193,7 +185,7 @@ export function classSwitch(e) {
   });
   curentButton.classList.add("_active", "_no-event");
 
-  tabSwitch("closeAll", tabsMain);
+  tabSwitch("closeAll", getTab("main"));
   currentClass = raceClassNum;
 
   setTimeout(() => {
@@ -704,7 +696,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
     lapTime: document.querySelector(".pilots-vs__lap-time-value"),
   };
 
-  const currentLapsId = lapsIdData[vsSlider.value];
+  const currentLapsId = getState("lapsIdData")[vsSlider.value];
 
   const currentLapsData = [];
 
@@ -788,185 +780,6 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
       lap.classList.remove("_active-permanent");
     }
   });
-}
-
-export function startRound() {
-  if (getState("CONSOLE_DEBUG")) console.log("NAMES", pilotsName);
-  if (getState("CONSOLE_DEBUG")) console.log("lapsByPilot", lapsByPilot);
-  if (getState("CONSOLE_DEBUG")) console.log("intervals", intervals);
-  if (getState("CONSOLE_DEBUG")) console.log("lapTimeStep", lapTimeStep);
-  if (getState("CONSOLE_DEBUG")) console.log("holeShots", holeShots);
-  if (getState("CONSOLE_DEBUG")) console.log("pilotsIntervalCount", pilotsIntervalCount);
-  if (getState("CONSOLE_DEBUG")) console.log("lapState", lapState);
-  if (getState("CONSOLE_DEBUG")) console.log("roundSpeed", roundSpeed);
-  if (getState("CONSOLE_DEBUG")) console.log("playState", roundPlayState);
-
-  if (!lastHoleShot) {
-    intervalButtonsAccept = setInterval(() => {
-      let holeFullArr = [];
-      let holeTruedArr = [];
-
-      pilotsName.forEach((name) => {
-        holeFullArr.push(lapState[name][0]);
-        holeTruedArr = holeFullArr.filter((el) => el == true);
-      });
-
-      if (holeFullArr.length == holeTruedArr.length) {
-        lastHoleShot = true;
-      }
-
-      if (lastHoleShot == true) {
-        if (getState("CONSOLE_DEBUG")) console.log("RJYTWWWWW");
-        const roundPlayButton = document.querySelector(".round__play-button");
-        const slider = document.querySelector(".round__slider");
-        roundPlayButton.classList.remove("_no-event");
-        slider.classList.remove("_no-event");
-        clearInterval(intervalButtonsAccept);
-      }
-    }, 100);
-  }
-  pilotsName.forEach((pilotName) => {
-    const laps = lapsByPilot[pilotName];
-
-    laps.forEach((lap, lapIndex) => {
-      const fixedRoundSpeed = roundSpeed.toFixed(2);
-      const floatLapTimeStep = lapTimeStep[pilotName][lapIndex];
-      const fixedLapTimeStep = floatLapTimeStep.toFixed(2);
-      const floatIntervalTime = +fixedRoundSpeed * +fixedLapTimeStep;
-      // const fixedIntervalTime = +floatIntervalTime.toFixed(2)
-
-      const preFixedIntervalTime = +floatIntervalTime.toFixed(2);
-
-      let fixedIntervalTime;
-      if (preFixedIntervalTime < 10) {
-        const fixedFullNum = preFixedIntervalTime.toFixed(0);
-        fixedIntervalTime = `10.${fixedFullNum}`;
-      } else {
-        fixedIntervalTime = +preFixedIntervalTime.toFixed(2);
-      }
-
-      if (!holeShots[pilotName].state) {
-        if (getState("CONSOLE_DEBUG")) console.log("HOLESHOTTTTTTTTTT", pilotName);
-        holeShots[pilotName].state = true;
-
-        let timeoutMultiplier;
-        if (roundSpeed == 1) {
-          timeoutMultiplier = 0.5;
-        } else {
-          timeoutMultiplier = 1;
-        }
-
-        holeShots[pilotName].interval = setTimeout(() => {
-          lapState[pilotName][0] = true;
-          // holeShots[pilotName].state = false;
-          if (getState("CONSOLE_DEBUG")) console.log("SETT TIME");
-        }, holeShots[pilotName].timeout * +fixedRoundSpeed * timeoutMultiplier);
-      }
-
-      // let currentCount = 0;
-      // const maxCount = element.laps.length;
-      // const intervalTime = 100;
-
-      intervals[pilotName][lapIndex] = setInterval(() => {
-        // if (pilotName == 'BeeHolder') if(getState('CONSOLE_DEBUG'))console.log('INTERVALLLL', lapIndex);
-
-        if (lapState[pilotName][lapIndex]) {
-          let pecrentMultiplaer;
-          if (roundSpeed == 1) {
-            pecrentMultiplaer = 2;
-          } else {
-            pecrentMultiplaer = 1;
-          }
-
-          if (pilotsIntervalCount[pilotName][lapIndex] * 1 < 100) {
-            lap.style.width = `${pilotsIntervalCount[pilotName][lapIndex] * 1}%`;
-            pilotsIntervalCount[pilotName][lapIndex] += 1 * pecrentMultiplaer;
-          } else {
-            lap.style.width = "100%";
-            pilotsIntervalCount[pilotName][lapIndex] = 100;
-            clearInterval(intervals[pilotName][lapIndex]);
-
-            lapState[pilotName][lapIndex + 1] = true;
-
-            const allLapsState = [];
-
-            for (const counts in pilotsIntervalCount) {
-              const pilotCounts = pilotsIntervalCount[counts];
-              pilotCounts.forEach((count) => {
-                allLapsState.push(count);
-              });
-            }
-            const fullWidthLaps = allLapsState.filter((el) => el == 100);
-
-            if (allLapsState.length == fullWidthLaps.length) {
-              // if(getState('CONSOLE_DEBUG'))console.log('В С Ё!!!!');
-              endRound();
-              roundPlayState = "end";
-            }
-          }
-        }
-        // if(getState('CONSOLE_DEBUG'))console.log('fixedIntervalTime', fixedIntervalTime);
-      }, +fixedIntervalTime);
-    });
-  });
-}
-
-export function pauseRound() {
-  pilotsName.forEach((pilotName) => {
-    const intervalArr = intervals[pilotName];
-    intervalArr.forEach((inter) => {
-      clearInterval(inter);
-    });
-  });
-}
-
-export function endRound() {
-  pauseRound();
-  const roundPlayButton = document.querySelector(".round__play-button");
-  const paragraph = roundPlayButton.firstElementChild;
-
-  textChange(paragraph, `<p>${getState("textStrings").roundsTab.again}</p>`, 150);
-
-  for (const lapp in lapsByPilot) {
-    const laps = lapsByPilot[lapp];
-    laps.forEach((lapp, index) => {
-      laps[index].classList.add("_akcent");
-    });
-  }
-
-  for (const counts in pilotsIntervalCount) {
-    const pilotCounts = pilotsIntervalCount[counts];
-    pilotCounts.forEach((count, index) => {
-      pilotCounts[index] = 0;
-    });
-  }
-
-  for (const lap in lapState) {
-    const lapsStates = lapState[lap];
-    lapsStates.forEach((states, index) => {
-      lapsStates[index] = false;
-    });
-  }
-
-  for (const holeName in holeShots) {
-    const holeObj = holeShots[holeName];
-    holeObj.state = false;
-  }
-
-  lastHoleShot = false;
-  clearInterval(intervalButtonsAccept);
-}
-
-export function speedChange(sliderElement) {
-  pauseRound();
-  const speedValue = document.querySelector(".round__speed-value");
-  const sliderValue = sliderElement.value;
-  roundSpeed = speedValues[sliderValue];
-  if (getState("CONSOLE_DEBUG")) console.log("LOGG", roundSpeed);
-
-  speedValue.innerHTML = `x${speedNames[roundSpeed]}`;
-
-  if (roundPlayState == "play") startRound();
 }
 
 export function roundStatsStrokeWidthChange() {

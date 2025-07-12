@@ -1,7 +1,7 @@
-import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getHeat, getRoundsByHeats } from "./getDatas";
+import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getRoundsByHeats } from "./getDatas";
 import { lapTimeConverter } from "./utils";
-import { lapNodeShow,classSwitch} from "./uiChange";
-import { getState,setState } from "./sharedStates";
+import { lapNodeShow, classSwitch } from "./uiChange";
+import { getState, setAkcent, setState } from "./sharedStates";
 
 export function writePilotsHTML() {
   // Рисуем страницу пилотов
@@ -198,7 +198,7 @@ export function writePilotsHTML() {
 
       // if(getState('CONSOLE_DEBUG'))console.log(`consecutives от ${ pilot.name } `, consecutivesData);
 
-      item.bestConsecutivesText.innerHTML = getState("textStrings").pilotsTab.bestConsecutive;
+      item.bestConsecutivesText.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").pilotsTab.bestConsecutive}`;
       try {
         item.bestConsecutivesMainTime.innerHTML = consecutivesData[0].lapTime;
       } catch (error) {
@@ -391,7 +391,7 @@ export function writeLeaderboardHTML() {
   leaderboard.container.append(leaderboard.buttons, leaderboard.items);
   leaderboard.buttons.append(leaderboard.lapBtn, leaderboard.consecutiveBtn, leaderboard.countBtn, leaderboard.averageBtn);
   leaderboard.lapBtn.innerHTML = getState("textStrings").leaderboardTab.lap;
-  leaderboard.consecutiveBtn.innerHTML = getState("textStrings").leaderboardTab.consecutive;
+  leaderboard.consecutiveBtn.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").leaderboardTab.consecutive}`;
   leaderboard.countBtn.innerHTML = getState("textStrings").leaderboardTab.totalLaps;
   leaderboard.averageBtn.innerHTML = getState("textStrings").leaderboardTab.average;
   leaderboard.items.append(lapItem.lap, consecutiveItem.consecutive, countItem.count, averageItem.average);
@@ -444,7 +444,6 @@ export function writeLeaderboardHTML() {
       let countObj = {};
       let averageObj = {};
       const name = pilot.name;
-      const heat = getHeat(pilot.name);
 
       let allLaps;
       lapObj.name = name;
@@ -452,7 +451,7 @@ export function writeLeaderboardHTML() {
       lapObj.LapTime = null;
 
       try {
-        allLaps = getLapsByName(name, heat, true);
+        allLaps = getLapsByName(name, true);
         lapObj.lapRound = allLaps[0].round;
         lapObj.LapTime = lapTimeConverter(allLaps[0].lapTime, "float");
       } catch (error) {
@@ -465,7 +464,7 @@ export function writeLeaderboardHTML() {
       consecutiveObj.consecutiveTime = null;
 
       try {
-        allConsecutives = getConsecutivesByName(name, heat, true);
+        allConsecutives = getConsecutivesByName(name, true);
         consecutiveObj.consecutiveRound = allConsecutives[0].round;
         consecutiveObj.consecutiveTime = lapTimeConverter(allConsecutives[0].lapTime, "float");
       } catch (error) {
@@ -849,11 +848,16 @@ export function writeRound(roundRound, roundHeat) {
 
   const maxLaps = roundInfo[0].maxLaps;
 
+
   statistic.fullRoundTittle.innerHTML = `${getState("textStrings").roundsTab.roundStart} - ${roundInfo[0].roundStart}`;
   statistic.singleLapsTittle.innerHTML = getState("textStrings").roundsTab.laps;
 
   view.lapsArea.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
   view.pilots.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
+  if (maxLaps > 22) {
+    view.graphArea.classList.add("_many-laps");
+    view.lapsArea.classList.add("_many-laps");
+  }
   for (let i = 0; i <= maxLaps; i++) {
     const lapElement = document.createElement("div");
     if (i != maxLaps) {
@@ -1210,13 +1214,11 @@ export function writeInRoundHTML(lap, laps, name) {
 
   //ищем совпадение лучшего круга и лучших кругов
 
-  const heat = getHeat(name);
-
   const currentLapId = lap.lapId;
 
   try {
-    const lapsData = getLapsByName(name, heat, true);
-    const consecutivesData = getConsecutivesByName(name, heat, true);
+    const lapsData = getLapsByName(name, true);
+    const consecutivesData = getConsecutivesByName(name, true);
     const bestLapId = lapsData[0].lapId;
     const bestConsecutiveId = consecutivesData[0].lapId;
     // if(getState('CONSOLE_DEBUG'))console.log('CURR ID', currentLapId);
@@ -1633,8 +1635,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
   let bestIds = [];
 
   pilotsVsStatistic.bestLapTittle.innerHTML = getState("textStrings").vsTab.bestLap;
-
-  pilotsVsStatistic.bestConsecutiveTittle.innerHTML = getState("textStrings").vsTab.bestConsecutive;
+  pilotsVsStatistic.bestConsecutiveTittle.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").vsTab.bestConsecutive}`;
   pilotsVsStatistic.averageTittle.innerHTML = getState("textStrings").vsTab.average;
   pilotsVsStatistic.totalLapsTittle.innerHTML = getState("textStrings").vsTab.totalLaps;
   pilotsVsStatistic.startsTittle.innerHTML = getState("textStrings").vsTab.starts;
@@ -1668,15 +1669,14 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 
   pilotsVsArr.forEach((pilot, index) => {
     const pilotFloatTimes = {};
-    const heat = getHeat(pilot);
     pilotsHeats.push(heat);
 
-    const laps = getLapsByName(pilot, heat, true);
+    const laps = getLapsByName(pilot, true);
     if (getState("CONSOLE_DEBUG")) console.log("PilotsVSInfoLAPS", laps);
 
     let consecutives;
     try {
-      consecutives = getConsecutivesByName(pilot, heat, true);
+      consecutives = getConsecutivesByName(pilot, true);
     } catch (error) {
       consecutives = [];
       if (getState("CONSOLE_DEBUG")) console.log("Нет 3 Подряд");
@@ -1753,7 +1753,10 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     }
   });
 
-  akcentArr = [1, 1, 1, 1];
+  setAkcent(0, 1);
+  setAkcent(1, 1);
+  setAkcent(2, 1);
+  setAkcent(3, 1);
 
   let floatCounter = 0;
 
@@ -1761,13 +1764,13 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     if (floatCounter < 3) {
       const pilot1Time = pilotsFloatTimes[0][floatTimeName];
       const pilot2Time = pilotsFloatTimes[1][floatTimeName];
-      if (pilot1Time > pilot2Time) akcentArr[floatCounter] = 2;
+      if (pilot1Time > pilot2Time) setAkcent(floatCounter, 2);
       floatCounter++;
       if (getState("CONSOLE_DEBUG")) console.log("floatTime", pilotsFloatTimes[0][floatTimeName]);
     } else {
       const pilot1Time = pilotsFloatTimes[0][floatTimeName];
       const pilot2Time = pilotsFloatTimes[1][floatTimeName];
-      if (pilot1Time < pilot2Time) akcentArr[floatCounter] = 2;
+      if (pilot1Time < pilot2Time) setAkcent(floatCounter, 2);
     }
   }
 
@@ -1850,7 +1853,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 	
 */
 
-  const classHeats = getState("mainObj").heats_by_class[currentClass];
+  const classHeats = getState("mainObj").heats_by_class[getState("currentClass")];
 
   let lapsTimeData = [];
   let roundsInAllHeats1 = {};
@@ -1926,7 +1929,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
       }
 
       lapsTimeData.push(...heatTimeData);
-      lapsIdData.push(...heatIdData);
+      setState("lapsIdData", [...getState("lapsIdData"), ...heatIdData]);
     });
   }
 
@@ -1955,7 +1958,7 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     lapTimes.forEach((value, index) => {
       if (value == 0) {
         colors[index] = "#0b0c10";
-      } else if (bestIds.indexOf(lapsIdData[i][index]) != -1 || bestConsecutivesIds.indexOf(lapsIdData[i][index]) != -1) {
+      } else if (bestIds.indexOf(getState("lapsIdData")[i][index]) != -1 || bestConsecutivesIds.indexOf(getState("lapsIdData")[i][index]) != -1) {
         bestDotRadius[index] = 3;
         circleRadius[index] = 4;
       }
@@ -2080,7 +2083,7 @@ export function calendarRender(filesloaded) {
     let dayNumber, isCurrentMonth;
 
     if (i <= prevMonthDays) {
-      dayNumber = new Date(getState('currentMonth').getFullYear(), getState('currentMonth').getMonth(), 0).getDate() - prevMonthDays + i;
+      dayNumber = new Date(getState("currentMonth").getFullYear(), getState("currentMonth").getMonth(), 0).getDate() - prevMonthDays + i;
       isCurrentMonth = false;
     } else if (i > prevMonthDays + lastDay.getDate()) {
       dayNumber = i - (prevMonthDays + lastDay.getDate());
@@ -2095,7 +2098,7 @@ export function calendarRender(filesloaded) {
     }
 
     let isHaveFiles;
-    getState('filesJson').forEach((file) => {
+    getState("filesJson").forEach((file) => {
       if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
         isHaveFiles = true;
         dayElement.classList.add("_day__file");
@@ -2125,7 +2128,6 @@ export function makeRaceClassButtons() {
   //Делаем кнопки Классов
   const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
   const raceClasses = getState("mainObj").classes;
-
 
   // let tabsClasses = [];
   for (let raceClass in raceClasses) {

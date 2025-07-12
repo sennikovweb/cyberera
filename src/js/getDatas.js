@@ -1,7 +1,7 @@
 import { getState } from "./sharedStates";
 import { timeSumer, lapTimeSumer, fromFloatToString, lapTimeConverter } from "./utils";
 
-export function getLapsByName(name, noNeed, sorted) {
+export function getLapsByName(name, sorted) {
   // const data = mainObj.heats[heat].rounds;			//Когда искали в Heat, ниже будем искать во всех Heatах
 
   const heatsData = getState("mainObj").heats;
@@ -48,31 +48,29 @@ export function getLapsByName(name, noNeed, sorted) {
       // Находим там ноду
       if (node.callsign == name) {
         // в Ноде ищем определенного пилота
+
         const laps = node.laps; // и ищем его круги
 
         let lapCount; //переменная чтобы считать круги
-        let holeShotStatus; //Переменная, чтобы знать, был ли holeShot(Он может быть не только под index=0)
+        let holeShotStatus = false; //Переменная, чтобы знать, был ли holeShot(Он может быть не только под index=0)
+        let firstNotDeletedLap = false;
         let previousLapTime; //Переменная для хранения предыдущего времени круга
         let previousLapTimeStart; //переменная для хранения старта предущего круга
-
         laps.forEach(function (lap, index) {
           const lapDataObj = {};
-          if (index == 0) {
-            lapCount = 0; //Начинаем считать круги заново, как только индекс круга 0
+          if (index == 0) lapCount = 0; //Начинаем считать круги заново, как только индекс круга 0
+          if (!lap.deleted && index == 0) firstNotDeletedLap = true;
+          if (!lap.deleted && index > 0 && !firstNotDeletedLap) firstNotDeletedLap = true;
 
+          if (firstNotDeletedLap && !holeShotStatus) {
             const lapTimeSpread = [...lap.lap_time_formatted];
             lapTimeSpread.splice(0, 2);
             const lapFloat = parseFloat(lapTimeSpread.join(""));
             previousLapTime = lapFloat.toFixed(3); //здесь начинаем брать Hole Shot за время предыдущего круга
             previousLapTimeStart = roundStartTimeFormated;
-            holeShotStatus = false;
-          }
-          if (index == 0 && lap.deleted != false) {
-            holeShotStatus = true; //Если нулевой круг не удален, значит он был holeshot;
-          }
-          if (lap.deleted == false && index > 0 && !holeShotStatus) {
+            holeShotStatus = true;
+          } else if (!lap.deleted && index > 0 && holeShotStatus) {
             // отсекаем  Hole Shot и удаленные круги.
-            // отсекаем  Hole Shot и удаленные круги;
             lapDataObj.round = currentRound; //Название раунда, который строка в роторхазарде
             lapDataObj.roundId = round.id; //Id раунда
             lapDataObj.heatId = round.heatId;
@@ -139,7 +137,7 @@ export function getLapsByName(name, noNeed, sorted) {
   }
 }
 
-export function getConsecutivesByName(name, heat, sorted) {
+export function getConsecutivesByName(name, sorted) {
   //   let consecutivesCount;
   //   if (mainObj.consecutives_count) {
   //     consecutivesCount = mainObj.consecutives_count;
@@ -149,7 +147,7 @@ export function getConsecutivesByName(name, heat, sorted) {
 
   const consecutivesCount = getState("consecutivesCount") ? getState("consecutivesCount") : 3;
 
-  const allLapsData = getLapsByName(name, heat, false);
+  const allLapsData = getLapsByName(name, false);
   let allConsecutivesFloat = [];
   let allConsecutivesTime = [];
   let allConsecutivesData = []; //Переменная с конечным массивом всех 3 кругов
@@ -262,7 +260,7 @@ export function getRound(roundNum, heatNum) {
       roundInfo.round = currentRound;
       roundInfo.roundStart = roundLaps[0].roundTimeStart; //добавляем в инфу раунда время начало раунда
 
-      const holeSHot = getHoleShot(element.name, heatNum, roundNum); //ищем круг до старта
+      const holeSHot = getRoundHoleShot(element.name, heatNum, roundNum); //ищем круг до старта
       roundLaps.unshift(holeSHot); //добавляем пустой круг в начало массива
       roundLaps.push(element.name); //добавляем имя пилота в конец массива
       roundPilotsLaps.push(roundLaps); //добавляем получившийся массив в общий массив по раунду
@@ -334,43 +332,32 @@ export function getRound(roundNum, heatNum) {
   return roundPilotsLapsSorted;
 }
 
-export function getHoleShot(name, heat, round) {
+export function getRoundHoleShot(name, heat, round) {
   if (getState("CONSOLE_DEBUG")) console.log("ИМЯяяя", name);
 
-  let heats;
-
   const fullData = getState("mainObj");
-  for (const objStroke in fullData) {
-    if (objStroke == "heats") {
-      heats = fullData[objStroke];
-    } else if (fullData[objStroke].heats) {
-      heats = fullData[objStroke].heats;
-    }
-  }
 
-  const roundInfo = heats[heat].rounds[round - 1].nodes;
-  const roundByName = roundInfo.filter((element) => {
-    return element.callsign == name;
-  });
-  const holeShot = roundByName[0].laps[0].lap_time_formatted;
+  const roundInfo = fullData.heats[heat].rounds[round - 1].nodes;
+  const roundByName = roundInfo.find((element) => element.callsign == name);
+  const notDeletedLap = roundByName.laps.find((lap) => lap.deleted == false);
+  const holeShot = notDeletedLap.lap_time_formatted;
   return holeShot;
 }
 
-export function getLapData(targetTime, lapOrConsecutive, name, heat, getLap) {
+export function getLapData(targetTime, lapOrConsecutive, name, getLap) {
   //находим выбранный круг getLap=current, или все круги раунда по выбранному кругу getLap=other;
   //lapOrConsecutive - выбранный один или подряд
   //targetTime - выбранный круг
   let lapData;
   let lapsData;
   let otherLapData = [];
-  const singleLapsData = getLapsByName(name, heat, true); //находим все круги по имени для дальнейшего отбора otherLaps
+  const singleLapsData = getLapsByName(name, true); //находим все круги по имени для дальнейшего отбора otherLaps
   if (lapOrConsecutive == "lap") {
     lapsData = singleLapsData; //находим все круги для сравнение с выбранным(когда выбранный 'один круг' - это тоже самое, что все круги для отбора otherLaps)
   } else if (lapOrConsecutive == "consecutive") {
-    lapsData = getConsecutivesByName(name, heat, true); //находим все круги для сравнение с выбранным(круги подряд)
+    lapsData = getConsecutivesByName(name, true); //находим все круги для сравнение с выбранным(круги подряд)
   }
-  lapsData.forEach((lap, index) => {
-    // if(getState('CONSOLE_DEBUG'))console.log('I T E R A T I O N', index);
+  lapsData.forEach((lap) => {
     if (lap.lapTime == targetTime) {
       //перебирая все круги ищем совпадение по времени;
       lapData = lap; //объект выбранного круга
@@ -465,6 +452,7 @@ export function getRoundsByHeats() {
 
   return heatsObj;
 }
+
 export function getDateinfo(dateOrTime) {
   // Может больше и не нужна
   //берем дату для заголовка
@@ -474,7 +462,7 @@ export function getDateinfo(dateOrTime) {
     let dateString;
 
     const fullData = getState("mainObj");
-    for (objStroke in fullData) {
+    for (const objStroke in fullData) {
       if (objStroke == "heats") {
         const heatsStroke = fullData[objStroke];
         dateString = heatsStroke[1].rounds[0].start_time_formatted;
@@ -484,21 +472,10 @@ export function getDateinfo(dateOrTime) {
       }
     }
 
-    // const dateString = mainObj.heats[1].rounds[0].start_time_formatted;			//string дата из первого раунда
-
     let year;
     let mounth;
     let day;
     let time;
-    if (getState("CONSOLE_DEBUG")) console.log("ДАТА", dateString);
-
-    // let monthArr;
-    // if (language == 'ru') {
-    // 	monthArr = ['января', 'феваля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-
-    // } else if (language == 'en') {
-    // 	monthArr = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-    // }
 
     if (dateString) {
       //Если дату нашли
@@ -536,18 +513,18 @@ export function getDateinfo(dateOrTime) {
   }
 }
 
-export function getHeat(name) {
-  //Надо проверить, нужна ли она - мы больше не ищем Heatы
-  const allPilots = getPilotsStats();
-  let heat;
-  allPilots.forEach((pilot) => {
-    //Ищем Heat по имени
-    if (pilot.name == name) {
-      heat = pilot.heat;
-    }
-  });
-  return heat;
-}
+// export function getHeat(name) {
+//   //Надо проверить, нужна ли она - мы больше не ищем Heatы
+//   const allPilots = getPilotsStats();
+//   let heat;
+//   allPilots.forEach((pilot) => {
+//     //Ищем Heat по имени
+//     if (pilot.name == name) {
+//       heat = pilot.heat;
+//     }
+//   });
+//   return heat;
+// }
 
 export function getDayFiles(date) {
   const dayButtons = document.querySelectorAll(".calendar__day");
@@ -561,7 +538,7 @@ export function getDayFiles(date) {
   setTimeout(() => {
     dateFilesElement.innerHTML = "";
 
-    filesJson.forEach((file) => {
+    getState("filesJson").forEach((file) => {
       const fileDateArr = `${file.year}-${file.month}-${file.day}`;
 
       if (date == fileDateArr) {

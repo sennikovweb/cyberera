@@ -1,7 +1,6 @@
-import { textChange, startRound } from "./uiChange";
+import { textChange,allLapsGraphChoosing } from "./uiChange";
 import { getState } from "./sharedStates";
-import { allLapsGraphChoosing } from "./uiChange";
-// import {}
+import { startRound } from "./playRound";
 
 export function allLapsShow(allLaps, allLapsButton, nameForSlider) {
   const element = {
@@ -79,61 +78,6 @@ export function pilotsVsShow(allLaps) {
   }, 1900);
 }
 
-export function roundShow(round, buttonRound) {
-  const element = {
-    container: round.firstElementChild,
-    tittle: round.querySelector(".round__tittle"),
-    graphArea: round.querySelector(".round__graph-area"),
-    buttons: round.querySelector(".round__buttons"),
-    exitBtn: round.querySelector(".round__exit-button"),
-    slider: round.querySelector(".round__speed-slider"),
-
-    playButton: round.querySelector(".round__play-button"),
-    laps: round.querySelectorAll(".round__graph-area-lap-node"),
-    names: round.querySelectorAll(".round__graph-area-name"),
-  };
-
-  buttonRound.classList.add("_no-event"); //запрещаем кнопку, где время
-
-  setTimeout(() => {
-    //удаляем классы 'скрыто'
-    element.buttons.classList.remove("_hidden-buttons");
-    element.tittle.classList.remove("_hidden-tittle");
-    element.graphArea.classList.remove("_hidden-graph-area");
-    element.slider.classList.remove("_hidden-slider");
-  }, 500);
-
-  setTimeout(() => {
-    element.names.forEach((name) => {
-      name.classList.remove("_hidden-graph-area-name");
-    });
-  }, 500);
-
-  setTimeout(() => {
-    let currentCount = 0;
-    const maxCount = element.laps.length;
-    const intervalTime = 80;
-    let intervalFunction = setInterval(() => {
-      //полоски 'круги' Интервал чтобы поочереди
-      element.laps[currentCount].classList.remove("_hidden-graph-area-lap-node");
-      currentCount++;
-      if (currentCount == maxCount) clearInterval(intervalFunction);
-    }, intervalTime);
-  }, 500);
-
-  setTimeout(() => {
-    element.container.classList.remove("_no-events");
-    buttonRound.classList.remove("_no-event");
-    element.buttons.classList.remove("_no-event");
-    element.exitBtn.classList.remove("_no-event");
-    element.playButton.classList.remove("_hidden-play-button");
-
-    const paragraph = element.playButton.firstElementChild;
-    textChange(paragraph, `<p>${getState("textStrings").roundsTab.pause}</p>`, 150);
-    startRound();
-    roundPlayState = "play";
-  }, 1100);
-}
 
 export function inRoundShow(inRound, buttonTime) {
   //Анимация появления 'inRound'

@@ -1,8 +1,11 @@
-import { getState, setState } from "./sharedStates";
+import { getState, setState, getLocalFileElement } from "./sharedStates";
 import { getAnimationDurationTime } from "./utils";
 import { makeRaceClassButtons } from "./htmlWriters";
+import { startFileView } from "./uiChange";
 
 export async function addLocalFile() {
+  console.log('getLocalFileElement("input")', getLocalFileElement("input"));
+
   const file = getLocalFileElement("input").files[0];
 
   if (file) {
@@ -68,7 +71,7 @@ export function parseLocalFile(stringJson) {
 export async function startLocalFile(e) {
   //Нажатие на кнопку Загрузить - Самое начало
   e.preventDefault();
-  const file = getLocalFileElement("").input.files[0];
+  const file = getLocalFileElement("input").files[0];
 
   if (file) {
     //Проверяем, есть ли файл
@@ -80,6 +83,8 @@ export async function startLocalFile(e) {
       //Проверяем, норм ли спарсилось, и если да, убираем форму ввода и показываем дальнейшие кнопки
       makeRaceClassButtons();
       startFileView("load");
+		console.log('MAIN',getState('mainObj'));
+		
     } else {
       //Если не спарсилось, рисуем ошибку
       getLocalFileElement("button").innerHTML = getState("textStrings").error;

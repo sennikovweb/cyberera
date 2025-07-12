@@ -199,3 +199,12 @@ export const EN_DICT = {
     totalTime: "Total time",
   },
 };
+
+export const SPEED_NAMES = {
+  3: 0.3,
+  2: 0.5,
+  1.1: 1,
+  // '1': 2.5,
+  1: 2,
+};
+export const SPEED_VALUES = [3, 2, 1.1, 1];
