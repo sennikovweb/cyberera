@@ -9,6 +9,12 @@ export const RU_DICT = {
   chooseAnother: "Выберите другой файл",
   choosed: "Файл выбран",
   load: "Загрузить",
+  uploaded: "Обновлено",
+  minute3: "минуты",
+  minute2: "минуту",
+  minute1: "минут",
+  seconds: "секунд",
+  ago: "назад",
 
   pilotsTab: {
     bestLap: "Лучший круг",
@@ -110,7 +116,12 @@ export const EN_DICT = {
   chooseAnother: "Choose another file",
   choosed: "File choosed",
   load: "Load",
-
+  uploaded: "Updated",
+  minute3: "minutes",
+  minute2: "minutes",
+  minute1: "minutes",
+  seconds: "seconds",
+  ago: "ago",
   pilotsTab: {
     bestLap: "Best lap",
     round: "Round",

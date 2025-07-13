@@ -1,18 +1,22 @@
-import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
-import { getTransitionDurationTime } from "./utils";
-import {  getLapsByName, getTabsRounds, getDateinfo } from "./getDatas";
-import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender } from "./htmlWriters";
+import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils";
+import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
+import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender } from "./htmlWriters";
+import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
 
-export function startFileView(fileType, fileName) {
+export async function startFileView(fileType) {
   try {
     setState("consecutivesCount", getState("mainObj").consecutives_count);
   } catch (error) {
     if (getState("CONSOLE_DEBUG")) console.log("Не найдена информация о consecutives count");
   }
+  if (!Object.keys(getState("mainObj").heats).length) {
+    //Проверяем, есть ли вообще круги, или только создали
+    console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
+  }
 
-  const tabWrapper = document.querySelector(".tabs-wrapper");
-  tabWrapper.append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
+  document.querySelector(".tabs-wrapper").append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
+  console.log("StartViewFile", getState("mainObj"));
 
   //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
   setTab("main", [
@@ -27,33 +31,28 @@ export function startFileView(fileType, fileName) {
     { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
     { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
   ]);
-
+  //Кнопки для Leaderboadr
   addButton("lap", document.querySelector(".leaderboard__lap-button"));
   addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
   addButton("count", document.querySelector(".leaderboard__count-button"));
   addButton("average", document.querySelector(".leaderboard__average-button"));
 
-  setTab("rounds", getTabsRounds());
-
-  getTab("rounds").forEach((tab) => {
-    const tabName = tab.name;
-    addButton(tabName, document.querySelector(`.rounds__${tabName}`));
-  });
+  setTab("rounds", getHeatTabsRounds()); //Получаем 'Вкладки'Heatы для вкладки Rounds
+  getTab("rounds").forEach((tab) => addButton(tab.name, document.querySelector(`.rounds__${tab.name}`))); //Добавляем кнопку каждому Heatу
 
   getTab("main")[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
   getTab("main")[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
   getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
 
   tabSwitch(getTab("leader")[0].name, getTab("leader"));
-  const leaderboardItemsElement = document.querySelector(".leaderboard__items");
-  tabHeightChange(getTab("leader")[0].element, leaderboardItemsElement, true);
+  tabHeightChange(getTab("leader")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
 
   tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
-  const roundsItemsElement = document.querySelector(".rounds__items");
+  tabHeightChange(getTab("rounds")[0].element, document.querySelector(".rounds__items"), true); //динамическая высота окна для Rounds
 
-  tabHeightChange(getTab("rounds")[0].element, roundsItemsElement, true);
-
+  ////
   if (fileType != "classSwitch") {
+    //Кнопка поделиться
     const shareElement = document.querySelector(".author__share");
 
     shareElement.classList.remove("_hide");
@@ -62,13 +61,14 @@ export function startFileView(fileType, fileName) {
       const urlToCopy = document.querySelector(".author__share-url").textContent;
       try {
         await navigator.clipboard.writeText(urlToCopy);
-
         shareElement.classList.add("_success");
         const timer = setTimeout(() => {
           shareElement.classList.remove("_success");
           clearTimeout(timer);
         }, 1000);
       } catch (error) {
+        console.log("error", error);
+
         shareElement.classList.add("_error");
         const timer = setTimeout(() => {
           shareElement.classList.remove("_error");
@@ -77,100 +77,85 @@ export function startFileView(fileType, fileName) {
       }
     });
 
-    const windowWidth = window.innerWidth; // ширина окна, сколько надо проехаться кнопками за границу
-    const buttonWidth = getLocalFileElement("button").offsetWidth; //ширина кнопки, чтобы не торчали края
-    const labelWidth = getLocalFileElement("label").offsetWidth; //ширина label чтобы не торчали края
+    if (fileType == "event" || fileType == "live") {
+      const wrapperElement = document.querySelector(".wrapper");
+      wrapperElement.classList.add("_loading-hide");
 
-    const lastFileElement = document.querySelector(".last-file");
-    const dateFilesElement = document.querySelector(".date-files");
-    const calendarElement = document.querySelector(".calendar");
-
-    if (fileType == "load") {
-      lastFileElement.classList.add("_hidden");
-      getLocalFileElement("button").style.transition = "all 1s ease";
-      getLocalFileElement("button").style.transform = `translate(${windowWidth / 2 + buttonWidth}px, 0px)`; //едем
-      getLocalFileElement("label").style.transition = "all 1s ease";
-      getLocalFileElement("label").style.transform = `translate(-${windowWidth / 2 + labelWidth}px, 0px)`; //едем
-      getLocalFileElement("tittle").classList.add("_hidden");
-      dateFilesElement.classList.add("_hidden");
-      setTimeout(() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth",
+      await new Promise((resolve) => {
+        wrapperElement.addEventListener("transitionend", function (e) {
+          if (e.target == wrapperElement && e.propertyName == "opacity") {
+            resolve();
+          }
         });
-      }, 300);
+      });
+      document.querySelector(".main").classList.remove("_hide");
+      wrapperElement.classList.remove("_loading-hide");
+      wrapperElement.classList.remove("_hide");
+    } else if (fileType == "last") {
+      const lastFileButton = document.querySelector(".last-file__item");
+      lastFileButton.classList.remove("_loading");
+      lastFileButton.classList.add("_move");
+
+      await new Promise((resolve) => {
+        lastFileButton.addEventListener("transitionend", function (e) {
+          if (e.propertyName === "transform") {
+            resolve();
+          }
+        });
+      });
+    } else if (fileType == "date") {
+      const fileItemElement = document.querySelector("._uploading-file");
+      fileItemElement.classList.add("_hidden");
+
+      await new Promise((resolve) => {
+        fileItemElement.addEventListener("transitionend", function (e) {
+          if (e.propertyName == "opacity") {
+            resolve();
+          }
+        });
+      });
+      window.scrollTo({
+        top: 0,
+      });
+    } else if (fileType == "local") {
+      getLocalFileElement("button").style.transition = "all 1s ease";
+      getLocalFileElement("button").style.transform = `translate(${window.innerWidth / 2 + getLocalFileElement("button").offsetWidth}px, 0px)`; //едем
+      getLocalFileElement("label").style.transition = "all 1s ease";
+      getLocalFileElement("label").style.transform = `translate(-${window.innerWidth / 2 + getLocalFileElement("label").offsetWidth}px, 0px)`; //едем
+      await new Promise((resolve) => {
+        getLocalFileElement("button").addEventListener("transitionend", function (e) {
+          if (e.propertyName == "transform") {
+            resolve();
+          }
+        });
+      });
+      window.scrollTo({
+        top: 0,
+      });
     }
 
-    getLocalFileElement("tittle").classList.add("_hidden");
+    //Удаляем лишнее из html
+    document.querySelector(".last-file").remove();
+    document.querySelector(".date-files").remove();
+    document.querySelector(".calendar").remove();
+    getLocalFileElement("button").remove();
+    getLocalFileElement("form").remove();
+    getLocalFileElement("tittle").remove();
 
-    setTimeout(() => {
-      //меняем после анимации кнопки и label, которые ниже.
-      const mainDisplayName = document.querySelector(".main-tittle__display-name");
-      const mainDate = document.querySelector(".main-tittle__date");
-      const mainTime = document.querySelector(".main-tittle__time");
-      if (fileType != "load" && fileType != "live") {
-        const [datePart, timePart, displayName] = fileName.split("_");
-        const isoString = `${datePart}T${timePart.replace("-", ":")}`;
-        const date = new Date(isoString);
-        console.log("date", date);
+    //Удаляем классы hidden для нужного
+    document.querySelector(".main-tittle").classList.remove("_hidden");
+    getButton("container").classList.add("_active");
+    document.querySelector(".class-switch-buttons__container").classList.add("_active");
+    document.querySelector(".home").classList.remove("_hidden");
 
-        mainDisplayName.innerHTML = displayName.split(".")[0].replace(/-/g, " ");
-        mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
-        mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
-      } else if (fileType == "load") {
-        const day = getDateinfo("day");
-        const year = getDateinfo("year");
-        const time = getDateinfo("time");
-        mainDisplayName.innerHTML = `${getState("textStrings").event}`;
-        mainDate.innerHTML = `${day} ${year}`;
-        mainTime.innerHTML = `${time}`;
-      }
-      document.querySelector(".main-tittle").classList.remove("_hidden");
-      lastFileElement.remove();
-      calendarElement.remove();
-      dateFilesElement.remove();
-      if (fileType == "url" || fileType == "live") {
-        const mainElement = document.querySelector(".main");
-        const wrapperElement = document.querySelector(".wrapper");
-
-        mainElement.classList.remove("_hide");
-        wrapperElement.classList.add("_to-hide");
-        const hideEnd = setTimeout(() => {
-          wrapperElement.classList.remove("_to-hide");
-          wrapperElement.classList.remove("_hide");
-          clearTimeout(hideEnd);
-        }, 1000);
-      }
-    }, 500);
-
-    setTimeout(() => {
-      const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
-      getLocalFileElement("button").remove();
-      getLocalFileElement("form").remove();
-      getLocalFileElement("tittle").remove();
-      getButton("container").classList.add("_active");
-      classButtonsContainer.classList.add("_active");
-
-      const homeElement = document.querySelector(".home");
-      homeElement.classList.remove("_hidden");
-    }, 500);
+    tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
   } else {
-    setTimeout(() => {
-      const buttonsContainer = document.querySelector(".class-switch-buttons__container");
-      buttonsContainer.classList.remove("_no-event");
-
-      const buttonPilots = document.querySelector(".buttons__pilots");
-      const buttonLeaderboard = document.querySelector(".buttons__leaderboard");
-      const buttonRounds = document.querySelector(".buttons__rounds");
-      buttonPilots.classList.add("_ready");
-      buttonLeaderboard.classList.add("_ready");
-      buttonRounds.classList.add("_ready");
-    }, 450);
+    //Смена классов
+    document.querySelector(".class-switch-buttons__container").classList.remove("_no-event");
+    tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
   }
-  setTimeout(() => {
-    tabSwitch(getTab("main")[1].name, getTab("main"));
-  }, 550);
 }
+////////////////////////////////////////////////////////////
 
 export function classSwitch(e) {
   const curentButton = e.target;
@@ -186,7 +171,7 @@ export function classSwitch(e) {
   curentButton.classList.add("_active", "_no-event");
 
   tabSwitch("closeAll", getTab("main"));
-  currentClass = raceClassNum;
+  setState("currentClass", raceClassNum);
 
   setTimeout(() => {
     const pilotsTab = document.querySelector(".pilots");
@@ -685,9 +670,7 @@ export function pilotsVsGraphChoosing(name1, name2, classForSpan) {
   const laps = document.querySelectorAll(".pilots-vs__lap");
   const vsSlider = document.querySelector(".pilots-vs__slider");
 
-  const heats = [getHeat(name1), getHeat(name2)];
-
-  const lapsDatas = [getLapsByName(name1, heats[0], false), getLapsByName(name2, heats[1], false)];
+  const lapsDatas = [getLapsByName(name1, false), getLapsByName(name2, false)];
 
   const stat = {
     roundCount: document.querySelector(".pilots-vs__round-count-value"),
@@ -900,9 +883,34 @@ export async function moveMonth(start, stop) {
   prevButton.classList.remove("_no-event");
   nextButton.classList.remove("_no-event");
   const present = new Date();
-  console.log(getState("currentMonth").getMonth() - present.getMonth() < 0);
 
   if (getState("currentMonth").getMonth() - present.getMonth() >= 0) {
     nextButton.classList.add("_disabled");
+  }
+}
+
+export function setTittle(tittleType, filename, eventName, timestamp) {
+  const mainDisplayName = document.querySelector(".main-tittle__display-name");
+  const mainDate = document.querySelector(".main-tittle__date");
+  const mainTime = document.querySelector(".main-tittle__time");
+
+  if (tittleType == "live") {
+    mainDisplayName.innerHTML = eventName; //Добавялем Имя Ивента
+    mainDate.innerHTML = getMinutesSinceUpload(timestamp); //Считаем, сколько прошло времени с обновления
+    mainTime.remove(); //Удаляем лишнюю строчку заголовка
+  } else if (tittleType == "event") {
+    const [datePart, timePart, displayName] = filename.split("_");
+    const isoString = `${datePart}T${timePart.replace("-", ":")}`;
+    const date = new Date(isoString);
+    mainDisplayName.innerHTML = displayName.split(".")[0].replace(/-/g, " ");
+    mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
+    mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
+  } else if (tittleType == "local") {
+    const day = getDateinfo("day");
+    const year = getDateinfo("year");
+    const time = getDateinfo("time");
+    mainDate.innerHTML = `${day} ${year}`;
+    mainTime.innerHTML = `${time}`;
+    mainDisplayName.remove();
   }
 }

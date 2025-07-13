@@ -416,7 +416,7 @@ export function getPilotsStats() {
   return pilots;
 }
 
-export function getTabsRounds() {
+export function getHeatTabsRounds() {
   const heatObj = getRoundsByHeats();
   const tabsRounds = [];
 
@@ -512,19 +512,6 @@ export function getDateinfo(dateOrTime) {
     if (getState("CONSOLE_DEBUG")) console.log("Ошибка при формировании даты", error);
   }
 }
-
-// export function getHeat(name) {
-//   //Надо проверить, нужна ли она - мы больше не ищем Heatы
-//   const allPilots = getPilotsStats();
-//   let heat;
-//   allPilots.forEach((pilot) => {
-//     //Ищем Heat по имени
-//     if (pilot.name == name) {
-//       heat = pilot.heat;
-//     }
-//   });
-//   return heat;
-// }
 
 export function getDayFiles(date) {
   const dayButtons = document.querySelectorAll(".calendar__day");

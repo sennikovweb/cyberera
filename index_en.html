@@ -1,134 +1,122 @@
-<!doctype html>
-<html lang="ru">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-	 <link rel="apple-touch-icon" sizes="180x180" href="/favicon16.ico">
-	 <link rel="icon" type="image/png" sizes="32x32" href="/favicon16.ico">
-	 <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.ico">
- 
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon16.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon16.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.ico" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RotorHazard Results Viewer</title>
   </head>
-<body>
-	<div class="wrapper">
-		<div class="main _hide">
-			<div class="main-tittle _hidden">
-				<div class="main-tittle__container _container">
-					<h2 class="main-tittle__display-name"></h2>
-					<div class="main-tittle__date"></div>
-					<div class="main-tittle__time"></div>
-				</div>
-			</div>
-			<div class="last-file">
-				<div class="last-file__container _container">
-					<h2 class="last-file__tittle">Last load</h2>
+  <body>
+    <div class="wrapper _hide">
+      <div class="main _hide">
+        <div class="main-tittle _hidden">
+          <div class="main-tittle__container _container">
+            <h2 class="main-tittle__display-name"></h2>
+            <div class="main-tittle__date"></div>
+            <div class="main-tittle__time"></div>
+          </div>
+        </div>
+        <div class="last-file">
+          <div class="last-file__container _container">
+            <h2 class="last-file__tittle">Last load</h2>
 
-					<div class="file__item last-file__item _no-files pseudo-button">
-						<span class="_no-files-span"></span>
-						<div class="file__file-name">
-							<div class="file__file-name-tittle">Event:</div>
-							<div class="last-file__file-name-value file__file-name-value"></div>
-						</div>
-						<div class="file__date">
-							<div class="file__date-tittle">Date:</div>
-							<div class="last-file__date-value file__date-value"></div>
-						</div>
-						<div class="file__time">
-							<div class="file__time-tittle">Time:</div>
-							<div class="last-file__time-value file__time-value"></div>
-						</div>
-					</div>
-				</div>
-			</div>
+            <div class="file__item last-file__item _no-files pseudo-button">
+              <span class="_no-files-span"></span>
+              <div class="file__file-name">
+                <div class="file__file-name-tittle">Event:</div>
+                <div class="last-file__file-name-value file__file-name-value"></div>
+              </div>
+              <div class="file__date">
+                <div class="file__date-tittle">Date:</div>
+                <div class="last-file__date-value file__date-value"></div>
+              </div>
+              <div class="file__time">
+                <div class="file__time-tittle">Time:</div>
+                <div class="last-file__time-value file__time-value"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-			<div class="calendar">
-				<div class="calendar__container">
-					<div class="calendar__header _no-files">
-						<button class="calendar__prev-month"><span></span></button>
-						<h2 class="calendar__current-month"></h2>
-						<button class="calendar__next-month"><span></span></button>
-					</div>
-					<div class="calendar__weekdays">
-						<div>Mon</div>
-						<div>Tue</div>
-						<div>Wed</div>
-						<div>Thu</div>
-						<div>Fri</div>
-						<div>Sat</div>
-						<div>Sun</div>
-					</div>
-					<div class="calendar__days _no-files"></div>
-				</div>
-			</div>
+        <div class="calendar">
+          <div class="calendar__container">
+            <div class="calendar__header _no-files">
+              <button class="calendar__prev-month"><span></span></button>
+              <h2 class="calendar__current-month"></h2>
+              <button class="calendar__next-month"><span></span></button>
+            </div>
+            <div class="calendar__weekdays">
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+              <div>Sun</div>
+            </div>
+            <div class="calendar__days _no-files"></div>
+          </div>
+        </div>
 
-			<div class="date-files">
-				<div class="date-files__container _container">
-					<div class="date-files__items _hidden">
+        <div class="date-files">
+          <div class="date-files__container _container">
+            <div class="date-files__items _hidden"></div>
+          </div>
+        </div>
+        <div class="local-file__tittle">
+          <p>or</p>
+          <p>choose your ...Results.JSON</p>
+        </div>
+        <form class="local-file__form">
+          <div class="local-file__container _container">
+            <input class="local-file__file" type="file" id="local-file" />
+            <label class="local-file__label" for="local-file">
+              <span>Choose File</span>
+            </label>
+          </div>
+          <button class="local-file__button _button">Load</button>
+        </form>
+        <div class="class-switch-buttons">
+          <div class="class-switch-buttons__container _container _buttons-wrapper"></div>
+        </div>
+        <div class="buttons">
+          <div class="buttons__container _container _buttons-wrapper">
+            <button class="buttons__pilots _button">Pilots</button>
+            <button class="buttons__leaderboard _button">Leaderboard</button>
+            <button class="buttons__rounds _button">Rounds</button>
+          </div>
+        </div>
+        <div class="tabs-wrapper"></div>
 
-					</div>
+        <form class="pilots-vs-form" id="pilots-vs-form" action="#" method="GET"></form>
 
-				</div>
-			</div>
-			<div class="local-file__tittle">
-				<p>or</p>
-				<p>choose your ...Results.JSON</p>
-			</div>
-			<form class="local-file__form">
-				<div class="local-file__container _container">
-					<input class="local-file__file" type="file" id="local-file">
-					<label class="local-file__label" for="local-file">
-						<span>Choose File</span>
-					</label>
-				</div>
-				<button class="local-file__button _button">Load</button>
-			</form>
-			<div class="class-switch-buttons">
-				<div class="class-switch-buttons__container _container _buttons-wrapper"></div>
+        <div class="language">
+          <a href="./index.html" class="language__RU">
+            <img src="/icons/en.png" alt="RU" />
+          </a>
+        </div>
 
-			</div>
-			<div class="buttons">
-				<div class="buttons__container _container _buttons-wrapper">
-					<button class="buttons__pilots _button">Pilots</button>
-					<button class="buttons__leaderboard _button">Leaderboard</button>
-					<button class="buttons__rounds _button">Rounds</button>
-				</div>
-			</div>
-			<div class="tabs-wrapper">
+        <div class="home _hidden">
+          <a href="./index_en.html">
+            <img src="/icons/home.svg" alt="home" />
+          </a>
+        </div>
 
-			</div>
-
-
-
-
-			<form class="pilots-vs-form" id="pilots-vs-form" action="#" method="GET">
-			</form>
-
-			<div class="language">
-				<a href="./index.html" class="language__RU">
-					<img src="/icons/en.png" alt="RU">
-				</a>
-			</div>
-
-			<div class="home _hidden">
-				<a href="./index_en.html">
-					<img src="/icons/home.svg" alt="home">
-				</a>
-			</div>
-
-			<footer class="author">
-				<div class="author__container _container">
-					<div class="author__share _hide">
-						<p>Поделиться</p>
-						<img src="/icons/share.svg" alt="share">
-						<p class="author__share-url"></p>
-					</div>
-					<a href="http://t.me/sharikov_stepan" target="_blank" class="author__text">by BeeHolder</a>
-				</div>
-
-			</footer>
-		</div>
-	</div>
-	<script type="module" src="/src/main.js"></script>
-</body>
-
+        <footer class="author">
+          <div class="author__container _container">
+            <div class="author__share _hide">
+              <p>Поделиться</p>
+              <img src="/icons/share.svg" alt="share" />
+              <p class="author__share-url"></p>
+            </div>
+            <a href="http://t.me/sharikov_stepan" target="_blank" class="author__text">by BeeHolder</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

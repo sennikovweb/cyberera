@@ -1,3 +1,5 @@
+import { getState } from "./sharedStates";
+
 export function timeSumer(previouseDate, previousLapTime) {
   //посчитать время по дате и время круга;
 
@@ -179,4 +181,47 @@ export function getNumFromText(text) {
     }
   });
   return num;
+}
+
+export function getMinutesSinceUpload(uploadTimestamp) {
+  if (!uploadTimestamp || typeof uploadTimestamp !== "number") {
+    return "Некорректный timestamp";
+  }
+
+  const now = Date.now();
+
+  // Проверка на "timestamp из будущего"
+  if (uploadTimestamp > now) {
+    return "Timestamp не может быть из будущего";
+  }
+
+  const diffMs = now - uploadTimestamp;
+  const diffMinutes = Math.floor(diffMs / 60000); // 60000 мс = 1 минута
+
+  // Возвращаем текст с правильным склонением
+  if (diffMinutes === 0) {
+    const diffSeconds = Math.floor(diffMs / 1000);
+    return `${getState("textStrings").uploaded} ${diffSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
+  }
+
+  const lastDigit = diffMinutes % 10;
+  const lastTwoDigits = diffMinutes % 100;
+
+  let minuteWord = getState("textStrings").minute1;
+  if (lastTwoDigits < 11 || lastTwoDigits > 14) {
+    if (lastDigit === 1) minuteWord = getState("textStrings").minute2;
+    if (lastDigit >= 2 && lastDigit <= 4) minuteWord = getState("textStrings").minute3;
+  }
+
+  return `${getState("textStrings").uploaded}: ${diffMinutes} ${minuteWord} ${getState("textStrings").ago}`;
+}
+
+export function setShareUrl(fileName) {
+  const eventUrl = new URL(window.location.href);
+  eventUrl.searchParams.set("event", `${fileName.slice(0, -5)}`);
+
+  history.pushState({}, "", eventUrl);
+
+  const shareUrlElement = document.querySelector(".author__share-url");
+  shareUrlElement.textContent = eventUrl.href;
 }

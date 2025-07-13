@@ -198,7 +198,8 @@ export function writePilotsHTML() {
 
       // if(getState('CONSOLE_DEBUG'))console.log(`consecutives от ${ pilot.name } `, consecutivesData);
 
-      item.bestConsecutivesText.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").pilotsTab.bestConsecutive}`;
+      item.bestConsecutivesText.innerHTML =
+        getState("language") == "ru" ? `${getState("consecutivesCount")} ${getState("textStrings").pilotsTab.bestConsecutive}` : `${getState("textStrings").pilotsTab.bestConsecutive}`;
       try {
         item.bestConsecutivesMainTime.innerHTML = consecutivesData[0].lapTime;
       } catch (error) {
@@ -391,7 +392,8 @@ export function writeLeaderboardHTML() {
   leaderboard.container.append(leaderboard.buttons, leaderboard.items);
   leaderboard.buttons.append(leaderboard.lapBtn, leaderboard.consecutiveBtn, leaderboard.countBtn, leaderboard.averageBtn);
   leaderboard.lapBtn.innerHTML = getState("textStrings").leaderboardTab.lap;
-  leaderboard.consecutiveBtn.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").leaderboardTab.consecutive}`;
+  leaderboard.consecutiveBtn.innerHTML =
+    getState("language") == "ru" ? `${getState("consecutivesCount")} ${getState("textStrings").pilotsTab.bestConsecutive}` : `${getState("textStrings").pilotsTab.bestConsecutive}`;
   leaderboard.countBtn.innerHTML = getState("textStrings").leaderboardTab.totalLaps;
   leaderboard.averageBtn.innerHTML = getState("textStrings").leaderboardTab.average;
   leaderboard.items.append(lapItem.lap, consecutiveItem.consecutive, countItem.count, averageItem.average);
@@ -847,14 +849,16 @@ export function writeRound(roundRound, roundHeat) {
   round.tittleRound.innerHTML = roundInfo[0].round;
 
   const maxLaps = roundInfo[0].maxLaps;
-
+  //   const maxLaps = 10;
 
   statistic.fullRoundTittle.innerHTML = `${getState("textStrings").roundsTab.roundStart} - ${roundInfo[0].roundStart}`;
   statistic.singleLapsTittle.innerHTML = getState("textStrings").roundsTab.laps;
 
   view.lapsArea.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
   view.pilots.style.gridTemplateColumns = `repeat(${maxLaps},1fr) 2px`;
-  if (maxLaps > 22) {
+
+  const screenMaxLaps = window.screen.width < 510 ? 9 : window.screen.width < 767 ? 15 : 22; //на каких экранах сколько кругов без скролла
+  if (maxLaps > screenMaxLaps) {
     view.graphArea.classList.add("_many-laps");
     view.lapsArea.classList.add("_many-laps");
   }
@@ -1635,7 +1639,8 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
   let bestIds = [];
 
   pilotsVsStatistic.bestLapTittle.innerHTML = getState("textStrings").vsTab.bestLap;
-  pilotsVsStatistic.bestConsecutiveTittle.innerHTML = `${getState("consecutivesCount")} ${getState("textStrings").vsTab.bestConsecutive}`;
+  pilotsVsStatistic.bestConsecutiveTittle.innerHTML =
+    getState("language") == "ru" ? `${getState("consecutivesCount")} ${getState("textStrings").pilotsTab.bestConsecutive}` : `${getState("textStrings").pilotsTab.bestConsecutive}`;
   pilotsVsStatistic.averageTittle.innerHTML = getState("textStrings").vsTab.average;
   pilotsVsStatistic.totalLapsTittle.innerHTML = getState("textStrings").vsTab.totalLaps;
   pilotsVsStatistic.startsTittle.innerHTML = getState("textStrings").vsTab.starts;
@@ -1669,7 +1674,6 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
 
   pilotsVsArr.forEach((pilot, index) => {
     const pilotFloatTimes = {};
-    pilotsHeats.push(heat);
 
     const laps = getLapsByName(pilot, true);
     if (getState("CONSOLE_DEBUG")) console.log("PilotsVSInfoLAPS", laps);

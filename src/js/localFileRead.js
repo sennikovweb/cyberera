@@ -1,7 +1,7 @@
 import { getState, setState, getLocalFileElement } from "./sharedStates";
 import { getAnimationDurationTime } from "./utils";
 import { makeRaceClassButtons } from "./htmlWriters";
-import { startFileView } from "./uiChange";
+import { setTittle, startFileView } from "./uiChange";
 
 export async function addLocalFile() {
   console.log('getLocalFileElement("input")', getLocalFileElement("input"));
@@ -80,11 +80,16 @@ export async function startLocalFile(e) {
     if (getState("CONSOLE_DEBUG")) console.log(notParsedJson);
     setState("mainObj", parseLocalFile(notParsedJson)); // Здесь парсим эту переменную
     if (getState("parsedOK")) {
-      //Проверяем, норм ли спарсилось, и если да, убираем форму ввода и показываем дальнейшие кнопки
+      //Проверяем, норм ли спарсилось
+      document.querySelector(".last-file").classList.add("_hidden");
+      document.querySelector(".date-files").classList.add("_hidden");
+      document.querySelector(".calendar").classList.add("_hidden");
+
+      getLocalFileElement("tittle").classList.add("_hidden");
+
       makeRaceClassButtons();
-      startFileView("load");
-		console.log('MAIN',getState('mainObj'));
-		
+      startFileView("local");
+      setTittle("local");
     } else {
       //Если не спарсилось, рисуем ошибку
       getLocalFileElement("button").innerHTML = getState("textStrings").error;

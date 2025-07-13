@@ -8,11 +8,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+ImagesPreview
 dist
 dist-ssr
 *.local
 src/js/script-old.js
-
+src/js/old-full-script.js
 
 # Editor directories and files
 .vscode/*

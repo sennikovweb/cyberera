@@ -475,7 +475,7 @@ body {
 		height: 100%;
 		top: 0;
 		left: 0;
-		transition: all 1s ease;
+		transition: all 0.7s ease-in;
 		opacity: 0;
 	}
 
@@ -499,7 +499,7 @@ body {
 
 	}
 
-	&._to-hide {
+	&._loading-hide {
 		&::before {
 			opacity: 0;
 		}
@@ -689,6 +689,9 @@ body {
 			background-color: rgba(255, 0, 0, 0.498);
 		}
 
+		&._uploading-file._hidden {
+			transition: all .3s ease 0.3s;
+		}
 
 		&._active {
 			border: 1px solid $color-akcent2;
@@ -697,6 +700,7 @@ body {
 		}
 
 		&._hidden {
+			transition: opacity 0.3s linear;
 			opacity: 0;
 		}
 
@@ -1062,6 +1066,7 @@ body {
 	transition: all 0.3s ease;
 
 	&._hidden {
+		position: absolute;
 		transform: translate(0, -120%);
 	}
 
@@ -1792,8 +1797,10 @@ body {
 		font-size: 22px;
 
 		@media(max-width:510px) {
-			font-size: 18px;
+			font-size: 16px;
 			font-weight: 400;
+			// margin:0px 0px 0px 10px;
+			
 			text-align: center;
 		}
 	}
@@ -2797,6 +2804,14 @@ body {
 		}
 	}
 
+	.leaderboard__consecutive-button {
+		@media(max-width:767px) {
+			font-size: 20px;
+		}
+		@media(max-width:510px) {
+			font-size: 16px;
+		}
+	}
 
 	.leaderboard__average-button {
 		font-size: 19px;

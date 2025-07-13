@@ -1,6 +1,7 @@
 import { getState, setState } from "./sharedStates";
 import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
-import { startFileView } from "./uiChange";
+import { startFileView, setTittle } from "./uiChange";
+import { setShareUrl } from "./utils";
 
 export async function urlUpload(type) {
   try {
@@ -8,26 +9,31 @@ export async function urlUpload(type) {
     console.log("type", type);
 
     if (type == "live") {
-      await getLiveData(getState("isLive"));
+      const fullLiveData = await getLiveData(getState("isLive"));
       makeRaceClassButtons();
+
       startFileView("live", " ");
 
+      setTittle("live", "", fullLiveData.eventName, fullLiveData.date);
       eventUrl.searchParams.set(type, `${getState("isLive")}`);
     } else if (type == "event") {
       await getEventData(getState("isEvent"));
       makeRaceClassButtons();
-      startFileView("url", getState("isEvent"));
-      console.log("", getState("mainObj"));
 
+      startFileView("event", getState("isEvent"));
+
+      setTittle("event", getState("isEvent"));
       eventUrl.searchParams.set(type, `${getState("isEvent")}`);
     }
 
     const shareUrlElement = document.querySelector(".author__share-url");
     shareUrlElement.textContent = eventUrl.href;
-    const languageElement = getState("language") == "ru" ? document.querySelector(`.language__EN`) : getState("language") == "ru" && document.querySelector(`.language__RU`);
+    const languageElement = getState("language") == "ru" ? document.querySelector(`.language__EN`) : getState("language") == "en" && document.querySelector(`.language__RU`);
     const newLanguageChangeLink = `${languageElement.getAttribute("href")}?${type}=${eventUrl.searchParams.get(`${type}`)}`;
     languageElement.setAttribute("href", `${newLanguageChangeLink}`);
   } catch (error) {
+    console.error("error", error);
+
     const wrapperElement = document.querySelector(".wrapper");
     wrapperElement.classList.add("_error");
   }
@@ -40,6 +46,7 @@ export async function getLiveData(uuid) {
   const dataJson = await data.json();
 
   setState("mainObj", dataJson.data.data.results);
+  return dataJson.data.data;
 }
 
 export async function getEventData(event) {
@@ -83,7 +90,6 @@ export async function loadFilesJson() {
       obj.hours = date.getHours();
       obj.minutes = date.getMinutes();
       setState("filesJson", [...getState("filesJson"), obj]);
-      // filesJson.push(obj);
     });
 
     const spanLoadeingElement = document.querySelector("._no-files-span");
@@ -101,61 +107,15 @@ export async function loadFilesJson() {
       }
     });
 
-    const lastFileNameElement = document.querySelector(".last-file__file-name-value");
-    const lastFileDateElement = document.querySelector(".last-file__date-value");
-    const lastFileTimeElement = document.querySelector(".last-file__time-value");
-
     const lastFile = getState("filesJson")[getState("filesJson").length - 1];
-    lastFileNameElement.innerHTML = lastFile.displayName;
-    lastFileDateElement.innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
-    lastFileTimeElement.innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
+    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.displayName;
+    document.querySelector(".last-file__date-value").innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
+    document.querySelector(".last-file__time-value").innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
 
     calendarRender(true);
   } catch (error) {
     console.error("Не удалось загрузить файл:", error);
   }
-}
-
-export async function loadDateFile(fileName) {
-  const fileItemElement = document.querySelector(".flie-item_uploading");
-  const loadTimer = setTimeout(() => {
-    fileItemElement.classList.add("_loading");
-  }, 500);
-
-  try {
-    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
-
-    const data = await fetch(url);
-    if (!data.ok) throw new Error("Ошибка загрузки");
-    setState("mainObj", await data.json());
-
-    makeRaceClassButtons();
-
-    setTimeout(() => {
-      fileItemElement.classList.add("_hidden");
-      fileItemElement.addEventListener("transitionend", function (e) {
-        if (e.propertyName == "opacity") {
-          window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-          });
-          startFileView("date", fileName);
-
-          const eventUrl = new URL(window.location.href);
-          eventUrl.searchParams.set("event", `${fileName.slice(0, -5)}`);
-
-          history.pushState({}, "", eventUrl);
-
-          const shareUrlElement = document.querySelector(".author__share-url");
-          shareUrlElement.textContent = eventUrl.href;
-        }
-      });
-    }, 400);
-  } catch (error) {
-    fileItemElement.classList.remove("_loading");
-    fileItemElement.classList.add("_loading-error");
-  }
-  clearTimeout(loadTimer);
 }
 
 export async function loadLastFile() {
@@ -164,6 +124,13 @@ export async function loadLastFile() {
     lastFileButton.classList.add("_loading");
   }, 500);
 
+  document.querySelector(".last-file__tittle").classList.add("_hidden");
+  document.querySelector(".calendar").classList.add("_hidden");
+  document.querySelector(".local-file__tittle").classList.add("_hidden");
+  document.querySelector(".local-file__form").classList.add("_hidden");
+  document.querySelector(".date-files").classList.add("_hidden");
+  document.querySelector(".local-file__label").classList.add("_hidden");
+  document.querySelector(".language").classList.add("_hidden");
   try {
     //  const fileName = filesJson[filesJson.length - 1].fileName;
     //  const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
@@ -177,27 +144,43 @@ export async function loadLastFile() {
 
     setState("mainObj", await data.json());
     makeRaceClassButtons();
-    lastFileButton.classList.remove("_loading");
-    lastFileButton.classList.add("_move");
-
-    lastFileButton.addEventListener("transitionend", function (e) {
-      if (e.propertyName === "transform") {
-        startFileView("local", getState("filesJson")[getState("filesJson").length - 1].fileName);
-
-        const eventUrl = new URL(window.location.href);
-        eventUrl.searchParams.set("event", `${fileName.slice(0, -5)}`);
-
-        history.pushState({}, "", eventUrl);
-
-        const shareUrlElement = document.querySelector(".author__share-url");
-        shareUrlElement.textContent = eventUrl.href;
-      }
-    });
+    startFileView("last", getState("filesJson")[getState("filesJson").length - 1].fileName);
+    setTittle("event", getState("filesJson")[getState("filesJson").length - 1].fileName);
+    setShareUrl(getState("filesJson")[getState("filesJson").length - 1].fileName);
   } catch (error) {
     console.log("error", error);
 
     lastFileButton.classList.remove("_loading");
     lastFileButton.classList.add("_loading-error");
+  }
+  clearTimeout(loadTimer);
+}
+
+export async function loadDateFile(fileName) {
+  const fileItemElement = document.querySelector(".flie-item_uploading");
+  const loadTimer = setTimeout(() => {
+    fileItemElement.classList.add("_loading");
+  }, 500);
+
+  document.querySelector(".last-file__tittle").classList.add("_hidden");
+  document.querySelector(".calendar").classList.add("_hidden");
+  document.querySelector(".language").classList.add("_hidden");
+
+  try {
+    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
+
+    const data = await fetch(url);
+    if (!data.ok) throw new Error("Ошибка загрузки");
+    setState("mainObj", await data.json());
+
+    makeRaceClassButtons();
+
+    startFileView("date", fileName);
+    setTittle("event", fileName);
+    setShareUrl(fileName);
+  } catch (error) {
+    fileItemElement.classList.remove("_loading");
+    fileItemElement.classList.add("_loading-error");
   }
   clearTimeout(loadTimer);
 }

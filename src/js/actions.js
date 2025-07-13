@@ -2,9 +2,10 @@ import { getState, getTab, setTab, getButton, setState, getDuel, setDuel, getAkc
 import { writeInRoundHTML, writeAllLapsHTML, writePilotsVs } from "./htmlWriters";
 import { tabSwitch, tabHeightChange, spoilerOnOff, modalOnOff, lapNodeShow, allLapsGraphScale, pilotsVsGraphScale, allLapsGraphChoosing, pilotsVsGraphChoosing, setAkcentValues } from "./uiChange";
 import { spoilerButtonAnimation, inRoundShow, allLapsShow, pilotsVsShow } from "./animations";
-import {  getLapData,getTabsRounds} from "./getDatas";
+import { getLapData, getHeatTabsRounds } from "./getDatas";
 import { getNumFromText } from "./utils";
 import { goToRoundAction } from "./playRound";
+
 export function pilotTabAction(e) {
   //Это события вкладки Pilots
 
@@ -200,8 +201,6 @@ export function pilotTabAction(e) {
     const nameElement = parent.querySelector(".pilots__pilot-name");
     const name = nameElement.innerHTML;
 
-  
-
     let lapData; //выбраный круг
     let otherLapData; //круги в раунде выбранного
 
@@ -307,15 +306,6 @@ export function pilotTabAction(e) {
       }, 500);
     }
   }
-
-  // const pilotsVsInputs = document.querySelectorAll('.pilots-vs-form-input');
-  // const pilotsVsLabels = document.querySelectorAll('.pilots-vs-form-input__label');
-  // pilotsVsLabels.forEach(label => {
-  // 	const labelSpan = label.querySelector('span')
-  // 	labelSpan.addEventListener('click', function () {
-  // 		label.classList.toggle('_active')
-  // 	})
-  // })
 }
 
 export function fromInRoundToRoundAction(buttonPressed) {
@@ -410,7 +400,6 @@ export function leaderboardTabAction(e) {
     const name = nameElement.children[1].innerHTML;
     // if(getState('CONSOLE_DEBUG'))console.log(name);
 
-
     let lapData; //выбраный круг
     let otherLapData; //круги в раунде выбранного
 
@@ -478,7 +467,7 @@ export function leaderboardTabAction(e) {
 export function roundsTabAction(e) {
   const itemsElement = document.querySelector(".rounds__items");
 
-  const heatTabs = getTabsRounds();
+  const heatTabs = getHeatTabsRounds();
 
   heatTabs.forEach((heat, index) => {
     if (e.target.closest(`.rounds__${heat.name} `)) {
