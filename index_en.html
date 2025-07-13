@@ -1,36 +1,14 @@
-<!-- сообщаем браузеру, как обрабатывать страницу -->
-<!DOCTYPE html>
-
-<!-- Оболочка страницы, язык содержимого -->
-<html lang="en">
-
-<!-- Заголовок страницы, контейнер для других важных данных(не отображается) -->
-
-<head>
-
-	<!-- Заголовок в браузере -->
-	<title>RotorHazard Results Viewer</title>
-
-	<!-- Подключаем CSS -->
-	<link rel="stylesheet" href="css/style.css" />
-
-
-	<!-- Кодировка страницы -->
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
-
-
-	<link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon16.ico">
-	<link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon16.ico">
-	<link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon16.ico">
-	<!-- <link rel="manifest" href="/site.webmanifest"> -->
-
-
-
-</head>
-
-<!-- Отображаемое тело страницы -->
-
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+	 <link rel="apple-touch-icon" sizes="180x180" href="/favicon16.ico">
+	 <link rel="icon" type="image/png" sizes="32x32" href="/favicon16.ico">
+	 <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.ico">
+ 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RotorHazard Results Viewer</title>
+  </head>
 <body>
 	<div class="wrapper">
 		<div class="main _hide">
@@ -91,18 +69,18 @@
 
 				</div>
 			</div>
-			<div class="main-subtittle">
+			<div class="local-file__tittle">
 				<p>or</p>
 				<p>choose your ...Results.JSON</p>
 			</div>
-			<form class="main-form">
-				<div class="main-form__container _container">
-					<input class="main-form__file" type="file" id="main-file">
-					<label class="main-form__label" for="main-file">
+			<form class="local-file__form">
+				<div class="local-file__container _container">
+					<input class="local-file__file" type="file" id="local-file">
+					<label class="local-file__label" for="local-file">
 						<span>Choose File</span>
 					</label>
 				</div>
-				<button class="main-form__button _button">Load</button>
+				<button class="local-file__button _button">Load</button>
 			</form>
 			<div class="class-switch-buttons">
 				<div class="class-switch-buttons__container _container _buttons-wrapper"></div>
@@ -127,13 +105,13 @@
 
 			<div class="language">
 				<a href="./index.html" class="language__RU">
-					<img src="./assets/img/ru.png" alt="RU">
+					<img src="/icons/en.png" alt="RU">
 				</a>
 			</div>
 
 			<div class="home _hidden">
 				<a href="./index_en.html">
-					<img src="assets/img/home.svg" alt="">
+					<img src="/icons/home.svg" alt="home">
 				</a>
 			</div>
 
@@ -141,7 +119,7 @@
 				<div class="author__container _container">
 					<div class="author__share _hide">
 						<p>Поделиться</p>
-						<img src="/assets/img/share.svg" alt="">
+						<img src="/icons/share.svg" alt="share">
 						<p class="author__share-url"></p>
 					</div>
 					<a href="http://t.me/sharikov_stepan" target="_blank" class="author__text">by BeeHolder</a>
@@ -150,7 +128,7 @@
 			</footer>
 		</div>
 	</div>
-	<script src="js/script.js"></script>
+	<script type="module" src="/src/main.js"></script>
 </body>
 
 </html>
