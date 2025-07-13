@@ -63,9 +63,9 @@ export async function loadFilesJson() {
   let responseDataFiles;
 
   try {
-     const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`
+    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`;
 
-   //  const url = `files.json`; //Для локальной проверки
+    //  const url = `files.json`; //Для локальной проверки
 
     const response = await fetch(url);
 
@@ -132,11 +132,11 @@ export async function loadLastFile() {
   document.querySelector(".local-file__label").classList.add("_hidden");
   document.querySelector(".language").classList.add("_hidden");
   try {
-     const fileName = filesJson[filesJson.length - 1].fileName;
-     const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+    const fileName = getState("filesJson")[filesJson.length - 1].fileName;
+    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
 
-   //  const fileName = `2025-06-24_19-31_Whoopclub.json`; //Для локальной проверки
-   //  const url = fileName; //Для локальной проверки
+    //  const fileName = `2025-06-24_19-31_Whoopclub.json`; //Для локальной проверки
+    //  const url = fileName; //Для локальной проверки
 
     const data = await fetch(url);
 
@@ -157,7 +157,7 @@ export async function loadLastFile() {
 }
 
 export async function loadDateFile(fileName) {
-  const fileItemElement = document.querySelector(".flie-item_uploading");
+  const fileItemElement = document.querySelector("._uploading-file");
   const loadTimer = setTimeout(() => {
     fileItemElement.classList.add("_loading");
   }, 500);
