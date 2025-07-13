@@ -132,7 +132,7 @@ export async function loadLastFile() {
   document.querySelector(".local-file__label").classList.add("_hidden");
   document.querySelector(".language").classList.add("_hidden");
   try {
-    const fileName = getState("filesJson")[filesJson.length - 1].fileName;
+    const fileName = getState("filesJson")[getState("filesJson").length - 1].fileName;
     const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
 
     //  const fileName = `2025-06-24_19-31_Whoopclub.json`; //Для локальной проверки
