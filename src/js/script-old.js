@@ -17,7 +17,12 @@ if (language == 'ru') {
 		chooseAnother: 'Выберите другой файл',
 		choosed: 'Файл выбран',
 		load: 'Загрузить',
-
+		uploaded:'Обновлено',
+		minute3:'минуты',
+		minute2:'минуту',
+		minute1:'минут',
+		seconds:'секунд',
+		ago:'назад',
 		pilotsTab: {
 			bestLap: 'Лучший круг',
 			round: 'Раунд',
@@ -120,6 +125,12 @@ if (language == 'ru') {
 		chooseAnother: 'Choose another file',
 		choosed: 'File choosed',
 		load: 'Load',
+		uploaded:'Updated',
+		minute3:'minutes',
+		minute2:'minutes',
+		minute1:'minutes',
+		seconds:'seconds',
+		ago:'ago',
 
 		pilotsTab: {
 			bestLap: 'Best lap',
@@ -231,10 +242,46 @@ let filesJson = [];
 //Проверка, есть ли ивент в url
 const isEvent = new URLSearchParams(window.location.search).get('event')
 
-if (isEvent) {
+const isLive = new URLSearchParams(window.location.search).get('uuid')
+
+
+
+async function getLiveData(uuid) {
+		const data = await fetch(`https://rh-results-viewer.vercel.app/api/getData?uuid=${uuid}`)
+		
+		if (!data.ok) throw new Error('Ошибка загрузки')
+		const dataJson = await data.json();
+	console.log('dataJsondataJson',dataJson);
+	
+		mainObj = dataJson.data.data.results
+		return dataJson.data.data
+}
+
+async function getEventData(event) {
+		const fileName = `${event}.json`
+		// const url = fileName
+		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
+		const data = await fetch(url)
+		if (!data.ok) throw new Error('Ошибка загрузки')
+		mainObj = await data.json();
+		
+		console.log('EVENT',mainObj);
+		
+}
+
+
+
+if (isLive) {
 	const wrapperElement = document.querySelector('.wrapper')
 	wrapperElement.classList.add('_hide')
-	urlEventUpload();
+	
+	urlUpload('live');
+	
+	
+}else if(isEvent){
+	const wrapperElement = document.querySelector('.wrapper')
+	wrapperElement.classList.add('_hide')
+	urlUpload('event');
 	console.log('urlEvent');
 
 } else {
@@ -243,52 +290,96 @@ if (isEvent) {
 	console.log('no event on url');
 }
 
+function getMinutesSinceUpload(uploadTimestamp) {
+	if (!uploadTimestamp || typeof uploadTimestamp !== 'number') {
+		 return 'Некорректный timestamp';
+	}
+	
+	const now = Date.now();
+	
+	// Проверка на "timestamp из будущего"
+	if (uploadTimestamp > now) {
+		 return 'Timestamp не может быть из будущего';
+	}
+	
+	const diffMs = now - uploadTimestamp;
+	const diffMinutes = Math.floor(diffMs / 60000); // 60000 мс = 1 минута
+	
+	// Возвращаем текст с правильным склонением
+	if (diffMinutes === 0) {
+		 const diffSeconds = Math.floor(diffMs / 1000);
+		 return `${textStrings.uploaded} ${diffSeconds} ${textStrings.seconds} ${textStrings.ago}`;
+	}
+	
+	const lastDigit = diffMinutes % 10;
+	const lastTwoDigits = diffMinutes % 100;
+	
+	let minuteWord = textStrings.minute1;
+	if (lastTwoDigits < 11 || lastTwoDigits > 14) {
+		 if (lastDigit === 1) minuteWord = textStrings.minute2;
+		 if (lastDigit >= 2 && lastDigit <= 4) minuteWord = textStrings.minute3;
+	}
+	
+	return `${textStrings.uploaded}: ${diffMinutes} ${minuteWord} ${textStrings.ago}`;
+}
 
 // Загрузка ивента по имени из url
-async function urlEventUpload() {
+async function urlUpload(type) {
 	try {
-
-		const fileName = `${isEvent}.json`
-
-		const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`
-		// const url = fileName
-
-		const data = await fetch(url);
-
-
-
-		if (!data.ok) throw new Error('Ошибка загрузки');
-
-		mainObj = await data.json();
-
-		makeRaceClassButtons();
-
-
-		console.log('startViewwww');
-
-		startFileView('url', fileName);
-
 		const eventUrl = new URL(window.location.href)
-		eventUrl.searchParams.set('event', `${fileName.slice(0, -5)}`)
-
 		const shareUrlElement = document.querySelector('.author__share-url')
 
-		shareUrlElement.textContent = eventUrl.href;
-		if (language == 'ru') {
-			const languageElement = document.querySelector('.language__EN')
-			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
-			console.log('newLanguageChangeLinkRUU', newLanguageChangeLink);
+		if (type=='live'){
+			const fullLive = await getLiveData(isLive)
+			makeRaceClassButtons();
+			startFileView('live', '123');
 
-			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			const mainDisplayName = document.querySelector('.main-tittle__display-name')
+			const mainDate = document.querySelector('.main-tittle__date')
+			const mainTime = document.querySelector('.main-tittle__time')
 
-		} else if (language == 'en') {
-			const languageElement = document.querySelector('.language__RU')
-			const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
-			console.log('newLanguageChangeLinkENNNN', newLanguageChangeLink);
+	
+			mainDisplayName.innerHTML = `${fullLive.eventName}`;
+			mainDate.innerHTML = getMinutesSinceUpload(fullLive.date)
+			mainTime.remove();
 
-			languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			eventUrl.searchParams.set('uuid', `${isLive}`)
+			shareUrlElement.textContent = eventUrl.href;
+			if (language == 'ru') {
+				const languageElement = document.querySelector('.language__EN')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?uuid=${eventUrl.searchParams.get('uuid')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+	
+			} else if (language == 'en') {
+				const languageElement = document.querySelector('.language__RU')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?uuid=${eventUrl.searchParams.get('uuid')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			}
 
+		}else if (type=='event'){			
+			await getEventData(isEvent)
+			makeRaceClassButtons();
+			startFileView('url', isEvent);
+
+			eventUrl.searchParams.set('event', `${isEvent}`)
+			shareUrlElement.textContent = eventUrl.href;
+			if (language == 'ru') {
+				const languageElement = document.querySelector('.language__EN')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+	
+			} else if (language == 'en') {
+				const languageElement = document.querySelector('.language__RU')
+				const newLanguageChangeLink = `${languageElement.getAttribute('href')}?event=${eventUrl.searchParams.get('event')}`
+				languageElement.setAttribute('href', `${newLanguageChangeLink}`)
+			}
 		}
+		
+		
+
+
+	
+		
 
 	} catch (error) {
 		const wrapperElement = document.querySelector('.wrapper')
@@ -932,13 +1023,18 @@ function makeRaceClassButtons() {
 			classSwitchButton.setAttribute('value', `${raceClass}`)
 			classSwitchButton.addEventListener('click', classSwitch)
 
-			if (!currentClassChoosed) {
-				currentClass = raceClass
-				classSwitchButton.classList.add('_active', '_no-event')
-				currentClassChoosed = true;
-			}
+			// if (!currentClassChoosed) {			//С таким учловием будет выбран 1 класс 
+			// 	currentClass = raceClass
+			// 	classSwitchButton.classList.add('_active', '_no-event')
+			// 	currentClassChoosed = true;
+			// }
 		}
 	}
+	const classSwitchButtons = document.querySelectorAll('.class-switch-buttons__button')
+			const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length-1]
+			lastClassButtonSwitch.classList.add('_active', '_no-event')
+
+			currentClass=lastClassButtonSwitch.getAttribute('value')
 
 }
 
@@ -1059,7 +1155,7 @@ function startFileView(fileType, fileName) {
 			const mainDisplayName = document.querySelector('.main-tittle__display-name')
 			const mainDate = document.querySelector('.main-tittle__date')
 			const mainTime = document.querySelector('.main-tittle__time')
-			if (fileType != 'load') {
+			if (fileType != 'load'&&fileType != 'live') {
 				const [datePart, timePart, displayName] = fileName.split('_');
 				const isoString = `${datePart}T${timePart.replace('-', ':')}`;
 				const date = new Date(isoString);
@@ -1080,7 +1176,7 @@ function startFileView(fileType, fileName) {
 			lastFileElement.remove();
 			calendarElement.remove();
 			dateFilesElement.remove();
-			if (fileType == 'url') {
+			if (fileType == 'url'||fileType == 'live') {
 				const mainElement = document.querySelector('.main')
 				const wrapperElement = document.querySelector('.wrapper')
 
@@ -1104,7 +1200,6 @@ function startFileView(fileType, fileName) {
 
 			const homeElement = document.querySelector('.home')
 			homeElement.classList.remove('_hidden')
-			console.log('hiddennn?');
 
 		}, 500);
 	} else {
@@ -1121,6 +1216,9 @@ function startFileView(fileType, fileName) {
 			buttonRounds.classList.add('_ready')
 		}, 450);
 	}
+	setTimeout(() => {
+		tabSwitch(tabsMain[1].name, tabsMain);
+	}, 550);
 }
 
 mainForm.form.addEventListener('submit', startButtonClick);			//событие нажатия на кнопку
@@ -4347,6 +4445,7 @@ function getLapsByName(name, noNeed, sorted) {
 				const laps = node.laps		// и ищем его круги
 
 				let lapCount;		//переменная чтобы считать круги
+				let holeShotStatus;			//Переменная, чтобы знать, был ли holeShot(Он может быть не только под index=0)
 				let previousLapTime;			//Переменная для хранения предыдущего времени круга
 				let previousLapTimeStart;			//переменная для хранения старта предущего круга
 
@@ -4354,15 +4453,17 @@ function getLapsByName(name, noNeed, sorted) {
 					const lapDataObj = {};
 					if (index == 0) {
 						lapCount = 0;			//Начинаем считать круги заново, как только индекс круга 0
-
 						const lapTimeSpread = [...lap.lap_time_formatted];
 						lapTimeSpread.splice(0, 2);
 						const lapFloat = parseFloat(lapTimeSpread.join(''));
-						previousLapTime = lapFloat.toFixed(3);			//здесь начинаем брать Hole Shot за время предыдущего круга
+						previousLapTime = lapFloat.toFixed(3);			//здесь начинаем брать Hole Shot за время предыдущего круга(спустя время не понимаю этот коментарий:) )
 						previousLapTimeStart = roundStartTimeFormated;
+						holeShotStatus = false;
 					}
-
-					if (lap.deleted == false && index > 0) {			// отсекаем  Hole Shot и удаленные круги;
+					if (index == 0 && lap.deleted != false){						
+						holeShotStatus = true;			//Если нулевой круг не удален, значит он был holeshot;
+					}
+					if (lap.deleted == false && index > 0 && !holeShotStatus) {			// отсекаем  Hole Shot и удаленные круги.
 						lapDataObj.round = currentRound;			//Название раунда, который строка в роторхазарде
 						lapDataObj.roundId = round.id;			//Id раунда
 						lapDataObj.heatId = round.heatId;
@@ -4408,8 +4509,10 @@ function getLapsByName(name, noNeed, sorted) {
 
 		allLapsFloat.sort((a, b) => a - b);			//Сортировка по лучшим кругам, значения Float
 
+console.log('FLOAT',allLapsFloat);
 
 		allLapsTime = fromFloatToString(allLapsFloat);			//превращаем Float в человечиские цифры в виде String
+console.log('allLapsTime',allLapsTime);
 
 
 
@@ -4771,7 +4874,11 @@ function lapTimeSumer(data = [], formfated) {			//посчитать неско�
 
 function fromFloatToString(array) {			//превращаем массив времени Float в массив человечиских цифр в виде String
 	const allLapsTime = array.map((lap) => {
-		if (lap < 60) {
+		if (lap < 60) {	
+			if(lap<10){
+				lap = `0:0${lap}`;
+				return lap
+			}
 			lap = `0:${lap}`;
 		} else if (lap >= 60 && lap < 120) {
 			lapWithoutMinute = lap - 60;

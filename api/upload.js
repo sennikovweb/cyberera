@@ -1,35 +1,96 @@
 export default async (req, res) => {
   if (req.method === 'POST') {
     try {
+     const userIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+      const rateLimitKey = `rate_limit:${userIP}`;
+
+      // Атомарно увеличиваем счетчик и получаем новое значение
+      const incrResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/incr/${encodeURIComponent(rateLimitKey)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+          }
+        }
+      );
+
+      if (!incrResponse.ok) {
+        throw new Error('Failed to increment rate limit counter');
+      }
+
+      const result = await incrResponse.json();
+      const currentCount = result.result;
+
+      // Если это первый запрос, устанавливаем TTL 60 секунд
+      if (currentCount === 1) {
+        await fetch(
+          `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(rateLimitKey)}/60`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+            }
+          }
+        );
+      }
+
+      // Проверяем лимит
+      if (currentCount > 10) {
+        res.status(429).json({
+          status: 'error',
+          message:'Too many requests. Limit is 10 requests per minute.',
+          error: 'Too many requests. Limit is 10 requests per minute.'
+        });
+        return;
+      }
+
+      
       const data = req.body;
       const uuid = data["event_uuid"];
-      console.log('data', data)
-      console.log('dataSting', JSON.stringify(data))
+		const date = Date.now()
+      // console.log('data', data)
+      // console.log('dataSting', JSON.stringify(data))
 
-      // Сохраняем данные в Upstash Redis через REST API
-      const redisResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/set/${uuid}`,
+     // ИСПРАВЛЕННАЯ ЧАСТЬ: сначала SET, затем EXPIRE отдельными запросами
+      // 1. Сохраняем данные
+      const setResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}`,
         {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data) // Тело запроса - ваши данные
+          }
         }
       );
 
-      if (!redisResponse.ok) {
-        const errorDetails = await redisResponse.text();
-        throw new Error(`Redis error: ${errorDetails}`);
+      if (!setResponse.ok) {
+        const errorDetails = await setResponse.text();
+        throw new Error(`Redis set error: ${errorDetails}`);
       }
 
-      // Формируем URL для доступа к данным
+      // 2. Устанавливаем TTL 14 дней (1209600 секунд)
+      const expireResponse = await fetch(
+        `${process.env.KV_REST_API_URL}/expire/${encodeURIComponent(uuid)}/1209600`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`
+          }
+        }
+      );
+
+      if (!expireResponse.ok) {
+        const errorDetails = await expireResponse.text();
+        throw new Error(`Redis expire error: ${errorDetails}`);
+      }
+
       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
 
       res.status(200).json({ 
-        success: true,
-        message: 'Данные успешно сохранены в Upstash Redis',
+        status: 'success',
+        message: 'Export successful',
         dataUrl: dataUrl,
         yourData: data
       });
@@ -37,13 +98,14 @@ export default async (req, res) => {
     } catch (error) {
       console.error('Error:', error);
       res.status(500).json({ 
-        success: false,
+        status: 'error',
+        message:'error.message',
         error: error.message 
       });
     }
   } else if (req.method === 'GET') {
     res.status(200).json({ 
-      success: true,
+      status: 'success',
       message: 'GET endpoint works' 
     });
   }

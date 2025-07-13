@@ -27,5 +27,7 @@ src/js/old-full-script.js
 *.sw?
 
 2025-06-24_19-31_Whoopclub.json
-files.json
 .prettierignore
+/node_modules/
+files.json
+
