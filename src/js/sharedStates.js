@@ -7,7 +7,7 @@ const states = {
   textStrings: {},
   parsedOK: false,
   isEvent: null,
-  isLive: null,
+  isUuid: null,
   filesJson: [],
   currentMonth: new Date(),
   graphTouchFlag: false,

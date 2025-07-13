@@ -8,14 +8,14 @@ export async function urlUpload(type) {
     const eventUrl = new URL(window.location.href);
     console.log("type", type);
 
-    if (type == "live") {
-      const fullLiveData = await getLiveData(getState("isLive"));
+    if (type == "uuid") {
+      const fullLiveData = await getLiveData(getState("isUuid"));
       makeRaceClassButtons();
 
-      startFileView("live", " ");
+      startFileView("uuid", " ");
 
-      setTittle("live", "", fullLiveData.eventName, fullLiveData.date);
-      eventUrl.searchParams.set('uuid', `${getState("isLive")}`);
+      setTittle("uuid", "", fullLiveData.eventName, fullLiveData.date);
+      eventUrl.searchParams.set(type, `${getState("isUuid")}`);
     } else if (type == "event") {
       await getEventData(getState("isEvent"));
       makeRaceClassButtons();
@@ -23,7 +23,7 @@ export async function urlUpload(type) {
       startFileView("event", getState("isEvent"));
 
       setTittle("event", getState("isEvent"));
-      eventUrl.searchParams.set('event', `${getState("isEvent")}`);
+      eventUrl.searchParams.set(type, `${getState("isEvent")}`);
     }
 
     const shareUrlElement = document.querySelector(".author__share-url");

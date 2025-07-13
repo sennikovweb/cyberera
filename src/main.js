@@ -24,11 +24,11 @@ setState("language", document.querySelector("html").getAttribute("lang"));
 
 setState("textStrings", getState("language") == "ru" ? RU_DICT : getState("language") == "en" && EN_DICT);
 
-setState("isLive", new URLSearchParams(window.location.search).get("uuid"));
+setState("isUuid", new URLSearchParams(window.location.search).get("uuid"));
 setState("isEvent", new URLSearchParams(window.location.search).get("event"));
 
-if (getState("isLive")) {
-  urlUpload("live");
+if (getState("isUuid")) {
+  urlUpload("uuid");
 } else if (getState("isEvent")) {
   urlUpload("event");
 } else {

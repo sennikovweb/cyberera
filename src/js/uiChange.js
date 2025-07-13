@@ -77,7 +77,7 @@ export async function startFileView(fileType) {
       }
     });
 
-    if (fileType == "event" || fileType == "live") {
+    if (fileType == "event" || fileType == "uuid") {
       const wrapperElement = document.querySelector(".wrapper");
       wrapperElement.classList.add("_loading-hide");
 
@@ -894,7 +894,7 @@ export function setTittle(tittleType, filename, eventName, timestamp) {
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
 
-  if (tittleType == "live") {
+  if (tittleType == "uuid") {
     mainDisplayName.innerHTML = eventName; //Добавялем Имя Ивента
     mainDate.innerHTML = getMinutesSinceUpload(timestamp); //Считаем, сколько прошло времени с обновления
     mainTime.remove(); //Удаляем лишнюю строчку заголовка
