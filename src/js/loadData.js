@@ -15,7 +15,7 @@ export async function urlUpload(type) {
       startFileView("live", " ");
 
       setTittle("live", "", fullLiveData.eventName, fullLiveData.date);
-      eventUrl.searchParams.set(type, `${getState("isLive")}`);
+      eventUrl.searchParams.set('uuid', `${getState("isLive")}`);
     } else if (type == "event") {
       await getEventData(getState("isEvent"));
       makeRaceClassButtons();
@@ -23,7 +23,7 @@ export async function urlUpload(type) {
       startFileView("event", getState("isEvent"));
 
       setTittle("event", getState("isEvent"));
-      eventUrl.searchParams.set(type, `${getState("isEvent")}`);
+      eventUrl.searchParams.set('event', `${getState("isEvent")}`);
     }
 
     const shareUrlElement = document.querySelector(".author__share-url");
