@@ -1,20 +1,71 @@
 import { getMinutesSinceUpload } from "./utils";
-import { getState } from "./sharedStates";
+import { getState, setState, getTab } from "./sharedStates";
 import { getLiveData } from "./loadData";
+import { newLiveDataHTML, makeRaceClassButtons } from "./htmlWriters";
+import { tabSwitch, startFileView } from "./uiChange";
 
-export function liveDataCounter() {
-  const mainDate = document.querySelector(".main-tittle__date");
+export function tittleCounter() {
   const timer1 = setInterval(() => {
-    mainDate.innerHTML = getMinutesSinceUpload(getState("liveTimestamp"));
+    document.querySelector(".main-tittle__date").innerHTML = getMinutesSinceUpload('minutes',getState("liveTimestamp"));
+	 document.querySelector(".main-tittle__time").innerHTML = getMinutesSinceUpload('seconds',getState("liveTimestamp"));
   }, 1000);
+}
 
-  const timer2 = setInterval(async () => {
-    const newData = await getLiveData(getState("isUuid"));
-    console.log("Сравнение", getState("liveTimestamp"), newData.date);
-    console.log("TRUE?", getState("liveTimestamp") == newData.date);
-	 if(getState("liveTimestamp") != newData.date){
-		const newDataButton =document.createElement('button')
-		newDataButton.classList.add('_button')
-	 }
-  }, 10000);
+export function checkLiveData() {
+  setState(
+    "checkLiveDataInterval",
+    setInterval(async () => {
+      const newData = await getLiveData(getState("isUuid"));
+      console.log("CHECK DATA");
+
+      if (getState("liveTimestamp") != newData.date && getState("newLiveData") == false) {
+        setState("newLiveData", true);
+      }
+      if (getState("newLiveData")) {
+        const updateLiveDataButton = newLiveDataHTML();
+        document.querySelector(".main").prepend(updateLiveDataButton);
+
+        updateLiveDataButton.addEventListener(
+          "click",
+          function () {
+            updateLiveDataButton.classList.add("_no-event");
+            setState("mainObj", newData.results);
+            setState("liveTimestamp", newData.date);
+
+            //Очищаем кнопки классов - вдруг поменялись
+            document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
+              raceClass.remove();
+            });
+
+            //получаем новые кнопки классов и выбиравем последнюю
+            makeRaceClassButtons();
+            tabSwitch("closeAll", getTab("main"));
+
+            //удаляем html
+            setTimeout(() => {
+              const pilotsTab = document.querySelector(".pilots");
+              const leaderboardTab = document.querySelector(".leaderboard");
+              const roundsTab = document.querySelector(".rounds");
+              pilotsTab.remove();
+              leaderboardTab.remove();
+              roundsTab.remove();
+            }, 50);
+
+            //добавляем html
+            setTimeout(() => {
+              startFileView("classSwitch");
+            }, 150);
+            setState("newLiveData", false);
+
+            //удаляем кнопку и включаем функцию ещё раз
+            updateLiveDataButton.remove();
+            checkLiveData();
+          },
+          { once: true }
+        );
+        //очищаем таймер, как только событие н
+        clearInterval(getState("checkLiveDataInterval"));
+      }
+    }, 10000)
+  );
 }

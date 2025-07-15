@@ -206,6 +206,44 @@ body {
 	}
 }
 
+.new-live-data-button {
+	position: fixed;
+	z-index: 90;
+	top: 23%;
+	right: 20px;
+	opacity: 0.8;
+	width: 140px;
+	// box-shadow: 0px 0px 10px $color-akcent2;
+	animation: fade-in 0.5s ease 0s 1 normal forwards,ready-animation 1.5s ease 0s infinite normal forwards;
+	will-change: box-shadow;
+
+	&:hover {
+		background-color: $color-akcent2;
+	}
+
+	&._active-animation {
+		background-color: $color-akcent2;
+	}
+
+	&._no-event {
+		pointer-events: none;
+		opacity: 0
+	}
+
+	@media(max-width:992px) {
+		top: 50%;
+	}
+	@media(max-width:510px) {
+		top:80%;
+		right:50%;
+		transform: translate(50%,0);
+		width: 200px;
+		height: 80px;
+		font-size: 28px;
+		// box-shadow: 0px 0px 20px $color-back inset;
+	}
+}
+
 ._button-time {
 	color: $color-grey;
 	background-color: transparent;
@@ -1613,7 +1651,7 @@ body {
 		font-size: 22px;
 
 		@media(max-width:510px) {
-			font-size: 18px;
+			font-size: 16px;
 			font-weight: 400;
 			text-align: center;
 		}
@@ -1800,7 +1838,7 @@ body {
 			font-size: 16px;
 			font-weight: 400;
 			// margin:0px 0px 0px 10px;
-			
+
 			text-align: center;
 		}
 	}
@@ -2021,7 +2059,16 @@ body {
 	}
 
 }
+.empty-container{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
 
+.empty-tittle{
+	font-size: 26px;
+}
 .modal {
 	position: fixed;
 	top: 0;
@@ -2808,6 +2855,7 @@ body {
 		@media(max-width:767px) {
 			font-size: 20px;
 		}
+
 		@media(max-width:510px) {
 			font-size: 16px;
 		}
@@ -5003,16 +5051,16 @@ body {
 
 @keyframes ready-animation {
 	0% {
-		box-shadow: 0px 0px 10px $color-akcent2;
+		box-shadow: 0px 0px 5px $color-akcent2;
 	}
 
 	50% {
-		box-shadow: 0px 0px 20px $color-akcent2;
+		box-shadow: 0px 0px 25px $color-akcent2;
 
 	}
 
 	100% {
-		box-shadow: 0px 0px 10px $color-akcent2;
+		box-shadow: 0px 0px 5px $color-akcent2;
 	}
 }
 
@@ -5130,4 +5178,14 @@ body {
 		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
 	}
 
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 0.9;
+	}
 }

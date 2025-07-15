@@ -13,6 +13,8 @@ const states = {
   graphTouchFlag: false,
   lapsIdData: [],
   liveTimestamp: null,
+  newLiveData: false,
+  checkLiveDataInterval: null,
 };
 
 export function setState(key, value) {

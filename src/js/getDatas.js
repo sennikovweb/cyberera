@@ -576,3 +576,9 @@ export function getDayFiles(date) {
     }, 20);
   }, 310);
 }
+
+
+export function updateLiveData(){
+	classSwitch(getState())
+	document.querySelector('.new-live-data-button').remove()
+}

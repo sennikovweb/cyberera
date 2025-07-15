@@ -1378,30 +1378,30 @@ export function writeAllLapsHTML(name) {
 
   const pilots = getPilotsStats(); //список пилотов
 
-  let heat;
+  //   let heat;
   let averageLineValueString;
 
   pilots.forEach((element) => {
     //тут среди пилотов по имени ищем данные нужного нам
     if (element.name == name) {
       averageLineValueString = element.averageLap; //записываем средлний круг
-      heat = element.heat; //записываем heat пилота
+      // heat = element.heat; //записываем heat пилота
       return;
     }
   });
 
-  const lapsData = getLapsByName(name, heat, false); //берем все круги
+  const lapsData = getLapsByName(name, false); //берем все круги
 
   allLaps.slider.setAttribute("max", `${lapsData.length - 1}`); //максимальные ползунковые движения
   allLaps.averageLine.innerHTML = `<span>${averageLineValueString}</span>`; //значение полоски среднего круга
 
-  const lapsDataSorted = getLapsByName(name, heat, true); //берем все круги сортированные, чтобы найти лучший
+  const lapsDataSorted = getLapsByName(name, true); //берем все круги сортированные, чтобы найти лучший
   const bestId = lapsDataSorted[0].lapId; //id лучшего круга
 
   let bestConsecutivesId = [];
 
   try {
-    const consecutivesDataSorted = getConsecutivesByName(name, heat, true); //берем все круги подряд сортированные, чтобы найти лучший
+    const consecutivesDataSorted = getConsecutivesByName(name, true); //берем все круги подряд сортированные, чтобы найти лучший
     bestConsecutivesId = consecutivesDataSorted[0].lapId; //id лучшего consecutives
   } catch (error) {
     if (getState("CONSOLE_DEBUG")) console.log("Нет подряд");
@@ -2150,4 +2150,28 @@ export function makeRaceClassButtons() {
   lastClassButtonSwitch.classList.add("_active", "_no-event");
 
   setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+}
+
+export function newLiveDataHTML() {
+  const newDataButton = document.createElement("button");
+  newDataButton.classList.add("_button", "new-live-data-button");
+  newDataButton.innerHTML = getState("textStrings").newLiveData;
+  return newDataButton;
+}
+
+export function emptyEventHTML() {
+  const emptyModal = document.createElement("div");
+  const emptyModalContainer = document.createElement("div");
+  const emptyModalText = document.createElement("div");
+
+  emptyModal.classList.add("modal", "_active");
+  emptyModalContainer.classList.add("modal__container", "_active", "_container",'empty-container');
+  emptyModalText.classList.add("modal__tittle", "empty-tittle");
+
+  emptyModal.append(emptyModalContainer);
+  emptyModalContainer.append(emptyModalText);
+
+  emptyModalText.innerHTML = getState("textStrings").empty;
+
+  return emptyModal;
 }

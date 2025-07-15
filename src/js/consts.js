@@ -15,7 +15,8 @@ export const RU_DICT = {
   minute1: "минут",
   seconds: "сек.",
   ago: "назад",
-
+  newLiveData: "Новые данные!",
+  empty:'Пока пусто',
   pilotsTab: {
     bestLap: "Лучший круг",
     round: "Раунд",
@@ -122,6 +123,8 @@ export const EN_DICT = {
   minute1: "minutes",
   seconds: "seconds",
   ago: "ago",
+  newLiveData: "New Data!",
+  empty:'Still Empty',
   pilotsTab: {
     bestLap: "Best lap",
     round: "Round",

@@ -1,7 +1,7 @@
 import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils";
 import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
-import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender } from "./htmlWriters";
+import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender,emptyEventHTML } from "./htmlWriters";
 import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
 
 export async function startFileView(fileType) {
@@ -12,7 +12,8 @@ export async function startFileView(fileType) {
   }
   if (!Object.keys(getState("mainObj").heats).length) {
     //Проверяем, есть ли вообще круги, или только создали
-    console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
+    document.querySelector(".main").append(emptyEventHTML());
+   //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
   }
 
   document.querySelector(".tabs-wrapper").append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
@@ -158,6 +159,8 @@ export async function startFileView(fileType) {
 ////////////////////////////////////////////////////////////
 
 export function classSwitch(e) {
+  console.log(e);
+
   const curentButton = e.target;
   const allButtons = document.querySelectorAll(".class-switch-buttons__button");
   const buttonsContainer = document.querySelector(".class-switch-buttons__container");
@@ -634,8 +637,8 @@ export function allLapsGraphChoosing(name, classForSpan) {
   const laps = document.querySelectorAll(".all-laps__lap");
   const slider = document.querySelector(".all-laps__slider");
 
-  const heat = getHeat(name);
-  const lapsData = getLapsByName(name, heat, false);
+  //   const heat = getHeat(name);
+  const lapsData = getLapsByName(name, false);
 
   const stat = {
     roundCount: document.querySelector(".all-laps__round-count-value"),
@@ -896,8 +899,8 @@ export function setTittle(tittleType, filename, eventName) {
 
   if (tittleType == "uuid") {
     mainDisplayName.innerHTML = eventName; //Добавялем Имя Ивента
-   //  mainDate.innerHTML = getMinutesSinceUpload(timestamp); //Считаем, сколько прошло времени с обновления
-    mainTime.remove(); //Удаляем лишнюю строчку заголовка
+    mainDate.innerHTML = "-";
+    mainTime.innerHTML = "-";
   } else if (tittleType == "event") {
     const [datePart, timePart, displayName] = filename.split("_");
     const isoString = `${datePart}T${timePart.replace("-", ":")}`;
