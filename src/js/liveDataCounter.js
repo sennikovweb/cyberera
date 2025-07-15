@@ -1,6 +1,6 @@
 import { getMinutesSinceUpload } from "./utils";
 import { getState } from "./sharedStates";
-
+import { getLiveData } from "./loadData";
 
 export function liveDataCounter() {
   const mainDate = document.querySelector(".main-tittle__date");
