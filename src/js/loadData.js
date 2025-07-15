@@ -2,7 +2,7 @@ import { getState, setState } from "./sharedStates";
 import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
 import { startFileView, setTittle } from "./uiChange";
 import { setShareUrl } from "./utils";
-
+import { liveDataCounter } from "./liveDataCounter";
 export async function urlUpload(type) {
   try {
     const eventUrl = new URL(window.location.href);
