@@ -55,8 +55,8 @@
 // };
 
 export default async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://rh-results-viewer.vercel.app/");
-  //   res.setHeader("Access-Control-Allow-Origin", "*");//для локальной проверки
+//   res.setHeader("Access-Control-Allow-Origin", "https://rh-results-viewer.vercel.app/");
+    res.setHeader("Access-Control-Allow-Origin", "*");//для локальной проверки
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   if (req.method === "GET") {
     try {

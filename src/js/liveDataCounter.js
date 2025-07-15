@@ -12,5 +12,9 @@ export function liveDataCounter() {
     const newData = await getLiveData(getState("isUuid"));
     console.log("Сравнение", getState("liveTimestamp"), newData.date);
     console.log("TRUE?", getState("liveTimestamp") == newData.date);
+	 if(getState("liveTimestamp") != newData.date){
+		const newDataButton =document.createElement('button')
+		newDataButton.classList.add('_button')
+	 }
   }, 10000);
 }

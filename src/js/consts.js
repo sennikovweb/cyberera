@@ -13,7 +13,7 @@ export const RU_DICT = {
   minute3: "минуты",
   minute2: "минуту",
   minute1: "минут",
-  seconds: "секунд",
+  seconds: "сек.",
   ago: "назад",
 
   pilotsTab: {
