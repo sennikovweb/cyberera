@@ -10,6 +10,7 @@ export async function urlUpload(type) {
 
     if (type == "uuid") {
       const fullLiveData = await getLiveData(getState("isUuid"));
+      setState("mainObj", fullLiveData.results);
       setState("liveTimestamp", fullLiveData.date);
       makeRaceClassButtons();
 
@@ -20,7 +21,7 @@ export async function urlUpload(type) {
       liveDataCounter(); //Открыть счётчик
       eventUrl.searchParams.set(type, `${getState("isUuid")}`);
     } else if (type == "event") {
-      await getEventData(getState("isEvent"));
+      setState("mainObj", await getEventData(getState("isEvent")));
       makeRaceClassButtons();
 
       startFileView("event", getState("isEvent"));
@@ -48,7 +49,6 @@ export async function getLiveData(uuid) {
   if (!data.ok) throw new Error("Ошибка загрузки");
   const dataJson = await data.json();
 
-  setState("mainObj", dataJson.data.data.results);
   return dataJson.data.data;
 }
 
@@ -58,7 +58,7 @@ export async function getEventData(event) {
   const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
   const data = await fetch(url);
   if (!data.ok) throw new Error("Ошибка загрузки");
-  setState("mainObj", await data.json());
+  return await data.json();
 }
 
 export async function loadFilesJson() {

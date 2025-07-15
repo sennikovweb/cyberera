@@ -196,24 +196,25 @@ export function getMinutesSinceUpload(uploadTimestamp) {
   }
 
   const diffMs = now - uploadTimestamp;
-  const diffMinutes = Math.floor(diffMs / 60000); // 60000 мс = 1 минута
+  const diffSecondsTotal = Math.floor(diffMs / 1000); // 60000 мс = 1 минута
 
-  // Возвращаем текст с правильным склонением
-  if (diffMinutes === 0) {
-    const diffSeconds = Math.floor(diffMs / 1000);
-    return `${getState("textStrings").uploaded} ${diffSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
+  if (diffSecondsTotal < 60) {
+    return `${getState("textStrings").uploaded} ${diffSecondsTotal} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
   }
+
+  const diffMinutes = Math.floor(diffSecondsTotal / 60);
+  const remainingSeconds = diffSecondsTotal % 60;
 
   const lastDigit = diffMinutes % 10;
   const lastTwoDigits = diffMinutes % 100;
 
-  let minuteWord = getState("textStrings").minute1;
+  let minuteWord = getState("textStrings").minute1; // минут
   if (lastTwoDigits < 11 || lastTwoDigits > 14) {
-    if (lastDigit === 1) minuteWord = getState("textStrings").minute2;
-    if (lastDigit >= 2 && lastDigit <= 4) minuteWord = getState("textStrings").minute3;
+    if (lastDigit === 1) minuteWord = getState("textStrings").minute2; // минуту
+    if (lastDigit >= 2 && lastDigit <= 4) minuteWord = getState("textStrings").minute3; // минуты
   }
 
-  return `${getState("textStrings").uploaded}: ${diffMinutes} ${minuteWord} ${getState("textStrings").ago}`;
+  return `${getState("textStrings").uploaded} ${diffMinutes} ${minuteWord} и ${remainingSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
 }
 
 export function setShareUrl(fileName) {
