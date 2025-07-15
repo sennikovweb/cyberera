@@ -12,6 +12,7 @@ const states = {
   currentMonth: new Date(),
   graphTouchFlag: false,
   lapsIdData: [],
+  liveTimestamp: null,
 };
 
 export function setState(key, value) {

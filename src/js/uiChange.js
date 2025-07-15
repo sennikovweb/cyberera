@@ -889,14 +889,14 @@ export async function moveMonth(start, stop) {
   }
 }
 
-export function setTittle(tittleType, filename, eventName, timestamp) {
+export function setTittle(tittleType, filename, eventName) {
   const mainDisplayName = document.querySelector(".main-tittle__display-name");
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
 
   if (tittleType == "uuid") {
     mainDisplayName.innerHTML = eventName; //Добавялем Имя Ивента
-    mainDate.innerHTML = getMinutesSinceUpload(timestamp); //Считаем, сколько прошло времени с обновления
+   //  mainDate.innerHTML = getMinutesSinceUpload(timestamp); //Считаем, сколько прошло времени с обновления
     mainTime.remove(); //Удаляем лишнюю строчку заголовка
   } else if (tittleType == "event") {
     const [datePart, timePart, displayName] = filename.split("_");

@@ -55,13 +55,14 @@ export default async (req, res) => {
      // ИСПРАВЛЕННАЯ ЧАСТЬ: сначала SET, затем EXPIRE отдельными запросами
       // 1. Сохраняем данные
       const setResponse = await fetch(
-        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}/${encodeURIComponent(JSON.stringify(data))}`,
+        `${process.env.KV_REST_API_URL}/set/${encodeURIComponent(uuid)}`,
         {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
             'Content-Type': 'application/json'
-          }
+          },
+			 body:JSON.stringify(data)
         }
       );
 

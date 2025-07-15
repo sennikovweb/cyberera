@@ -10,11 +10,14 @@ export async function urlUpload(type) {
 
     if (type == "uuid") {
       const fullLiveData = await getLiveData(getState("isUuid"));
+      setState("liveTimestamp", fullLiveData.date);
       makeRaceClassButtons();
 
       startFileView("uuid", " ");
 
-      setTittle("uuid", "", fullLiveData.eventName, fullLiveData.date);
+      setTittle("uuid", "", fullLiveData.eventName);
+
+      liveDataCounter(); //Открыть счётчик
       eventUrl.searchParams.set(type, `${getState("isUuid")}`);
     } else if (type == "event") {
       await getEventData(getState("isEvent"));
