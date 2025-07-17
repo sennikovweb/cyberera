@@ -53,19 +53,31 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные с TTL 14 дней
     await redis.set(uuid, JSON.stringify(body), { ex: DATA_TTL });
 
-    // 4) Формируем URL для чтения
-    /*
-    const host = process.env.VERCEL_URL || req.headers.host;
-    const proto = host.startsWith("http") ? "" : "https://";
-    const dataUrl = `${proto}${host}/api/getData?uuid=${uuid}`;
-	*/
+    // 2. Считываем текущий индекс файлов
+    const filesRaw = await redis.get("FILES");
+    let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+    // 3. Готовим метаинформацию
+    const meta = {
+      // date: body.date || Date.now(),
+      // title: body.title || "Без названия",
+      // live: body.live ?? true,
+      data: JSON.stringify(body),
+    };
+
+    // 4. Удаляем старую запись этого uuid (если она есть)
+    filesList = filesList.filter((entry) => entry.key !== uuid);
+
+    // 5. Добавляем новую
+    filesList.push({ key: uuid, meta });
+
+    // 6. Перезаписываем индекс файлов
+    await redis.set("FILES", filesList);
 
     // 5) Отправляем ответ
     return res.status(200).json({
       status: "success",
       message: "Data saved",
-      // dataUrl,
-      // yourData: body,
     });
   } catch (err) {
     console.error(err);
