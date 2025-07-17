@@ -1,87 +1,63 @@
+import { Redis } from '@upstash/redis';
 
-import { Redis } from '@upstash/redis'
-import { NextResponse } from 'next/server'
+// Клиент автоматически подхватит из process.env:
+//   UPSTASH_REDIS_REST_URL
+//   UPSTASH_REDIS_REST_TOKEN
+const redis = Redis.fromEnv();
 
-// Клиент подхватит REDIS_URL и REDIS_TOKEN из process.env
-const redis = Redis.fromEnv()
+const RATE_LIMIT = 10;
+const WINDOW_SEC = 60;
+const DATA_TTL = 60 * 60 * 24 * 14; // 14 дней
 
-const RATE_LIMIT = 10
-const WINDOW_SEC = 60
-const TTL_DATA_SEC = 60 * 60 * 24 * 14  // 14 дней
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 
-export const POST = async (req) => {
   try {
-    const userIP = req.headers.get('x-forwarded-for') || 'unknown'
-    const rateKey = `rate_limit:${userIP}`
-
-    // 1) RATE LIMIT
-    const cnt = await redis.incr(rateKey)
+    // 1) Rate limiting по IP
+    const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const rateKey = `rate_limit:${userIP}`;
+    const cnt = await redis.incr(rateKey);
     if (cnt === 1) {
-      await redis.expire(rateKey, WINDOW_SEC)
+      await redis.expire(rateKey, WINDOW_SEC);
     }
     if (cnt > RATE_LIMIT) {
-      return NextResponse.json(
-        { status: 'error', message: `Too many requests (${RATE_LIMIT}/min)` },
-        { status: 429 }
-      )
+      return res
+        .status(429)
+        .json({ status: 'error', message: `Too many requests (${RATE_LIMIT}/min)` });
     }
 
-    // 2) SAVE DATA
-    const body = await req.json()
-    const uuid = body.event_uuid
+    // 2) Читаем тело запроса
+    const body = req.body;
+    const uuid = body.event_uuid;
     if (!uuid) {
-      return NextResponse.json(
-        { status: 'error', message: 'event_uuid is required' },
-        { status: 400 }
-      )
+      return res
+        .status(400)
+        .json({ status: 'error', message: 'event_uuid is required' });
     }
 
-    // Сохраняем JSON-строку вместе с TTL 14 дней
-    await redis.set(uuid, JSON.stringify(body), { ex: TTL_DATA_SEC })
+    // 3) Сохраняем данные с TTL 14 дней
+    await redis.set(uuid, JSON.stringify(body), { ex: DATA_TTL });
 
-    const host = process.env.VERCEL_URL ?? req.headers.get('host')
-    const protocol = host?.startsWith('http') ? '' : 'https://'
-    const dataUrl = `${protocol}${host}/api/getData?uuid=${uuid}`
+    // 4) Формируем URL для чтения
+    const host = process.env.VERCEL_URL || req.headers.host;
+    const proto = host.startsWith('http') ? '' : 'https://';
+    const dataUrl = `${proto}${host}/api/getData?uuid=${uuid}`;
 
-    return NextResponse.json(
-      {
-        status: 'success',
-        message: 'Data saved',
-        dataUrl,
-        yourData: body,
-      },
-      { status: 200 }
-    )
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json(
-      { status: 'error', message: e.message },
-      { status: 500 }
-    )
+    // 5) Отправляем ответ
+    return res.status(200).json({
+      status: 'success',
+      message: 'Data saved',
+      dataUrl,
+      yourData: body,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ status: 'error', message: err.message });
   }
 }
-
-// export const GET = async (req) => {
-//   const { searchParams } = new URL(req.url)
-//   const uuid = searchParams.get('uuid')
-//   if (!uuid) {
-//     return NextResponse.json(
-//       { status: 'error', message: 'UUID is required' },
-//       { status: 400 }
-//     )
-//   }
-//   const stored = await redis.get(uuid)
-//   if (stored === null) {
-//     return NextResponse.json(
-//       { status: 'error', message: 'Not found' },
-//       { status: 404 }
-//     )
-//   }
-//   return NextResponse.json(
-//     { status: 'success', data: JSON.parse(stored) },
-//     { status: 200 }
-//   )
-// }
 
 
 
