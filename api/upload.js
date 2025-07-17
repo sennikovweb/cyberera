@@ -7,7 +7,8 @@ const redis = Redis.fromEnv();
 
 const RATE_LIMIT = 10;
 const WINDOW_SEC = 60;
-const DATA_TTL = 60 * 60 * 24 * 14; // 14 дней
+const HOURS = 6;
+const STOP_LIVE_TIME = HOURS * 60 * 60 * 1000;
 
 function setCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", "*"); // или конкретный домен
@@ -45,23 +46,39 @@ export default async function handler(req, res) {
 
     // 2) Читаем тело запроса
     const body = req.body;
+    console.log("bodybodybody", body);
+
     const uuid = body.event_uuid;
     const key = body.key;
+    const timeStamp = body.data.date;
 
     if (!uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
     }
 
-	 
+    const now = Date.now();
+    const diff = now - timeStamp;
+
     const redisResponse = await redis.get(uuid);
+    let parsedPrevFile;
     if (redisResponse) {
-      if (redisResponse.key != key) {
-        return res.status(404).json({ success: false, message: "Wrong key!" });
+      try {
+        parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
+      } catch (error) {
+        return res.status(400).json({ message: "Corrupted data in db" });
+      }
+      if (parsedPrevFile.key != key) {
+        return res.status(403).json({ success: false, message: "Wrong key!" });
+      }
+      if (diff > STOP_LIVE_TIME) {
+        return res.status(400).json({
+          status: "error",
+          message: "LIVE is finished! Please, Generate NEW!",
+        });
       }
     }
-
-    // 3) Сохраняем данные с TTL 14 дней
-    await redis.set(uuid, JSON.stringify(body), { ex: DATA_TTL });
+    // 3) Сохраняем данные
+    await redis.set(uuid, JSON.stringify(body));
 
     // 2. Считываем текущий индекс файлов
     const filesRaw = await redis.get("FILES");
@@ -87,7 +104,7 @@ export default async function handler(req, res) {
     // 5) Отправляем ответ
     return res.status(200).json({
       status: "success",
-      message: "Data saved",
+      message: "results export sucessful",
     });
   } catch (err) {
     console.error(err);
