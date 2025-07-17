@@ -131,7 +131,7 @@ export async function loadFilesList() {
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
 
-	 console.log("responseData", responseData);
+    console.log("responseData", responseData);
 
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
@@ -148,8 +148,8 @@ export async function loadFilesList() {
         obj.date = date;
         obj.uuid = file.uuid;
         obj.year = year;
-        obj.month = month;
-        obj.monthName = getState("textStrings").monthsNames[month];
+        obj.month = month - 1;
+        obj.monthName = getState("textStrings").monthsNames[month - 1];
         obj.day = day;
         obj.hours = hour;
         obj.minutes = minute;
