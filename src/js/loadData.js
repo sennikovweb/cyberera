@@ -139,7 +139,7 @@ export async function loadFilesList() {
         const [datePart, timePart] = file.meta.eventStart.split(" ");
         const [year, month, day] = datePart.split("-").map(Number);
         const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
-        const date = new Date(year, month - 1, day, hour, minute, second);
+        const date = new Date(year, month - 1, day, hour, minute);
 
         obj.liveState = getLiveState(Date.now(), date.getTime());
         obj.displayName = file.meta.title;
