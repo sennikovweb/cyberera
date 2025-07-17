@@ -90,7 +90,7 @@ console.log('Array.isArray(filesRaw)',Array.isArray(filesRaw));
     const meta = {
       date: data.date,
       title: data.eventName || "Без названия",
-      data: data.results,
+      data: 'some data'
     };
 
     // 4. Удаляем старую запись этого uuid (если она есть)
