@@ -54,16 +54,18 @@ export default async function handler(req, res) {
     await redis.set(uuid, JSON.stringify(body), { ex: DATA_TTL });
 
     // 4) Формируем URL для чтения
+    /*
     const host = process.env.VERCEL_URL || req.headers.host;
     const proto = host.startsWith("http") ? "" : "https://";
     const dataUrl = `${proto}${host}/api/getData?uuid=${uuid}`;
+	*/
 
     // 5) Отправляем ответ
     return res.status(200).json({
       status: "success",
       message: "Data saved",
-      dataUrl,
-      yourData: body,
+      // dataUrl,
+      // yourData: body,
     });
   } catch (err) {
     console.error(err);
