@@ -131,6 +131,8 @@ export async function loadFilesList() {
   const responseData = await response.json();
 
   setState("filesList", responseData.files);
+  console.log(' getState("filesList")', getState("filesList"));
+  
 
   getState("filesList").forEach((file) => {
     const uuid = file.uuid;
