@@ -140,7 +140,7 @@ export async function loadFilesList() {
         const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
         obj.date = date;
         obj.year = year;
-        obj.month = month;
+        obj.month = month - 1;
         obj.day = day;
         obj.hours = hours;
         obj.minutes = minutes;
