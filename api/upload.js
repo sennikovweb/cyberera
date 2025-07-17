@@ -46,11 +46,8 @@ export default async function handler(req, res) {
 
     // 2) Читаем тело запроса
     const body = req.body;
-    console.log("bodybodybody", body);
-
     const uuid = body.event_uuid;
     const key = body.key;
-    const timeStamp = body.data.date;
 
     if (!uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
@@ -59,7 +56,6 @@ export default async function handler(req, res) {
     const redisResponse = await redis.get(uuid);
     let parsedPrevFile;
     if (redisResponse) {
-      console.log("redisResponse", redisResponse);
 
       try {
         parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
@@ -69,12 +65,11 @@ export default async function handler(req, res) {
       if (parsedPrevFile.key != key) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
-      console.log("TIME", parsedPrevFile.data.date, body.data.date, STOP_LIVE_TIME);
 
       if (body.data.date - parsedPrevFile.data.date > STOP_LIVE_TIME) {
-        return res.status(400).json({
+        return res.status(410).json({
           status: "error",
-          message: "LIVE is finished! Please, Generate NEW!",
+          message: "No updates for too long",
         });
       }
     }
