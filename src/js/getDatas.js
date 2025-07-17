@@ -525,7 +525,7 @@ export function getDayFiles(date) {
   setTimeout(() => {
     dateFilesElement.innerHTML = "";
 
-    getState("filesJson").forEach((file) => {
+    getState("filesList").forEach((file) => {
       const fileDateArr = `${file.year}-${file.month}-${file.day}`;
 
       if (date == fileDateArr) {
