@@ -222,7 +222,7 @@ export async function loadLastFile() {
   clearTimeout(loadTimer);
 }
 
-export async function loadDateFile(fileName) {
+export async function loadDateFile(uuid) {
   const fileItemElement = document.querySelector("._uploading-file");
   const loadTimer = setTimeout(() => {
     fileItemElement.classList.add("_loading");
@@ -233,7 +233,7 @@ export async function loadDateFile(fileName) {
   document.querySelector(".language").classList.add("_hidden");
 
   try {
-    const url = `/api/proxy?path=results.jsons/${fileName}`;
+    const url = `/api/getData?=uuid${uuid}`;
 
     const data = await fetch(url);
     if (!data.ok) throw new Error("Ошибка загрузки");
@@ -241,9 +241,9 @@ export async function loadDateFile(fileName) {
 
     makeRaceClassButtons();
 
-    startFileView("date", fileName);
-    setTittle("event", fileName);
-    setShareUrl(fileName);
+    startFileView("date", uuid);
+    setTittle("event", uuid);
+    setShareUrl(uuid);
   } catch (error) {
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");
