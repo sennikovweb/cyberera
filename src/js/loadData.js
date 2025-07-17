@@ -124,29 +124,52 @@ export async function loadFilesJsonOld() {
 }
 
 export async function loadFilesList() {
-  //   calendarRender(false);
-  const response = await fetch("/api/loadFiles.js");
+  calendarRender(false);
+  try {
+    const response = await fetch("/api/loadFiles.js");
 
-  if (!response.ok) throw new Error("Ошибка загрузки");
-  const responseData = await response.json();
+    if (!response.ok) throw new Error("Ошибка загрузки");
+    const responseData = await response.json();
 
-  responseData.files.forEach((file) => {
-    ///Собираем объект всех файлов из репозитория
-    const obj = {};
-    const date = new Date(file.meta.eventStart);
-    obj.liveState = getLiveState(Date.now(), file.meta.eventStart);
-    obj.displayName = file.meta.title;
-    obj.date = date;
-    obj.uuid = file.uuid;
-    obj.year = date.getFullYear();
-    obj.month = date.getMonth();
-    obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
-    obj.day = date.getDate();
-    obj.hours = date.getHours();
-    obj.minutes = date.getMinutes();
-    setState("filesList", [...getState("filesList"), obj]);
-  });
-  console.log("filesssss", getState("filesList"));
+    responseData.files.forEach((file) => {
+      ///Собираем объект всех файлов из репозитория
+      const obj = {};
+      const date = new Date(file.meta.eventStart);
+      obj.liveState = getLiveState(Date.now(), file.meta.eventStart);
+      obj.displayName = file.meta.title;
+      obj.date = date;
+      obj.uuid = file.uuid;
+      obj.year = date.getFullYear();
+      obj.month = date.getMonth();
+      obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
+      obj.day = date.getDate();
+      obj.hours = date.getHours();
+      obj.minutes = date.getMinutes();
+      setState("filesList", [...getState("filesList"), obj]);
+    });
+    const spanLoadeingElement = document.querySelector("._no-files-span");
+    const daysElement = document.querySelector(".calendar__days");
+    spanLoadeingElement.classList.add("_hidden");
+    daysElement.classList.add("_hide-loading");
+
+    spanLoadeingElement.addEventListener("transitionend", function (e) {
+      if (e.propertyName == "opacity") {
+        const lastFileItemElement = document.querySelector(".last-file__item");
+        lastFileItemElement.classList.remove("_no-files");
+        daysElement.classList.remove("_hide-loading");
+        const calendarDaysElement = document.querySelector(".calendar__days");
+        calendarDaysElement.classList.remove("_no-files");
+      }
+    });
+
+    const lastFile = getState("filesList")[getState("filesList").length - 1];
+    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.displayName;
+    document.querySelector(".last-file__date-value").innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
+    document.querySelector(".last-file__time-value").innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
+    calendarRender(true);
+  } catch (error) {
+    console.error("Не удалось загрузить список файлов:", error);
+  }
 }
 
 export async function loadLastFile() {

@@ -235,8 +235,8 @@ export function getLiveState(now, fileTimesmap) {
   const sixHoursInMs = 6 * 60 * 60 * 1000;
 
   if (diff >= sixHoursInMs) {
-    return true;
-  } else {
     return false;
+  } else {
+    return true;
   }
 }

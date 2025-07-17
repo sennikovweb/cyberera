@@ -2102,7 +2102,7 @@ export function calendarRender(filesloaded) {
     }
 
     let isHaveFiles;
-    getState("filesJson").forEach((file) => {
+    getState("filesList").forEach((file) => {
       if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
         isHaveFiles = true;
         dayElement.classList.add("_day__file");
