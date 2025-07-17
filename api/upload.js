@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       }
       console.log("TIME", parsedPrevFile.data.date, body.data.date, STOP_LIVE_TIME);
 
-      if (parsedPrevFile.data.date - body.data.date > STOP_LIVE_TIME) {
+      if (body.data.date - parsedPrevFile.data.date > STOP_LIVE_TIME) {
         return res.status(400).json({
           status: "error",
           message: "LIVE is finished! Please, Generate NEW!",
