@@ -543,7 +543,7 @@ export function getDayFiles(date) {
         };
 
         fileItemElement.item.classList.add("file__item", "pseudo-button");
-        fileItemElement.item.id = file.fileName;
+        fileItemElement.item.id = file.uuid;
         fileItemElement.name.classList.add("file__file-name");
         fileItemElement.nameTittle.classList.add("file__file-name-tittle");
         fileItemElement.nameValue.classList.add("file__file-name-value");

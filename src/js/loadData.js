@@ -147,6 +147,8 @@ export async function loadFilesList() {
       obj.minutes = date.getMinutes();
       setState("filesList", [...getState("filesList"), obj]);
     });
+	 console.log('getState("filesList")',getState("filesList"));
+	 
     const spanLoadeingElement = document.querySelector("._no-files-span");
     const daysElement = document.querySelector(".calendar__days");
     spanLoadeingElement.classList.add("_hidden");
