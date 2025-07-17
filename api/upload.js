@@ -81,16 +81,16 @@ export default async function handler(req, res) {
 
     // 2. Считываем текущий индекс файлов
     const filesRaw = await redis.get("FILES");
-	 console.log('filesRaw',filesRaw);
-	 
+    console.log("filesRaw", filesRaw);
+
     let filesList = Array.isArray(filesRaw) ? filesRaw : [];
-console.log('Array.isArray(filesRaw)',Array.isArray(filesRaw));
+    console.log("Array.isArray(filesRaw)", Array.isArray(filesRaw));
 
     // 3. Готовим метаинформацию
     const meta = {
-      date: data.date,
       title: data.eventName || "Без названия",
-      data: 'some data'
+      lastUpdate: data.date,
+      eventStart: getEventStartTime(data),
     };
 
     // 4. Удаляем старую запись этого uuid (если она есть)
@@ -111,6 +111,26 @@ console.log('Array.isArray(filesRaw)',Array.isArray(filesRaw));
     console.error(err);
     return res.status(500).json({ status: "error", message: err.message });
   }
+}
+
+function getEventStartTime(data) {
+  if (!data.heats) return null;
+
+  // Получаем список ключей heats и сортируем их как числа
+  const heatKeys = Object.keys(data.heats).sort((a, b) => Number(a) - Number(b));
+  if (heatKeys.length === 0) return null;
+
+  const firstHeat = data.heats[heatKeys[0]];
+  if (!firstHeat.rounds || firstHeat.rounds.length === 0) return null;
+
+  const firstRound = firstHeat.rounds[0];
+  const formatedTime = firstRound.start_time_formatted || null;
+
+  if (formatedTime) {
+    const safeTime = formatedTime.replace(" ", "T");
+    return new Date(safeTime).getTime();
+  }
+  return null;
 }
 
 //REST API Версия
