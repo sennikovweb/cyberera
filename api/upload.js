@@ -70,6 +70,7 @@ export default async function handler(req, res) {
         return res.status(410).json({
           status: "error",
           message: "No updates for too long",
+			 status_code: 410
         });
       }
     }
