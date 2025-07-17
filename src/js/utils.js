@@ -198,9 +198,9 @@ export function getMinutesSinceUpload(timePart, uploadTimestamp) {
   const diffMs = now - uploadTimestamp;
   const diffSecondsTotal = Math.floor(diffMs / 1000); // 60000 мс = 1 минута
 
-//   if (diffSecondsTotal < 60) {
-//     return `${getState("textStrings").uploaded} ${diffSecondsTotal} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
-//   }
+  //   if (diffSecondsTotal < 60) {
+  //     return `${getState("textStrings").uploaded} ${diffSecondsTotal} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
+  //   }
 
   const diffMinutes = Math.floor(diffSecondsTotal / 60);
   const remainingSeconds = diffSecondsTotal % 60;
@@ -214,9 +214,9 @@ export function getMinutesSinceUpload(timePart, uploadTimestamp) {
     if (lastDigit >= 2 && lastDigit <= 4) minuteWord = getState("textStrings").minute3; // минуты
   }
 
-  if(timePart=='minutes')return `${getState("textStrings").uploaded}: ${diffMinutes} ${minuteWord}`
-  
-   if(timePart=='seconds')return `и ${remainingSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
+  if (timePart == "minutes") return `${getState("textStrings").uploaded}: ${diffMinutes} ${minuteWord}`;
+
+  if (timePart == "seconds") return `и ${remainingSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
 }
 
 export function setShareUrl(fileName) {
@@ -227,4 +227,16 @@ export function setShareUrl(fileName) {
 
   const shareUrlElement = document.querySelector(".author__share-url");
   shareUrlElement.textContent = eventUrl.href;
+}
+
+export function getLiveState(now, fileTimesmap) {
+  const diff = Math.abs(fileTimesmap - now); // разница в миллисекундах
+
+  const sixHoursInMs = 6 * 60 * 60 * 1000;
+
+  if (diff >= sixHoursInMs) {
+    return true;
+  } else {
+    return false;
+  }
 }

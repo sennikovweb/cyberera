@@ -1,7 +1,7 @@
 import { getState, setState } from "./sharedStates";
 import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
 import { startFileView, setTittle } from "./uiChange";
-import { setShareUrl } from "./utils";
+import { getLiveState, setShareUrl } from "./utils";
 import { tittleCounter, checkLiveData } from "./liveDataCounter";
 
 export async function urlUpload(type) {
@@ -124,21 +124,29 @@ export async function loadFilesJsonOld() {
 }
 
 export async function loadFilesList() {
-//   calendarRender(false);
+  //   calendarRender(false);
   const response = await fetch("/api/loadFiles.js");
 
   if (!response.ok) throw new Error("Ошибка загрузки");
   const responseData = await response.json();
 
-  setState("filesList", responseData.files);
-  console.log(' getState("filesList")', getState("filesList"));
-  
-
-  getState("filesList").forEach((file) => {
-    const uuid = file.uuid;
-    const startDate = file.meta.eventStart;
-    console.log(uuid, startDate);
+  responseData.forEach((file) => {
+    ///Собираем объект всех файлов из репозитория
+    const obj = {};
+    const date = new Date(file.meta.eventStart);
+    obj.liveState = getLiveState(Date.now(), file.meta.eventStart);
+    obj.displayName = file.meta.title;
+    obj.date = date;
+    obj.uuid = file.uuid;
+    obj.year = date.getFullYear();
+    obj.month = date.getMonth();
+    obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
+    obj.day = date.getDate();
+    obj.hours = date.getHours();
+    obj.minutes = date.getMinutes();
+    setState("filesList", [...getState("filesList"), obj]);
   });
+  console.log("filesssss", getState("filesList"));
 }
 
 export async function loadLastFile() {
