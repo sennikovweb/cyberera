@@ -115,19 +115,28 @@ export default async function handler(req, res) {
 
 function getEventStartTime(data) {
   if (!data.heats) return null;
+  console.log("data.heats", data.heats);
 
   // Получаем список ключей heats и сортируем их как числа
   const heatKeys = Object.keys(data.heats).sort((a, b) => Number(a) - Number(b));
   if (heatKeys.length === 0) return null;
+  console.log("heatKeys", heatKeys);
 
   const firstHeat = data.heats[heatKeys[0]];
   if (!firstHeat.rounds || firstHeat.rounds.length === 0) return null;
+  console.log('firstHeat.rounds',firstHeat.rounds);
+  
 
   const firstRound = firstHeat.rounds[0];
   const formatedTime = firstRound.start_time_formatted || null;
+console.log('formatedTime',formatedTime);
+
 
   if (formatedTime) {
     const safeTime = formatedTime.replace(" ", "T");
+	 console.log('safeTime',safeTime);
+	 console.log('new Date(safeTime).getTime()',new Date(safeTime).getTime());
+	 
     return new Date(safeTime).getTime();
   }
   return null;
