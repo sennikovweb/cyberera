@@ -130,7 +130,7 @@ export async function loadFilesList() {
   if (!response.ok) throw new Error("Ошибка загрузки");
   const responseData = await response.json();
 
-  responseData.data.forEach((file) => {
+  responseData.files.forEach((file) => {
     ///Собираем объект всех файлов из репозитория
     const obj = {};
     const date = new Date(file.meta.eventStart);
