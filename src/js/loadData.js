@@ -134,21 +134,26 @@ export async function loadFilesList() {
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
-      const date = new Date(file.meta.eventStart);
-      obj.liveState = getLiveState(Date.now(), file.meta.eventStart);
+
+      const [datePart, timePart] = file.meta.eventStart.split(" ");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
+      const date = new Date(year, month - 1, day, hour, minute, second);
+
+      obj.liveState = getLiveState(Date.now(), date.getTime());
       obj.displayName = file.meta.title;
       obj.date = date;
       obj.uuid = file.uuid;
-      obj.year = date.getFullYear();
-      obj.month = date.getMonth();
-      obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
-      obj.day = date.getDate();
-      obj.hours = date.getHours();
-      obj.minutes = date.getMinutes();
+      obj.year = year
+      obj.month = month
+      obj.monthName = getState("textStrings").monthsNames[month];
+      obj.day = day
+      obj.hours = hour
+      obj.minutes = minute
       setState("filesList", [...getState("filesList"), obj]);
     });
-	 console.log('getState("filesList")',getState("filesList"));
-	 
+    console.log('getState("filesList")', getState("filesList"));
+
     const spanLoadeingElement = document.querySelector("._no-files-span");
     const daysElement = document.querySelector(".calendar__days");
     spanLoadeingElement.classList.add("_hidden");

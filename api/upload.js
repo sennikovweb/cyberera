@@ -124,22 +124,13 @@ function getEventStartTime(data) {
 
   const firstHeat = data.heats[heatKeys[0]];
   if (!firstHeat.rounds || firstHeat.rounds.length === 0) return null;
-  console.log('firstHeat.rounds',firstHeat.rounds);
-  
+  console.log("firstHeat.rounds", firstHeat.rounds);
 
   const firstRound = firstHeat.rounds[0];
   const formatedTime = firstRound.start_time_formatted || null;
-console.log('formatedTime',formatedTime);
+  console.log("formatedTime", formatedTime);
 
-
-  if (formatedTime) {
-    const safeTime = formatedTime.replace(" ", "T");
-	 console.log('safeTime',safeTime);
-	 console.log('new Date(safeTime).getTime()',new Date(safeTime).getTime());
-	 
-    return new Date(safeTime).getTime();
-  }
-  return null;
+  return formatedTime || null;
 }
 
 //REST API Версия
