@@ -240,7 +240,9 @@ export async function loadDateFile(uuid) {
 
     if (!data.ok) throw new Error("Ошибка загрузки");
 
-    setState("mainObj", await data.json());
+    const fullResponse = await data.json();
+
+    setState("mainObj", fullResponse.data.results);
     console.log("dataMAIN", getState("mainObj"));
     makeRaceClassButtons();
 
