@@ -90,7 +90,7 @@ export default async function handler(req, res) {
     const meta = {
       title: data.eventName || "Без названия",
       lastUpdate: data.date,
-      eventStart: getEventStartTime(data),
+      eventStart: getEventStartTime(data.results),
     };
 
     // 4. Удаляем старую запись этого uuid (если она есть)
