@@ -1,62 +1,43 @@
-// export default async (req, res) => {
-//   // Устанавливаем CORS-заголовки для ответа API
-//   res.setHeader('Access-Control-Allow-Origin', '*');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+import { Redis } from "@upstash/redis";
 
-//   // Обрабатываем OPTIONS-запрос (для CORS Preflight)
-//   if (req.method === 'OPTIONS') {
-//     return res.status(200).end();
-//   }
+const redis = Redis.fromEnv();
 
-//   if (req.method === 'GET') {
-//     try {
-//       const { uuid } = req.query;
+export default async function handler (req, res){
+  //   res.setHeader("Access-Control-Allow-Origin", "https://rh-results-viewer.vercel.app/");
+  res.setHeader("Access-Control-Allow-Origin", "*"); //для локальной проверки
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  if (req.method === "GET") {
+    try {
+      const { uuid } = req.query;
+      if (!uuid) {
+        return res.status(400).end(`Method ${req.method} Not Allowed`);
+      }
+      const redisResponse = await redis.get(uuid);
 
-//       if (!uuid) {
-//         return res.status(400).json({
-//           success: false,
-//           error: 'UUID parameter is required'
-//         });
-//       }
+		if (!redisResponse.ok) {
+      	throw new Error("Данные не найдены в Redis");
+       }
 
-//       // Запрос к Redis (убираем ненужный CORS-заголовок)
-//       const redisResponse = await fetch(
-//         `${process.env.KV_REST_API_URL}/get/${uuid}`,
-//         {
-//           headers: {
-//             'Authorization': `Bearer ${process.env.KV_REST_API_TOKEN}`,
-//           }
-//         }
-//       );
+      // const responseData = await redisResponse.json();
 
-//       if (!redisResponse.ok) {
-//         throw new Error('Failed to fetch data from Redis');
-//       }
+      const data = typeof redisResponse.result === "string" ? JSON.parse(responseData.result) : responseData.result;
 
-//       const data = await redisResponse.json();
 
-//       res.status(200).json({
-//         success: true,
-//         data: data.result
-//       });
+      res.status(200).json({
+        success: true,
+        data: data,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+};
 
-//     } catch (error) {
-//       res.status(500).json({
-//         success: false,
-//         error: error.message
-//       });
-//     }
-//   } else {
-//     res.status(405).json({
-//       success: false,
-//       error: 'Method not allowed'
-//     });
-//   }
-// };
-
-export default async (req, res) => {
+//REST API Версия
+/*
+const qwe = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "https://rh-results-viewer.vercel.app/");
-   //  res.setHeader("Access-Control-Allow-Origin", "*");//для локальной проверки
+  //   res.setHeader("Access-Control-Allow-Origin", "*"); //для локальной проверки
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   if (req.method === "GET") {
     try {
@@ -110,3 +91,5 @@ export default async (req, res) => {
     });
   }
 };
+
+*/

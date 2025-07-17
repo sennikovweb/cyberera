@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { Redis } from "@upstash/redis";
 
 // Клиент автоматически подхватит из process.env:
 //   UPSTASH_REDIS_REST_URL
@@ -9,33 +9,45 @@ const RATE_LIMIT = 10;
 const WINDOW_SEC = 60;
 const DATA_TTL = 60 * 60 * 24 * 14; // 14 дней
 
+function setCorsHeaders(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // или конкретный домен
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  // res.setHeader('Access-Control-Allow-Credentials', 'true');  // если нужны куки
+}
+
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
+  // 1) Pre‑flight запрос
+  if (req.method === "OPTIONS") {
+    setCorsHeaders(res);
+    return res.status(204).end(); // No Content
+  }
+
+  // 2) Для остальных запросов сразу вешаем CORS‑заголовки
+  setCorsHeaders(res);
+
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
   try {
     // 1) Rate limiting по IP
-    const userIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const userIP = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     const rateKey = `rate_limit:${userIP}`;
     const cnt = await redis.incr(rateKey);
     if (cnt === 1) {
       await redis.expire(rateKey, WINDOW_SEC);
     }
     if (cnt > RATE_LIMIT) {
-      return res
-        .status(429)
-        .json({ status: 'error', message: `Too many requests (${RATE_LIMIT}/min)` });
+      return res.status(429).json({ status: "error", message: `Too many requests (${RATE_LIMIT}/min)` });
     }
 
     // 2) Читаем тело запроса
     const body = req.body;
     const uuid = body.event_uuid;
     if (!uuid) {
-      return res
-        .status(400)
-        .json({ status: 'error', message: 'event_uuid is required' });
+      return res.status(400).json({ status: "error", message: "event_uuid is required" });
     }
 
     // 3) Сохраняем данные с TTL 14 дней
@@ -43,26 +55,21 @@ export default async function handler(req, res) {
 
     // 4) Формируем URL для чтения
     const host = process.env.VERCEL_URL || req.headers.host;
-    const proto = host.startsWith('http') ? '' : 'https://';
+    const proto = host.startsWith("http") ? "" : "https://";
     const dataUrl = `${proto}${host}/api/getData?uuid=${uuid}`;
 
     // 5) Отправляем ответ
     return res.status(200).json({
-      status: 'success',
-      message: 'Data saved',
+      status: "success",
+      message: "Data saved",
       dataUrl,
       yourData: body,
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ status: 'error', message: err.message });
+    return res.status(500).json({ status: "error", message: err.message });
   }
 }
-
-
-
-
-
 
 //REST API Версия
 // export default async (req, res) => {
@@ -112,7 +119,6 @@ export default async function handler(req, res) {
 //         return;
 //       }
 
-      
 //       const data = req.body;
 //       const uuid = data["event_uuid"];
 // 		const date = Date.now()
@@ -156,7 +162,7 @@ export default async function handler(req, res) {
 
 //       const dataUrl = `${process.env.VERCEL_URL || 'https://rh-results-viewer.vercel.app'}/api/getData?uuid=${uuid}`;
 
-//       res.status(200).json({ 
+//       res.status(200).json({
 //         status: 'success',
 //         message: 'Export successful',
 //         dataUrl: dataUrl,
@@ -165,18 +171,16 @@ export default async function handler(req, res) {
 
 //     } catch (error) {
 //       console.error('Error:', error);
-//       res.status(500).json({ 
+//       res.status(500).json({
 //         status: 'error',
 //         message:'error.message',
-//         error: error.message 
+//         error: error.message
 //       });
 //     }
 //   } else if (req.method === 'GET') {
-//     res.status(200).json({ 
+//     res.status(200).json({
 //       status: 'success',
-//       message: 'GET endpoint works' 
+//       message: 'GET endpoint works'
 //     });
 //   }
 // };
-
-

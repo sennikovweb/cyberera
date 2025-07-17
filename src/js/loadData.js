@@ -46,7 +46,7 @@ export async function urlUpload(type) {
 }
 
 export async function getLiveData(uuid) {
-  const data = await fetch(`https://rh-results-viewer.vercel.app/api/getData?uuid=${uuid}`);
+  const data = await fetch(`/api/getData?uuid=${uuid}`);
 
   if (!data.ok) throw new Error("Ошибка загрузки");
   const dataJson = await data.json();
@@ -57,7 +57,7 @@ export async function getLiveData(uuid) {
 export async function getEventData(event) {
   const fileName = `${event}.json`;
 
-  const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
+  const url = `/api/proxy?path=results.jsons/${fileName}`;
   const data = await fetch(url);
   if (!data.ok) throw new Error("Ошибка загрузки");
   return await data.json();
@@ -68,7 +68,7 @@ export async function loadFilesJson() {
   let responseDataFiles;
 
   try {
-    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=files.json`;
+    const url = `/api/proxy?path=files.json`;
 
     //  const url = `files.json`; //Для локальной проверки
 
@@ -138,7 +138,7 @@ export async function loadLastFile() {
   document.querySelector(".language").classList.add("_hidden");
   try {
     const fileName = getState("filesJson")[getState("filesJson").length - 1].fileName;
-    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
+    const url = `/api/proxy?path=results.jsons/${fileName}`;
 
     //  const fileName = `2025-06-24_19-31_Whoopclub.json`; //Для локальной проверки
     //  const url = fileName; //Для локальной проверки
@@ -172,7 +172,7 @@ export async function loadDateFile(fileName) {
   document.querySelector(".language").classList.add("_hidden");
 
   try {
-    const url = `https://rh-results-viewer.vercel.app/api/proxy?path=results.jsons/${fileName}`;
+    const url = `/api/proxy?path=results.jsons/${fileName}`;
 
     const data = await fetch(url);
     if (!data.ok) throw new Error("Ошибка загрузки");
