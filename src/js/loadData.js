@@ -131,6 +131,8 @@ export async function loadFilesList() {
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
 
+	 console.log("responseData", responseData);
+
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
@@ -154,6 +156,7 @@ export async function loadFilesList() {
         setState("filesList", [...getState("filesList"), obj]);
       }
     });
+
     console.log('getState("filesList")', getState("filesList"));
 
     const spanLoadeingElement = document.querySelector("._no-files-span");
