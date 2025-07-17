@@ -137,7 +137,7 @@ export async function loadFilesList() {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
 
-      if (!file.meta.eventStart) {
+      if (file.meta.eventStart) {
         const [datePart, timePart] = file.meta.eventStart.split(" ");
         const [year, month, day] = datePart.split("-").map(Number);
         const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
