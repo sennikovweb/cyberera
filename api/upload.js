@@ -7,7 +7,7 @@ const redis = Redis.fromEnv();
 
 const RATE_LIMIT = 10;
 const WINDOW_SEC = 60;
-const HOURS = 0.00833;
+const HOURS = 6;
 const STOP_LIVE_TIME = HOURS * 60 * 60 * 1000;
 
 function setCorsHeaders(res) {
@@ -48,6 +48,7 @@ export default async function handler(req, res) {
     const body = req.body;
     const uuid = body.event_uuid;
     const key = body.key;
+    const data = body.data;
 
     if (!uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
@@ -55,6 +56,7 @@ export default async function handler(req, res) {
 
     const redisResponse = await redis.get(uuid);
     let parsedPrevFile;
+
     if (redisResponse) {
       try {
         parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
@@ -65,7 +67,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
 
-      if (body.data.date - parsedPrevFile.data.date > STOP_LIVE_TIME) {
+      if (Date.now() - parsedPrevFile.data.date > STOP_LIVE_TIME) {
         return res.status(410).json({
           status: "error",
           message: "Too long without updates",
@@ -83,17 +85,16 @@ export default async function handler(req, res) {
 
     // 3. Готовим метаинформацию
     const meta = {
-      // date: body.date || Date.now(),
-      // title: body.title || "Без названия",
-      // live: body.live ?? true,
-      data: JSON.stringify(body),
+      date: data.date,
+      title: data.eventName || "Без названия",
+      data: data.results,
     };
 
     // 4. Удаляем старую запись этого uuid (если она есть)
     filesList = filesList.filter((entry) => entry.key !== uuid);
 
     // 5. Добавляем новую
-    filesList.push({ key: uuid, meta });
+    filesList.push({ uuid: uuid, meta });
 
     // 6. Перезаписываем индекс файлов
     await redis.set("FILES", filesList);
