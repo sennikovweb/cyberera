@@ -3,7 +3,7 @@ import { getDayFiles } from "./js/getDatas";
 import { EN_DICT, RU_DICT } from "./js/consts";
 import { addLocalFile, startLocalFile } from "./js/localFileRead";
 import { tabSwitch, roundStatsStrokeWidthChange, moveMonth } from "./js/uiChange";
-import { loadFilesJson, loadLastFile, urlUpload, loadDateFile } from "./js/loadData";
+import { loadFilesList, loadLastFile, urlUpload, loadDateFile } from "./js/loadData";
 import { setState, getState, getButton, getLocalFileElement, getTab } from "./js/sharedStates";
 
 ////////////////////////////////////////////
@@ -34,7 +34,7 @@ if (getState("isUuid")) {
 } else {
   document.querySelector(".main").classList.remove("_hide");
   document.querySelector(".wrapper").classList.remove("_hide");
-  loadFilesJson();
+  loadFilesList();
 }
 
 ///////////////////////////////////

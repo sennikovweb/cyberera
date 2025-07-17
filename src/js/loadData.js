@@ -63,7 +63,7 @@ export async function getEventData(event) {
   return await data.json();
 }
 
-export async function loadFilesJson() {
+export async function loadFilesJsonOld() {
   calendarRender(false);
   let responseDataFiles;
 
@@ -121,6 +121,18 @@ export async function loadFilesJson() {
   } catch (error) {
     console.error("Не удалось загрузить файл:", error);
   }
+}
+
+export async function loadFilesList() {
+	calendarRender(false);
+	const response = await fetch('/api/loadFiles.js');
+
+    if (!response.ok) throw new Error("Ошибка загрузки");
+    const responseData = await response.json();
+
+
+	 console.log('FILESSSSS',responseData);
+	 
 }
 
 export async function loadLastFile() {
