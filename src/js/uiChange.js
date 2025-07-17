@@ -12,6 +12,7 @@ export async function startFileView(fileType) {
   }
   if (!Object.keys(getState("mainObj").heats).length) {
     //Проверяем, есть ли вообще круги, или только создали
+	 document.querySelector(".main").classList.remove('_hide')
     document.querySelector(".main").append(emptyEventHTML());
     //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
   } else {
