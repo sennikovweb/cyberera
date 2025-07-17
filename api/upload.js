@@ -94,7 +94,7 @@ console.log('Array.isArray(filesRaw)',Array.isArray(filesRaw));
     };
 
     // 4. Удаляем старую запись этого uuid (если она есть)
-    filesList = filesList.filter((entry) => entry.key !== uuid);
+    filesList = filesList.filter((entry) => entry.uuid !== uuid);
 
     // 5. Добавляем новую
     filesList.push({ uuid: uuid, meta });
