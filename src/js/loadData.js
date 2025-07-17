@@ -236,9 +236,12 @@ export async function loadDateFile(uuid) {
     const url = `/api/getData?uuid=${uuid}`;
 
     const data = await fetch(url);
-    if (!data.ok) throw new Error("Ошибка загрузки");
-    setState("mainObj", await data.json());
+    console.log("data", data);
 
+    if (!data.ok) throw new Error("Ошибка загрузки");
+
+    setState("mainObj", await data.json());
+    console.log("dataMAIN", getState("mainObj"));
     makeRaceClassButtons();
 
     startFileView("date", uuid);
