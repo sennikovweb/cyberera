@@ -7,7 +7,7 @@ const redis = Redis.fromEnv();
 
 const RATE_LIMIT = 10;
 const WINDOW_SEC = 60;
-const HOURS = 0.1;
+const HOURS = 0.00833;
 const STOP_LIVE_TIME = HOURS * 60 * 60 * 1000;
 
 function setCorsHeaders(res) {
@@ -62,6 +62,8 @@ export default async function handler(req, res) {
     const redisResponse = await redis.get(uuid);
     let parsedPrevFile;
     if (redisResponse) {
+		console.log('redisResponse',redisResponse);
+		
       try {
         parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
       } catch (error) {
