@@ -56,14 +56,11 @@ export default async function handler(req, res) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
     }
 
-    const now = Date.now();
-    const diff = now - timeStamp;
-
     const redisResponse = await redis.get(uuid);
     let parsedPrevFile;
     if (redisResponse) {
-		console.log('redisResponse',redisResponse);
-		
+      console.log("redisResponse", redisResponse);
+
       try {
         parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
       } catch (error) {
@@ -72,7 +69,9 @@ export default async function handler(req, res) {
       if (parsedPrevFile.key != key) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
-      if (diff > STOP_LIVE_TIME) {
+      console.log("TIME", parsedPrevFile.data.date, body.data.date, STOP_LIVE_TIME);
+
+      if (parsedPrevFile.data.date - body.data.date > STOP_LIVE_TIME) {
         return res.status(400).json({
           status: "error",
           message: "LIVE is finished! Please, Generate NEW!",
