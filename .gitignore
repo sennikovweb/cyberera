@@ -31,3 +31,4 @@ src/js/old-full-script.js
 /node_modules/
 files.json
 
+.vercel
