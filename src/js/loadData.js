@@ -51,7 +51,7 @@ export async function getLiveData(uuid) {
   if (!data.ok) throw new Error("Ошибка загрузки");
   const dataJson = await data.json();
 
-  return dataJson.data.data;
+  return dataJson.data;
 }
 
 export async function getEventData(event) {
