@@ -233,7 +233,7 @@ export async function loadDateFile(uuid) {
   document.querySelector(".language").classList.add("_hidden");
 
   try {
-    const url = `/api/getData?=uuid${uuid}`;
+    const url = `/api/getData?uuid=${uuid}`;
 
     const data = await fetch(url);
     if (!data.ok) throw new Error("Ошибка загрузки");
