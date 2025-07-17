@@ -46,8 +46,18 @@ export default async function handler(req, res) {
     // 2) Читаем тело запроса
     const body = req.body;
     const uuid = body.event_uuid;
+    const key = body.key;
+
     if (!uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
+    }
+
+	 
+    const redisResponse = await redis.get(uuid);
+    if (redisResponse) {
+      if (redisResponse.key != key) {
+        return res.status(404).json({ success: false, message: "Wrong key!" });
+      }
     }
 
     // 3) Сохраняем данные с TTL 14 дней
