@@ -12,7 +12,7 @@ export async function startFileView(fileType) {
   }
   if (!Object.keys(getState("mainObj").heats).length) {
     //Проверяем, есть ли вообще круги, или только создали
-	 document.querySelector(".main").classList.remove('_hide')
+    document.querySelector(".main").classList.remove("_hide");
     document.querySelector(".main").append(emptyEventHTML());
     //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
   } else {
@@ -893,7 +893,7 @@ export async function moveMonth(start, stop) {
   }
 }
 
-export function setTittle(tittleType, filename, eventName) {
+export function setTittleOld(tittleType, filename, eventName) {
   const mainDisplayName = document.querySelector(".main-tittle__display-name");
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
@@ -910,6 +910,25 @@ export function setTittle(tittleType, filename, eventName) {
     mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
     mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
   } else if (tittleType == "local") {
+    const day = getDateinfo("day");
+    const year = getDateinfo("year");
+    const time = getDateinfo("time");
+    mainDate.innerHTML = `${day} ${year}`;
+    mainTime.innerHTML = `${time}`;
+    mainDisplayName.remove();
+  }
+}
+
+export function setTittle(fileType, fullResponse) {
+  const mainDisplayName = document.querySelector(".main-tittle__display-name");
+  const mainDate = document.querySelector(".main-tittle__date");
+  const mainTime = document.querySelector(".main-tittle__time");
+  if (fileType != "local") {
+	console.log('fullResponse',fullResponse);
+	
+	mainDisplayName.innerHTML = fullResponse.data.eventName
+	// mainDate
+  } else {
     const day = getDateinfo("day");
     const year = getDateinfo("year");
     const time = getDateinfo("time");

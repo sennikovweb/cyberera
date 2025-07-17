@@ -246,9 +246,9 @@ export async function loadDateFile(uuid) {
     console.log("dataMAIN", getState("mainObj"));
     makeRaceClassButtons();
 
-    startFileView("date", uuid);
-    setTittle("event", uuid);
-    setShareUrl(uuid);
+    startFileView("date");
+    setTittle("event",fullResponse);
+   //  setShareUrl(uuid);
   } catch (error) {
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");
