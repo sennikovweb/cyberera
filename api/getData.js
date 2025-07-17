@@ -2,36 +2,46 @@ import { Redis } from "@upstash/redis";
 
 const redis = Redis.fromEnv();
 
-export default async function handler (req, res){
+export default async function handler(req, res) {
   //   res.setHeader("Access-Control-Allow-Origin", "https://rh-results-viewer.vercel.app/");
   res.setHeader("Access-Control-Allow-Origin", "*"); //для локальной проверки
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  if (req.method === "GET") {
-    try {
-      const { uuid } = req.query;
-      if (!uuid) {
-        return res.status(400).end(`Method ${req.method} Not Allowed`);
-      }
-      const redisResponse = await redis.get(uuid);
 
-		if (!redisResponse.ok) {
-      	throw new Error("Данные не найдены в Redis");
-       }
-
-      // const responseData = await redisResponse.json();
-
-      const data = typeof redisResponse.result === "string" ? JSON.parse(responseData.result) : responseData.result;
-
-
-      res.status(200).json({
-        success: true,
-        data: data,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
   }
-};
+
+  if (req.method !== "GET") {
+    res.setHeader("Allow", ["GET", "OPTIONS"]);
+    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
+
+  try {
+    const { uuid } = req.query;
+    if (!uuid) {
+      return res.status(400).json({ success: false, message: "UUID is required" });
+    }
+    const redisResponse = await redis.get(uuid);
+
+    if (!redisResponse) {
+      return res.status(404).json({ success: false, message: "Data not found" });
+    }
+
+    const data = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("Redis getData error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+}
 
 //REST API Версия
 /*
