@@ -124,7 +124,7 @@ export async function loadFilesJsonOld() {
 }
 
 export async function loadFilesList() {
-  calendarRender(false);
+//   calendarRender(false);
   const response = await fetch("/api/loadFiles.js");
 
   if (!response.ok) throw new Error("Ошибка загрузки");
