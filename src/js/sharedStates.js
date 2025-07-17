@@ -8,7 +8,7 @@ const states = {
   parsedOK: false,
   isEvent: null,
   isUuid: null,
-  filesJson: [],
+  filesList: [],
   currentMonth: new Date(),
   graphTouchFlag: false,
   lapsIdData: [],

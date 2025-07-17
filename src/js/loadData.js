@@ -124,15 +124,19 @@ export async function loadFilesJsonOld() {
 }
 
 export async function loadFilesList() {
-	calendarRender(false);
-	const response = await fetch('/api/loadFiles.js');
+  calendarRender(false);
+  const response = await fetch("/api/loadFiles.js");
 
-    if (!response.ok) throw new Error("Ошибка загрузки");
-    const responseData = await response.json();
+  if (!response.ok) throw new Error("Ошибка загрузки");
+  const responseData = await response.json();
 
+  setState("filesList", responseData.files);
 
-	 console.log('FILESSSSS',responseData);
-	 
+  getState("filesList").forEach((file) => {
+    const uuid = file.uuid;
+    const startDate = file.meta.eventStart;
+    console.log(uuid, startDate);
+  });
 }
 
 export async function loadLastFile() {
