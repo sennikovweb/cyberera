@@ -1,7 +1,7 @@
 import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils";
 import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
-import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender,emptyEventHTML } from "./htmlWriters";
+import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender, emptyEventHTML } from "./htmlWriters";
 import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
 
 export async function startFileView(fileType) {
@@ -13,147 +13,147 @@ export async function startFileView(fileType) {
   if (!Object.keys(getState("mainObj").heats).length) {
     //Проверяем, есть ли вообще круги, или только создали
     document.querySelector(".main").append(emptyEventHTML());
-   //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
-  }
-
-  document.querySelector(".tabs-wrapper").append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
-  console.log("StartViewFile", getState("mainObj"));
-
-  //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
-  setTab("main", [
-    { name: "pilots", opened: false, element: document.querySelector(".pilots") },
-    { name: "leaderboard", opened: false, element: document.querySelector(".leaderboard") },
-    { name: "rounds", opened: false, element: document.querySelector(".rounds") },
-  ]);
-
-  setTab("leader", [
-    { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
-    { name: "consecutive", opened: false, element: document.querySelector(".leaderboard-consecutive") },
-    { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
-    { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
-  ]);
-  //Кнопки для Leaderboadr
-  addButton("lap", document.querySelector(".leaderboard__lap-button"));
-  addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
-  addButton("count", document.querySelector(".leaderboard__count-button"));
-  addButton("average", document.querySelector(".leaderboard__average-button"));
-
-  setTab("rounds", getHeatTabsRounds()); //Получаем 'Вкладки'Heatы для вкладки Rounds
-  getTab("rounds").forEach((tab) => addButton(tab.name, document.querySelector(`.rounds__${tab.name}`))); //Добавляем кнопку каждому Heatу
-
-  getTab("main")[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
-  getTab("main")[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
-  getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
-
-  tabSwitch(getTab("leader")[0].name, getTab("leader"));
-  tabHeightChange(getTab("leader")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
-
-  tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
-  tabHeightChange(getTab("rounds")[0].element, document.querySelector(".rounds__items"), true); //динамическая высота окна для Rounds
-
-  ////
-  if (fileType != "classSwitch") {
-    //Кнопка поделиться
-    const shareElement = document.querySelector(".author__share");
-
-    shareElement.classList.remove("_hide");
-
-    shareElement.addEventListener("click", async function () {
-      const urlToCopy = document.querySelector(".author__share-url").textContent;
-      try {
-        await navigator.clipboard.writeText(urlToCopy);
-        shareElement.classList.add("_success");
-        const timer = setTimeout(() => {
-          shareElement.classList.remove("_success");
-          clearTimeout(timer);
-        }, 1000);
-      } catch (error) {
-        console.log("error", error);
-
-        shareElement.classList.add("_error");
-        const timer = setTimeout(() => {
-          shareElement.classList.remove("_error");
-          clearTimeout(timer);
-        }, 1000);
-      }
-    });
-
-    if (fileType == "event" || fileType == "uuid") {
-      const wrapperElement = document.querySelector(".wrapper");
-      wrapperElement.classList.add("_loading-hide");
-
-      await new Promise((resolve) => {
-        wrapperElement.addEventListener("transitionend", function (e) {
-          if (e.target == wrapperElement && e.propertyName == "opacity") {
-            resolve();
-          }
-        });
-      });
-      document.querySelector(".main").classList.remove("_hide");
-      wrapperElement.classList.remove("_loading-hide");
-      wrapperElement.classList.remove("_hide");
-    } else if (fileType == "last") {
-      const lastFileButton = document.querySelector(".last-file__item");
-      lastFileButton.classList.remove("_loading");
-      lastFileButton.classList.add("_move");
-
-      await new Promise((resolve) => {
-        lastFileButton.addEventListener("transitionend", function (e) {
-          if (e.propertyName === "transform") {
-            resolve();
-          }
-        });
-      });
-    } else if (fileType == "date") {
-      const fileItemElement = document.querySelector("._uploading-file");
-      fileItemElement.classList.add("_hidden");
-
-      await new Promise((resolve) => {
-        fileItemElement.addEventListener("transitionend", function (e) {
-          if (e.propertyName == "opacity") {
-            resolve();
-          }
-        });
-      });
-      window.scrollTo({
-        top: 0,
-      });
-    } else if (fileType == "local") {
-      getLocalFileElement("button").style.transition = "all 1s ease";
-      getLocalFileElement("button").style.transform = `translate(${window.innerWidth / 2 + getLocalFileElement("button").offsetWidth}px, 0px)`; //едем
-      getLocalFileElement("label").style.transition = "all 1s ease";
-      getLocalFileElement("label").style.transform = `translate(-${window.innerWidth / 2 + getLocalFileElement("label").offsetWidth}px, 0px)`; //едем
-      await new Promise((resolve) => {
-        getLocalFileElement("button").addEventListener("transitionend", function (e) {
-          if (e.propertyName == "transform") {
-            resolve();
-          }
-        });
-      });
-      window.scrollTo({
-        top: 0,
-      });
-    }
-
-    //Удаляем лишнее из html
-    document.querySelector(".last-file").remove();
-    document.querySelector(".date-files").remove();
-    document.querySelector(".calendar").remove();
-    getLocalFileElement("button").remove();
-    getLocalFileElement("form").remove();
-    getLocalFileElement("tittle").remove();
-
-    //Удаляем классы hidden для нужного
-    document.querySelector(".main-tittle").classList.remove("_hidden");
-    getButton("container").classList.add("_active");
-    document.querySelector(".class-switch-buttons__container").classList.add("_active");
-    document.querySelector(".home").classList.remove("_hidden");
-
-    tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
   } else {
-    //Смена классов
-    document.querySelector(".class-switch-buttons__container").classList.remove("_no-event");
-    tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    document.querySelector(".tabs-wrapper").append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
+    console.log("StartViewFile", getState("mainObj"));
+
+    //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
+    setTab("main", [
+      { name: "pilots", opened: false, element: document.querySelector(".pilots") },
+      { name: "leaderboard", opened: false, element: document.querySelector(".leaderboard") },
+      { name: "rounds", opened: false, element: document.querySelector(".rounds") },
+    ]);
+
+    setTab("leader", [
+      { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
+      { name: "consecutive", opened: false, element: document.querySelector(".leaderboard-consecutive") },
+      { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
+      { name: "average", opened: false, element: document.querySelector(".leaderboard-average") },
+    ]);
+    //Кнопки для Leaderboadr
+    addButton("lap", document.querySelector(".leaderboard__lap-button"));
+    addButton("consecutive", document.querySelector(".leaderboard__consecutive-button"));
+    addButton("count", document.querySelector(".leaderboard__count-button"));
+    addButton("average", document.querySelector(".leaderboard__average-button"));
+
+    setTab("rounds", getHeatTabsRounds()); //Получаем 'Вкладки'Heatы для вкладки Rounds
+    getTab("rounds").forEach((tab) => addButton(tab.name, document.querySelector(`.rounds__${tab.name}`))); //Добавляем кнопку каждому Heatу
+
+    getTab("main")[0].element.addEventListener("click", pilotTabAction); //открываем события вкладки Pilots
+    getTab("main")[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
+    getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
+
+    tabSwitch(getTab("leader")[0].name, getTab("leader"));
+    tabHeightChange(getTab("leader")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
+
+    tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
+    tabHeightChange(getTab("rounds")[0].element, document.querySelector(".rounds__items"), true); //динамическая высота окна для Rounds
+
+    ////
+    if (fileType != "classSwitch") {
+      //Кнопка поделиться
+      const shareElement = document.querySelector(".author__share");
+
+      shareElement.classList.remove("_hide");
+
+      shareElement.addEventListener("click", async function () {
+        const urlToCopy = document.querySelector(".author__share-url").textContent;
+        try {
+          await navigator.clipboard.writeText(urlToCopy);
+          shareElement.classList.add("_success");
+          const timer = setTimeout(() => {
+            shareElement.classList.remove("_success");
+            clearTimeout(timer);
+          }, 1000);
+        } catch (error) {
+          console.log("error", error);
+
+          shareElement.classList.add("_error");
+          const timer = setTimeout(() => {
+            shareElement.classList.remove("_error");
+            clearTimeout(timer);
+          }, 1000);
+        }
+      });
+
+      if (fileType == "event" || fileType == "uuid") {
+        const wrapperElement = document.querySelector(".wrapper");
+        wrapperElement.classList.add("_loading-hide");
+
+        await new Promise((resolve) => {
+          wrapperElement.addEventListener("transitionend", function (e) {
+            if (e.target == wrapperElement && e.propertyName == "opacity") {
+              resolve();
+            }
+          });
+        });
+        document.querySelector(".main").classList.remove("_hide");
+        wrapperElement.classList.remove("_loading-hide");
+        wrapperElement.classList.remove("_hide");
+      } else if (fileType == "last") {
+        const lastFileButton = document.querySelector(".last-file__item");
+        lastFileButton.classList.remove("_loading");
+        lastFileButton.classList.add("_move");
+
+        await new Promise((resolve) => {
+          lastFileButton.addEventListener("transitionend", function (e) {
+            if (e.propertyName === "transform") {
+              resolve();
+            }
+          });
+        });
+      } else if (fileType == "date") {
+        const fileItemElement = document.querySelector("._uploading-file");
+        fileItemElement.classList.add("_hidden");
+
+        await new Promise((resolve) => {
+          fileItemElement.addEventListener("transitionend", function (e) {
+            if (e.propertyName == "opacity") {
+              resolve();
+            }
+          });
+        });
+        window.scrollTo({
+          top: 0,
+        });
+      } else if (fileType == "local") {
+        getLocalFileElement("button").style.transition = "all 1s ease";
+        getLocalFileElement("button").style.transform = `translate(${window.innerWidth / 2 + getLocalFileElement("button").offsetWidth}px, 0px)`; //едем
+        getLocalFileElement("label").style.transition = "all 1s ease";
+        getLocalFileElement("label").style.transform = `translate(-${window.innerWidth / 2 + getLocalFileElement("label").offsetWidth}px, 0px)`; //едем
+        await new Promise((resolve) => {
+          getLocalFileElement("button").addEventListener("transitionend", function (e) {
+            if (e.propertyName == "transform") {
+              resolve();
+            }
+          });
+        });
+        window.scrollTo({
+          top: 0,
+        });
+      }
+
+      //Удаляем лишнее из html
+      document.querySelector(".last-file").remove();
+      document.querySelector(".date-files").remove();
+      document.querySelector(".calendar").remove();
+      getLocalFileElement("button").remove();
+      getLocalFileElement("form").remove();
+      getLocalFileElement("tittle").remove();
+
+      //Удаляем классы hidden для нужного
+      document.querySelector(".main-tittle").classList.remove("_hidden");
+      getButton("container").classList.add("_active");
+      document.querySelector(".class-switch-buttons__container").classList.add("_active");
+      document.querySelector(".home").classList.remove("_hidden");
+
+      tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    } else {
+      //Смена классов
+      document.querySelector(".class-switch-buttons__container").classList.remove("_no-event");
+      tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    }
   }
 }
 ////////////////////////////////////////////////////////////
