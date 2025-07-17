@@ -135,7 +135,7 @@ export async function loadFilesList() {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
 
-      try {
+      if (!file.meta.eventStart) {
         const [datePart, timePart] = file.meta.eventStart.split(" ");
         const [year, month, day] = datePart.split("-").map(Number);
         const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
@@ -152,8 +152,6 @@ export async function loadFilesList() {
         obj.hours = hour;
         obj.minutes = minute;
         setState("filesList", [...getState("filesList"), obj]);
-      } catch (error) {
-        console.error(error);
       }
     });
     console.log('getState("filesList")', getState("filesList"));
