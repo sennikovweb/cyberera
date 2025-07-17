@@ -135,22 +135,26 @@ export async function loadFilesList() {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
 
-      const [datePart, timePart] = file.meta.eventStart.split(" ");
-      const [year, month, day] = datePart.split("-").map(Number);
-      const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
-      const date = new Date(year, month - 1, day, hour, minute, second);
+      try {
+        const [datePart, timePart] = file.meta.eventStart.split(" ");
+        const [year, month, day] = datePart.split("-").map(Number);
+        const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
+        const date = new Date(year, month - 1, day, hour, minute, second);
 
-      obj.liveState = getLiveState(Date.now(), date.getTime());
-      obj.displayName = file.meta.title;
-      obj.date = date;
-      obj.uuid = file.uuid;
-      obj.year = year
-      obj.month = month
-      obj.monthName = getState("textStrings").monthsNames[month];
-      obj.day = day
-      obj.hours = hour
-      obj.minutes = minute
-      setState("filesList", [...getState("filesList"), obj]);
+        obj.liveState = getLiveState(Date.now(), date.getTime());
+        obj.displayName = file.meta.title;
+        obj.date = date;
+        obj.uuid = file.uuid;
+        obj.year = year;
+        obj.month = month;
+        obj.monthName = getState("textStrings").monthsNames[month];
+        obj.day = day;
+        obj.hours = hour;
+        obj.minutes = minute;
+        setState("filesList", [...getState("filesList"), obj]);
+      } catch (error) {
+        console.error(error);
+      }
     });
     console.log('getState("filesList")', getState("filesList"));
 
