@@ -1,7 +1,7 @@
 import { getState, setState } from "./sharedStates";
 import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
 import { startFileView, setTittle } from "./uiChange";
-import { getLiveState, setShareUrl } from "./utils";
+import { getDateStrings, getLiveState, setShareUrl } from "./utils";
 import { tittleCounter, checkLiveData } from "./liveDataCounter";
 
 export async function urlUpload(type) {
@@ -136,23 +136,19 @@ export async function loadFilesList() {
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
-
       if (file.meta.eventStart) {
-        const [datePart, timePart] = file.meta.eventStart.split(" ");
-        const [year, month, day] = datePart.split("-").map(Number);
-        const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
-        const date = new Date(year, month - 1, day, hour, minute);
+        const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
+        obj.date = date;
+        obj.year = year;
+        obj.month = month;
+        obj.day = day;
+        obj.hours = hours;
+        obj.minutes = minutes;
 
         obj.liveState = getLiveState(Date.now(), date.getTime());
         obj.displayName = file.meta.title;
-        obj.date = date;
         obj.uuid = file.uuid;
-        obj.year = year;
-        obj.month = month - 1;
         obj.monthName = getState("textStrings").monthsNames[month - 1];
-        obj.day = day;
-        obj.hours = hour;
-        obj.minutes = minute;
         setState("filesList", [...getState("filesList"), obj]);
       }
     });
@@ -247,8 +243,8 @@ export async function loadDateFile(uuid) {
     makeRaceClassButtons();
 
     startFileView("date");
-    setTittle("event",fullResponse);
-   //  setShareUrl(uuid);
+    setTittle("event", fullResponse);
+    //  setShareUrl(uuid);
   } catch (error) {
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");

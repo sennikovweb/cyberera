@@ -924,10 +924,14 @@ export function setTittle(fileType, fullResponse) {
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
   if (fileType != "local") {
-	console.log('fullResponse',fullResponse);
-	
-	mainDisplayName.innerHTML = fullResponse.data.eventName
-	// mainDate
+    console.log("fullResponse", fullResponse);
+
+    const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
+    mainDisplayName.innerHTML = fullResponse.data.eventName;
+
+    mainDate.innerHTML = `${day} ${getState("textStrings").monthsNames[month]} ${year}`;
+    mainTime.innerHTML = `${hours}:${minutes}`;
+    // mainDate
   } else {
     const day = getDateinfo("day");
     const year = getDateinfo("year");
