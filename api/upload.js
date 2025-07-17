@@ -56,7 +56,6 @@ export default async function handler(req, res) {
     const redisResponse = await redis.get(uuid);
     let parsedPrevFile;
     if (redisResponse) {
-
       try {
         parsedPrevFile = typeof redisResponse === "string" ? JSON.parse(redisResponse) : redisResponse;
       } catch (error) {
@@ -69,8 +68,9 @@ export default async function handler(req, res) {
       if (body.data.date - parsedPrevFile.data.date > STOP_LIVE_TIME) {
         return res.status(410).json({
           status: "error",
-          message: "No updates for too long",
-			 status_code: 410
+          message: "Too long without updates",
+          status_code: 410,
+          time: HOURS,
         });
       }
     }
@@ -101,7 +101,7 @@ export default async function handler(req, res) {
     // 5) Отправляем ответ
     return res.status(200).json({
       status: "success",
-      message: "results export sucessful",
+      message: "results export SUCCESSFUL!",
     });
   } catch (err) {
     console.error(err);
