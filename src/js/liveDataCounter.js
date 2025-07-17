@@ -4,10 +4,13 @@ import { getLiveData } from "./loadData";
 import { newLiveDataHTML, makeRaceClassButtons } from "./htmlWriters";
 import { tabSwitch, startFileView } from "./uiChange";
 
-export function tittleCounter() {
+export function tittleCounter(eventName) {
+  document.querySelector(".main-tittle__display-name").innerHTML = eventName
+  document.querySelector(".main-tittle__date").innerHTML = "-";
+  document.querySelector(".main-tittle__time").innerHTML = "-";
   const timer1 = setInterval(() => {
-    document.querySelector(".main-tittle__date").innerHTML = getMinutesSinceUpload('minutes',getState("liveTimestamp"));
-	 document.querySelector(".main-tittle__time").innerHTML = getMinutesSinceUpload('seconds',getState("liveTimestamp"));
+    document.querySelector(".main-tittle__date").innerHTML = getMinutesSinceUpload("minutes", getState("liveTimestamp"));
+    document.querySelector(".main-tittle__time").innerHTML = getMinutesSinceUpload("seconds", getState("liveTimestamp"));
   }, 1000);
 }
 

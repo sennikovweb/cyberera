@@ -78,7 +78,7 @@ export async function startFileView(fileType) {
         }
       });
 
-      if (fileType == "event" || fileType == "uuid") {
+      if (fileType == "uuid") {
         const wrapperElement = document.querySelector(".wrapper");
         wrapperElement.classList.add("_loading-hide");
 
@@ -888,7 +888,7 @@ export async function moveMonth(start, stop) {
   nextButton.classList.remove("_no-event");
   const present = new Date();
 
-  if (getState("currentMonth").getMonth() - present.getMonth() >= 0) {
+  if (getState("currentMonth").getMonth() - present.getMonth() >= 0 && present.getFullYear() == getState("currentMonth").getFullYear()) {
     nextButton.classList.add("_disabled");
   }
 }
@@ -919,19 +919,19 @@ export function setTittleOld(tittleType, filename, eventName) {
   }
 }
 
-export function setTittle(fileType, fullResponse) {
+export function setTittle(fileUuid) {
   const mainDisplayName = document.querySelector(".main-tittle__display-name");
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
-  if (fileType != "local") {
-    console.log("fullResponse", fullResponse);
+  if (fileUuid) {
+    const fileInfo = getState("filesList").find((file) => {
+      return file.uuid == fileUuid;
+    });
+    console.log("fileInfofileInfo", getState("filesList"));
 
-    const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
-    mainDisplayName.innerHTML = fullResponse.data.eventName;
-
-    mainDate.innerHTML = `${day} ${getState("textStrings").monthsNames[month]} ${year}`;
-    mainTime.innerHTML = `${hours}:${minutes}`;
-    // mainDate
+    mainDisplayName.innerHTML = fileInfo.displayName;
+    mainDate.innerHTML = `${fileInfo.day} ${getState("textStrings").monthsNames[fileInfo.month]} ${fileInfo.year}`;
+    mainTime.innerHTML = `${fileInfo.hours}:${fileInfo.minutes}`;
   } else {
     const day = getDateinfo("day");
     const year = getDateinfo("year");

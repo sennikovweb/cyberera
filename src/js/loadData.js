@@ -4,38 +4,33 @@ import { startFileView, setTittle } from "./uiChange";
 import { getDateStrings, getLiveState, setShareUrl } from "./utils";
 import { tittleCounter, checkLiveData } from "./liveDataCounter";
 
-export async function urlUpload(type) {
+export async function urlUpload() {
   try {
     const eventUrl = new URL(window.location.href);
-    console.log("type", type);
 
-    if (type == "uuid") {
-      const fullLiveData = await getLiveData(getState("isUuid"));
-      setState("mainObj", fullLiveData.results);
-      setState("liveTimestamp", fullLiveData.date);
-      makeRaceClassButtons();
+    const fullLiveData = await getLiveData(getState("isUuid"));
+    setState("mainObj", fullLiveData.results);
+    setState("liveTimestamp", fullLiveData.date);
 
-      startFileView("uuid", " ");
+    makeRaceClassButtons();
 
-      setTittle("uuid", "", fullLiveData.eventName);
+    startFileView("uuid");
 
-      tittleCounter(); //Времени прошло
+    const isLive = getLiveState(Date.now(), fullLiveData.date);
+
+    if (isLive) {
+      tittleCounter(fullLiveData.eventName);
       checkLiveData(); //Открыть счётчик
-      eventUrl.searchParams.set(type, `${getState("isUuid")}`);
-    } else if (type == "event") {
-      setState("mainObj", await getEventData(getState("isEvent")));
-      makeRaceClassButtons();
-
-      startFileView("event", getState("isEvent"));
-
-      setTittle("event", getState("isEvent"));
-      eventUrl.searchParams.set(type, `${getState("isEvent")}`);
+    } else {
+      setTittle(getState("isUuid"));
     }
+
+    eventUrl.searchParams.set("uuid", `${getState("isUuid")}`);
 
     const shareUrlElement = document.querySelector(".author__share-url");
     shareUrlElement.textContent = eventUrl.href;
     const languageElement = getState("language") == "ru" ? document.querySelector(`.language__EN`) : getState("language") == "en" && document.querySelector(`.language__RU`);
-    const newLanguageChangeLink = `${languageElement.getAttribute("href")}?${type}=${eventUrl.searchParams.get(`${type}`)}`;
+    const newLanguageChangeLink = `${languageElement.getAttribute("href")}?uuid=${eventUrl.searchParams.get('uuid')}`;
     languageElement.setAttribute("href", `${newLanguageChangeLink}`);
   } catch (error) {
     console.error("error", error);
@@ -54,14 +49,14 @@ export async function getLiveData(uuid) {
   return dataJson.data;
 }
 
-export async function getEventData(event) {
-  const fileName = `${event}.json`;
+// export async function getEventData(event) {
+//   const fileName = `${event}.json`;
 
-  const url = `/api/proxy?path=results.jsons/${fileName}`;
-  const data = await fetch(url);
-  if (!data.ok) throw new Error("Ошибка загрузки");
-  return await data.json();
-}
+//   const url = `/api/proxy?path=results.jsons/${fileName}`;
+//   const data = await fetch(url);
+//   if (!data.ok) throw new Error("Ошибка загрузки");
+//   return await data.json();
+// }
 
 export async function loadFilesJsonOld() {
   calendarRender(false);
@@ -123,15 +118,14 @@ export async function loadFilesJsonOld() {
   }
 }
 
-export async function loadFilesList() {
-  calendarRender(false);
+export async function loadFilesList(calendar) {
+  if (calendar) calendarRender(false);
+
   try {
     const response = await fetch("/api/loadFiles.js");
 
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
-
-    console.log("responseData", responseData);
 
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
@@ -153,28 +147,33 @@ export async function loadFilesList() {
       }
     });
 
-    console.log('getState("filesList")', getState("filesList"));
+    if (calendar) {
+      const spanLoadeingElement = document.querySelector("._no-files-span");
+      const daysElement = document.querySelector(".calendar__days");
+      spanLoadeingElement.classList.add("_hidden");
+      daysElement.classList.add("_hide-loading");
 
-    const spanLoadeingElement = document.querySelector("._no-files-span");
-    const daysElement = document.querySelector(".calendar__days");
-    spanLoadeingElement.classList.add("_hidden");
-    daysElement.classList.add("_hide-loading");
+      spanLoadeingElement.addEventListener("transitionend", function (e) {
+        if (e.propertyName == "opacity") {
+          const lastFileItemElement = document.querySelector(".last-file__item");
+          lastFileItemElement.classList.remove("_no-files");
+          daysElement.classList.remove("_hide-loading");
+          const calendarDaysElement = document.querySelector(".calendar__days");
+          calendarDaysElement.classList.remove("_no-files");
+        }
+      });
 
-    spanLoadeingElement.addEventListener("transitionend", function (e) {
-      if (e.propertyName == "opacity") {
-        const lastFileItemElement = document.querySelector(".last-file__item");
-        lastFileItemElement.classList.remove("_no-files");
-        daysElement.classList.remove("_hide-loading");
-        const calendarDaysElement = document.querySelector(".calendar__days");
-        calendarDaysElement.classList.remove("_no-files");
-      }
-    });
+      const latestFile = getState("filesList").reduce((latest, current) => {
+        return current.date > latest.date ? current : latest;
+      }, getState("filesList")[0]);
 
-    const lastFile = getState("filesList")[getState("filesList").length - 1];
-    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.displayName;
-    document.querySelector(".last-file__date-value").innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
-    document.querySelector(".last-file__time-value").innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
-    calendarRender(true);
+      document.querySelector(".last-file__file-name-value").innerHTML = latestFile.displayName;
+      document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
+      document.querySelector(".last-file__time-value").innerHTML = `${latestFile.hours}:${latestFile.minutes}`;
+      if (latestFile.liveState == true) document.querySelector(".last-file__time-value").classList.add("_live");
+
+      calendarRender(true);
+    }
   } catch (error) {
     console.error("Не удалось загрузить список файлов:", error);
   }
@@ -194,21 +193,23 @@ export async function loadLastFile() {
   document.querySelector(".local-file__label").classList.add("_hidden");
   document.querySelector(".language").classList.add("_hidden");
   try {
-    const fileName = getState("filesJson")[getState("filesJson").length - 1].fileName;
-    const url = `/api/proxy?path=results.jsons/${fileName}`;
+    const latestFile = getState("filesList").reduce((latest, current) => {
+      return current.date > latest.date ? current : latest;
+    }, getState("filesList")[0]);
 
-    //  const fileName = `2025-06-24_19-31_Whoopclub.json`; //Для локальной проверки
-    //  const url = fileName; //Для локальной проверки
+    const url = `/api/getData?uuid=${latestFile.uuid}`;
 
     const data = await fetch(url);
 
     if (!data.ok) throw new Error("Ошибка загрузки");
 
-    setState("mainObj", await data.json());
+    const fullResponse = await data.json();
+
+    setState("mainObj", fullResponse.data.results);
     makeRaceClassButtons();
-    startFileView("last", getState("filesJson")[getState("filesJson").length - 1].fileName);
-    setTittle("event", getState("filesJson")[getState("filesJson").length - 1].fileName);
-    setShareUrl(getState("filesJson")[getState("filesJson").length - 1].fileName);
+    startFileView("last");
+    setTittle(latestFile.uuid);
+    setShareUrl(latestFile.uuid);
   } catch (error) {
     console.log("error", error);
 
@@ -232,19 +233,18 @@ export async function loadDateFile(uuid) {
     const url = `/api/getData?uuid=${uuid}`;
 
     const data = await fetch(url);
-    console.log("data", data);
 
     if (!data.ok) throw new Error("Ошибка загрузки");
 
     const fullResponse = await data.json();
 
     setState("mainObj", fullResponse.data.results);
-    console.log("dataMAIN", getState("mainObj"));
     makeRaceClassButtons();
 
     startFileView("date");
-    setTittle("event", fullResponse);
-    //  setShareUrl(uuid);
+
+    setTittle(uuid, fullResponse.data.eventName);
+    setShareUrl(uuid);
   } catch (error) {
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");

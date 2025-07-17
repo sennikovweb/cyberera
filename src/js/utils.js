@@ -219,9 +219,9 @@ export function getMinutesSinceUpload(timePart, uploadTimestamp) {
   if (timePart == "seconds") return `и ${remainingSeconds} ${getState("textStrings").seconds} ${getState("textStrings").ago}`;
 }
 
-export function setShareUrl(fileName) {
+export function setShareUrl(uuid) {
   const eventUrl = new URL(window.location.href);
-  eventUrl.searchParams.set("event", `${fileName.slice(0, -5)}`);
+  eventUrl.searchParams.set("uuid", `${uuid}`);
 
   history.pushState({}, "", eventUrl);
 
@@ -244,8 +244,8 @@ export function getLiveState(now, fileTimesmap) {
 export function getDateStrings(timeFormated) {
   const [datePart, timePart] = timeFormated.split(" ");
   const [year, month, day] = datePart.split("-").map(Number)
-  const [hour, minute] = timePart.split(":").map((n) => n.padStart(2, "0"));
-  const date = new Date(year, month - 1, day, hour, minute);
+  const [hours, minutes] = timePart.split(":").map((n) => n.padStart(2, "0"));
+  const date = new Date(year, month - 1, day, hours, minutes);
 
-  return { date, year, month, day, hour, minute };
+  return { date, year, month, day, hours, minutes };
 }

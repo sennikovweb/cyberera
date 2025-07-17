@@ -214,7 +214,7 @@ body {
 	opacity: 0.8;
 	width: 140px;
 	// box-shadow: 0px 0px 10px $color-akcent2;
-	animation: fade-in 0.5s ease 0s 1 normal forwards,ready-animation 1.5s ease 0s infinite normal forwards;
+	animation: fade-in 0.5s ease 0s 1 normal forwards, ready-animation 1.5s ease 0s infinite normal forwards;
 	will-change: box-shadow;
 
 	&:hover {
@@ -233,10 +233,11 @@ body {
 	@media(max-width:992px) {
 		top: 50%;
 	}
+
 	@media(max-width:510px) {
-		top:80%;
-		right:50%;
-		transform: translate(50%,0);
+		top: 80%;
+		right: 50%;
+		transform: translate(50%, 0);
 		width: 200px;
 		height: 80px;
 		font-size: 28px;
@@ -752,6 +753,7 @@ body {
 			box-shadow: 0px 0px 5px $color-akcent2, 0px 0px 0px $color-akcent2 inset;
 		}
 
+
 	}
 
 	&__file-name {
@@ -795,7 +797,23 @@ body {
 
 	&__time-value {
 		font-weight: 600;
+		position: relative;
 
+		&._live {
+			&:after {
+				content: '';
+				position: absolute;
+				bottom: 50%;
+				left: 0%;
+				transform: translate(-200%, 50%);
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background-color: #f00;
+				animation: live 1.5s linear 0s infinite normal forwards;
+			}
+	
+		}
 	}
 }
 
@@ -980,6 +998,7 @@ body {
 	}
 
 	&__day {
+		position: relative;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -1081,6 +1100,24 @@ body {
 				background-color: #66fcf2c9;
 			}
 
+		}
+
+		&._live {
+
+			&:after {
+				content: '';
+				position: absolute;
+				bottom: 2px;
+				right: 2px;
+				transform: translate(0%, 0%);
+				width: 10px;
+				height: 10px;
+				z-index: 20;
+				opacity: 0.7;
+				border-radius: 50%;
+				background-color: #f00;
+				animation: live-calendar 1.5s linear 0s infinite normal forwards;
+			}
 		}
 	}
 
@@ -2059,16 +2096,18 @@ body {
 	}
 
 }
-.empty-container{
+
+.empty-container {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 }
 
-.empty-tittle{
+.empty-tittle {
 	font-size: 26px;
 }
+
 .modal {
 	position: fixed;
 	top: 0;
@@ -5187,5 +5226,33 @@ body {
 
 	100% {
 		opacity: 0.9;
+	}
+}
+
+@keyframes live {
+	0% {
+		box-shadow: 0px 0px 2px #f00;
+	}
+
+	50% {
+		box-shadow: 0px 0px 10px #f00;
+	}
+
+	100% {
+		box-shadow: 0px 0px 2px #f00;
+	}
+}
+
+@keyframes live-calendar {
+	0% {
+		box-shadow: 0px 0px 0px $color-back inset;
+	}
+
+	50% {
+		box-shadow: 0px 0px 4px $color-back inset;
+	}
+
+	100% {
+		box-shadow: 0px 0px 0px $color-back inset;
 	}
 }

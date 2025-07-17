@@ -2106,6 +2106,9 @@ export function calendarRender(filesloaded) {
       if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
         isHaveFiles = true;
         dayElement.classList.add("_day__file");
+		  if (file.liveState==true){
+			dayElement.classList.add("_live");
+		  }
       }
     });
 

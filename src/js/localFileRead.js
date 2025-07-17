@@ -89,7 +89,7 @@ export async function startLocalFile(e) {
 
       makeRaceClassButtons();
       startFileView("local");
-      setTittle("local");
+      setTittle();
     } else {
       //Если не спарсилось, рисуем ошибку
       getLocalFileElement("button").innerHTML = getState("textStrings").error;
