@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       filesList = filesList.filter((entry) => entry.uuid !== req.body.deleteUuid);
 
       await redis.set("FILES", filesList);
-		
+
       return res.status(204).json({ ok: true });
     } catch (error) {
       console.error(error);
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
       await redis.set("FILES", filesList);
 
-      return res.status(200).json({ ok: true });
+      return res.status(200).json({ ok: true ,eventStart});
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: err.message });
