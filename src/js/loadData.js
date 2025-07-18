@@ -108,7 +108,7 @@ export async function loadFilesJsonOld() {
     });
 
     const lastFile = getState("filesJson")[getState("filesJson").length - 1];
-    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.displayName;
+    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.eventName;
     document.querySelector(".last-file__date-value").innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
     document.querySelector(".last-file__time-value").innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
 
@@ -140,7 +140,7 @@ export async function loadFilesList(calendar) {
         obj.minutes = minutes;
 
         obj.liveState = getLiveState(Date.now(), date.getTime());
-        obj.displayName = file.meta.eventName;
+        obj.eventName = file.meta.eventName;
         obj.uuid = file.uuid;
         obj.monthName = getState("textStrings").monthsNames[month - 1];
         setState("filesList", [...getState("filesList"), obj]);
@@ -167,7 +167,7 @@ export async function loadFilesList(calendar) {
         return current.date > latest.date ? current : latest;
       }, getState("filesList")[0]);
 
-      document.querySelector(".last-file__file-name-value").innerHTML = latestFile.displayName;
+      document.querySelector(".last-file__file-name-value").innerHTML = latestFile.eventName;
       document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
       document.querySelector(".last-file__time-value").innerHTML = `${latestFile.hours}:${latestFile.minutes}`;
       if (latestFile.liveState == true) document.querySelector(".last-file__time-value").classList.add("_live");
