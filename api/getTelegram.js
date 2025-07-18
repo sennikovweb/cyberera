@@ -34,6 +34,7 @@ export default async function handler(req, res) {
 
     const completeData = {
       uuid,
+      key: "",
       data: {
         lastUpdate,
         eventName,
