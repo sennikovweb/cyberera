@@ -8,12 +8,15 @@ export async function urlUpload() {
   try {
     const eventUrl = new URL(window.location.href);
 
+    console.log("ПОСЛЕ LOAD");
+
     const fullLiveData = await getLiveData(getState("isUuid"));
+
     setState("mainObj", fullLiveData.results);
+    //  setState("isUuid", ''); Уже есть uuid
     setState("liveTimestamp", fullLiveData.lastUpdate);
 
     makeRaceClassButtons();
-
     startFileView("uuid");
 
     const isLive = getLiveState(Date.now(), fullLiveData.lastUpdate);
@@ -48,75 +51,6 @@ export async function getLiveData(uuid) {
   return dataJson.data;
 }
 
-// export async function getEventData(event) {
-//   const fileName = `${event}.json`;
-
-//   const url = `/api/proxy?path=results.jsons/${fileName}`;
-//   const data = await fetch(url);
-//   if (!data.ok) throw new Error("Ошибка загрузки");
-//   return await data.json();
-// }
-
-export async function loadFilesJsonOld() {
-  calendarRender(false);
-  let responseDataFiles;
-
-  try {
-    const url = `/api/proxy?path=files.json`;
-
-    //  const url = `files.json`; //Для локальной проверки
-
-    const response = await fetch(url);
-
-    if (!response.ok) throw new Error("Ошибка загрузки");
-    const responseData = await response.json();
-
-    responseDataFiles = responseData.files;
-
-    responseDataFiles.forEach((file) => {
-      ///Собираем объект всех файлов из репозитория
-      const obj = {};
-      const [datePart, timePart, displayName] = file.split("_");
-      const isoString = `${datePart}T${timePart.replace("-", ":")}`;
-      const date = new Date(isoString);
-      obj.displayName = displayName.split(".")[0].replace(/-/g, " ");
-      obj.date = date;
-      obj.fileName = file;
-      obj.year = date.getFullYear();
-      obj.month = date.getMonth();
-      obj.monthName = getState("textStrings").monthsNames[date.getMonth()];
-      obj.day = date.getDate();
-      obj.hours = date.getHours();
-      obj.minutes = date.getMinutes();
-      setState("filesJson", [...getState("filesJson"), obj]);
-    });
-
-    const spanLoadeingElement = document.querySelector("._no-files-span");
-    const daysElement = document.querySelector(".calendar__days");
-    spanLoadeingElement.classList.add("_hidden");
-    daysElement.classList.add("_hide-loading");
-
-    spanLoadeingElement.addEventListener("transitionend", function (e) {
-      if (e.propertyName == "opacity") {
-        const lastFileItemElement = document.querySelector(".last-file__item");
-        lastFileItemElement.classList.remove("_no-files");
-        daysElement.classList.remove("_hide-loading");
-        const calendarDaysElement = document.querySelector(".calendar__days");
-        calendarDaysElement.classList.remove("_no-files");
-      }
-    });
-
-    const lastFile = getState("filesJson")[getState("filesJson").length - 1];
-    document.querySelector(".last-file__file-name-value").innerHTML = lastFile.eventName;
-    document.querySelector(".last-file__date-value").innerHTML = `${lastFile.day} ${lastFile.monthName} ${lastFile.year}`;
-    document.querySelector(".last-file__time-value").innerHTML = `${lastFile.hours}:${lastFile.minutes}`;
-
-    calendarRender(true);
-  } catch (error) {
-    console.error("Не удалось загрузить файл:", error);
-  }
-}
-
 export async function loadFilesList(calendar) {
   if (calendar) calendarRender(false);
 
@@ -145,7 +79,8 @@ export async function loadFilesList(calendar) {
         setState("filesList", [...getState("filesList"), obj]);
       }
     });
-
+    getState("filesListResolve")();
+    setState("filesListLoaded", true);
     if (calendar) {
       const spanLoadeingElement = document.querySelector("._no-files-span");
       const daysElement = document.querySelector(".calendar__days");
@@ -205,18 +140,19 @@ export async function loadLastFile() {
     const fullResponse = await data.json();
 
     setState("mainObj", fullResponse.data.results);
+    setState("isUuid", latestFile.uuid);
+    setState("liveTimestamp", latestFile.lastUpdate);
+
     makeRaceClassButtons();
     startFileView("last");
 
     if (latestFile.liveState) {
-      setState("isUuid", latestFile.uuid);
-      setState("liveTimestamp", latestFile.lastUpdate);
       tittleCounter(latestFile.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
-      setTittle(latestFile.uuid);
+      setTittle(getState("isUuid"));
     }
-    setShareUrl(latestFile.uuid);
+    setShareUrl(getState("isUuid"));
   } catch (error) {
     console.log("error", error);
 
@@ -237,29 +173,28 @@ export async function loadDateFile(uuid) {
   document.querySelector(".language").classList.add("_hidden");
 
   try {
-    const url = `/api/getData?uuid=${uuid}`;
+    const fileListData = getState("filesList").find((file) => file.uuid == uuid);
 
+    const url = `/api/getData?uuid=${uuid}`;
     const data = await fetch(url);
 
     if (!data.ok) throw new Error("Ошибка загрузки");
 
     const fullResponse = await data.json();
-
     setState("mainObj", fullResponse.data.results);
-    makeRaceClassButtons();
+    setState("isUuid", uuid);
+    setState("liveTimestamp", fileListData.lastUpdate);
 
+    makeRaceClassButtons();
     startFileView("date");
-    const fileListData = getState("filesList").find((file) => file.uuid == uuid);
 
     if (fileListData.liveState) {
-      setState("isUuid", fileListData.uuid);
-      setState("liveTimestamp", fileListData.lastUpdate);
       tittleCounter(fileListData.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
-      setTittle(fileListData.uuid);
+      setTittle(getState("isUuid"));
     }
-    setShareUrl(uuid);
+    setShareUrl(getState("isUuid"));
   } catch (error) {
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");

@@ -893,41 +893,18 @@ export async function moveMonth(start, stop) {
   }
 }
 
-export function setTittleOld(tittleType, filename, eventName) {
-  const mainDisplayName = document.querySelector(".main-tittle__display-name");
-  const mainDate = document.querySelector(".main-tittle__date");
-  const mainTime = document.querySelector(".main-tittle__time");
-
-  if (tittleType == "uuid") {
-    mainDisplayName.innerHTML = eventName; //Добавялем Имя Ивента
-    mainDate.innerHTML = "-";
-    mainTime.innerHTML = "-";
-  } else if (tittleType == "event") {
-    const [datePart, timePart, displayName] = filename.split("_");
-    const isoString = `${datePart}T${timePart.replace("-", ":")}`;
-    const date = new Date(isoString);
-    mainDisplayName.innerHTML = displayName.split(".")[0].replace(/-/g, " ");
-    mainDate.innerHTML = `${date.getDate()} ${getState("textStrings").monthsNames[date.getMonth()]} ${date.getFullYear()}`;
-    mainTime.innerHTML = `${date.getHours()}:${date.getMinutes()}`;
-  } else if (tittleType == "local") {
-    const day = getDateinfo("day");
-    const year = getDateinfo("year");
-    const time = getDateinfo("time");
-    mainDate.innerHTML = `${day} ${year}`;
-    mainTime.innerHTML = `${time}`;
-    mainDisplayName.remove();
-  }
-}
-
-export function setTittle(fileUuid) {
+export async function setTittle(fileUuid) {
   const mainDisplayName = document.querySelector(".main-tittle__display-name");
   const mainDate = document.querySelector(".main-tittle__date");
   const mainTime = document.querySelector(".main-tittle__time");
   if (fileUuid) {
+    if (getState("filesListLoaded") == false) {
+      await getState("fileListPending");
+    }
     const fileInfo = getState("filesList").find((file) => {
       return file.uuid == fileUuid;
     });
-    console.log("fileInfofileInfo", getState("filesList"));
+    //  console.log("fileInfofileInfo", getState("filesList"));
 
     mainDisplayName.innerHTML = fileInfo.eventName;
     mainDate.innerHTML = `${fileInfo.day} ${getState("textStrings").monthsNames[fileInfo.month]} ${fileInfo.year}`;

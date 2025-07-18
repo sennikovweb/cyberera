@@ -9,6 +9,9 @@ const states = {
   isEvent: null,
   isUuid: null,
   filesList: [],
+  filesListLoaded: false,
+  filesListResolve: null,
+  fileListPending: null,
   currentMonth: new Date(),
   graphTouchFlag: false,
   lapsIdData: [],
@@ -16,6 +19,10 @@ const states = {
   newLiveData: false,
   checkLiveDataInterval: null,
 };
+
+states.fileListPending = new Promise((resolve) => {
+  states.filesListResolve = resolve;
+});
 
 export function setState(key, value) {
   states[key] = value;
