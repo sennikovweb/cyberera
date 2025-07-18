@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
     const lastUpdate = lastUpdateDate.getTime();
 
-    console.log("body", { eventName, eventStart, lastUpdate, data });
+    console.log("body", { uuid, eventName, eventStart, lastUpdate, data });
 
     return res.status(200).json({ ok: true });
   } catch (error) {}
