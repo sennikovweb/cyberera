@@ -15,9 +15,10 @@ export default async function handler(req, res) {
     return res.status(204).end(); // No Content
   }
   setCorsHeaders(res);
-  console.log("УДАЛИТЬ", req.body);
-  if (req.body.uuid) {
-    console.log("УДАЛИТЬ", req.body.uuid);
+
+  if (req.body.deleteUuid) {
+    console.log("УДАЛИТЬ", req.body.deleteUuid);
+    return res.status(200).json({ ok: true });
   } else {
     const longUuid = randomUUID();
     const buf = Buffer.from(longUuid.replace(/-/g, ""), "hex");
