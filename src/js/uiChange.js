@@ -929,7 +929,7 @@ export function setTittle(fileUuid) {
     });
     console.log("fileInfofileInfo", getState("filesList"));
 
-    mainDisplayName.innerHTML = fileInfo.displayName;
+    mainDisplayName.innerHTML = fileInfo.eventName;
     mainDate.innerHTML = `${fileInfo.day} ${getState("textStrings").monthsNames[fileInfo.month]} ${fileInfo.year}`;
     mainTime.innerHTML = `${fileInfo.hours}:${fileInfo.minutes}`;
   } else {
