@@ -556,7 +556,7 @@ export function getDayFiles(date) {
 		  if(file.liveState==true)fileItemElement.timeValue.classList.add("_live");
 
         fileItemElement.nameTittle.innerHTML = `${getState("textStrings").event}:`;
-        fileItemElement.nameValue.innerHTML = file.displayName;
+        fileItemElement.nameValue.innerHTML = file.eventName;
 
         fileItemElement.dateTittle.innerHTML = `${getState("textStrings").date}:`;
         fileItemElement.dateValue.innerHTML = `${file.day} ${file.monthName} ${file.year}`;
