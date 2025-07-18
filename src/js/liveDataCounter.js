@@ -21,7 +21,7 @@ export function checkLiveData() {
       const newData = await getLiveData(getState("isUuid"));
       console.log("CHECK DATA");
 
-      if (getState("liveTimestamp") != newData.date && getState("newLiveData") == false) {
+      if (getState("liveTimestamp") != newData.lastUpdate && getState("newLiveData") == false) {
         setState("newLiveData", true);
       }
       if (getState("newLiveData")) {
@@ -33,7 +33,7 @@ export function checkLiveData() {
           function () {
             updateLiveDataButton.classList.add("_no-event");
             setState("mainObj", newData.results);
-            setState("liveTimestamp", newData.date);
+            setState("liveTimestamp", newData.lastUpdate);
 
             //Очищаем кнопки классов - вдруг поменялись
             document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
