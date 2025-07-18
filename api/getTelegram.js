@@ -32,10 +32,37 @@ export default async function handler(req, res) {
     const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
     const lastUpdate = lastUpdateDate.getTime();
 
-    console.log("body", { uuid, eventName, eventStart, lastUpdate, data });
+    const completeData = {
+      uuid,
+      data: {
+        lastUpdate,
+        eventName,
+        results: data,
+      },
+    };
+
+    await redis.set(uuid, JSON.stringify(completeData));
+
+    const filesRaw = await redis.get("FILES");
+    let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+    const meta = {
+      eventName,
+      lastUpdate,
+      eventStart,
+    };
+
+    filesList = filesList.filter((entry) => entry.uuid !== uuid);
+
+    filesList.push({ uuid, meta });
+
+    await redis.set("FILES", filesList);
 
     return res.status(200).json({ ok: true });
-  } catch (error) {}
+  } catch (error) {
+    console.error(err);
+    return res.status(500).json({ status: "error", message: err.message });
+  }
 }
 
 function getEventTime(data, reverse) {

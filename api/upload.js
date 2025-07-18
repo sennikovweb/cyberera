@@ -46,7 +46,7 @@ export default async function handler(req, res) {
 
     // 2) Читаем тело запроса
     const body = req.body;
-    const uuid = body.event_uuid;
+    const uuid = body.uuid;
     const key = body.key;
     const data = body.data;
 
@@ -81,10 +81,10 @@ export default async function handler(req, res) {
 
     // 2. Считываем текущий индекс файлов
     const filesRaw = await redis.get("FILES");
-    console.log("filesRaw", filesRaw);
+
 
     let filesList = Array.isArray(filesRaw) ? filesRaw : [];
-    console.log("Array.isArray(filesRaw)", Array.isArray(filesRaw));
+
 
     // 3. Готовим метаинформацию
     const meta = {
