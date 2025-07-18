@@ -67,7 +67,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
 
-      if (Date.now() - parsedPrevFile.data.date > STOP_LIVE_TIME) {
+      if (Date.now() - parsedPrevFile.data.lastUpdate > STOP_LIVE_TIME) {
         return res.status(410).json({
           status: "error",
           message: "Too long without updates",
@@ -88,8 +88,8 @@ export default async function handler(req, res) {
 
     // 3. Готовим метаинформацию
     const meta = {
-      title: data.eventName || "Без названия",
-      lastUpdate: data.date,
+      eventName: data.eventName || "Без названия",
+      lastUpdate: data.lastUpdate,
       eventStart: getEventStartTime(data.results),
     };
 

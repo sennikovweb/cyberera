@@ -29,7 +29,8 @@ export default async function handler(req, res) {
     const eventName = body.caption;
     const data = body.jsonData;
     const eventStart = getEventTime(data, false);
-    const lastUpdate = getEventTime(data, true);
+    const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
+    const lastUpdate = lastUpdateDate.getTime();
 
     console.log("body", { eventName, eventStart, lastUpdate, data });
 
@@ -52,4 +53,3 @@ function getEventTime(data, reverse) {
 
   return formatedTime || null;
 }
-

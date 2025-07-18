@@ -10,13 +10,13 @@ export async function urlUpload() {
 
     const fullLiveData = await getLiveData(getState("isUuid"));
     setState("mainObj", fullLiveData.results);
-    setState("liveTimestamp", fullLiveData.date);
+    setState("liveTimestamp", fullLiveData.lastUpdate);
 
     makeRaceClassButtons();
 
     startFileView("uuid");
 
-    const isLive = getLiveState(Date.now(), fullLiveData.date);
+    const isLive = getLiveState(Date.now(), fullLiveData.lastUpdate);
 
     if (isLive) {
       tittleCounter(fullLiveData.eventName);
@@ -140,7 +140,7 @@ export async function loadFilesList(calendar) {
         obj.minutes = minutes;
 
         obj.liveState = getLiveState(Date.now(), date.getTime());
-        obj.displayName = file.meta.title;
+        obj.displayName = file.meta.eventName;
         obj.uuid = file.uuid;
         obj.monthName = getState("textStrings").monthsNames[month - 1];
         setState("filesList", [...getState("filesList"), obj]);
