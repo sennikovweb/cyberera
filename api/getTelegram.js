@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     return res.status(204).end(); // No Content
   }
   setCorsHeaders(res);
-
+  console.log("УДАЛИТЬ", req.body);
   if (req.body.uuid) {
     console.log("УДАЛИТЬ", req.body.uuid);
   } else {
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
       return res.status(200).json({ ok: true });
     } catch (error) {
-      console.error(err);
+      console.error(error);
       return res.status(500).json({ status: "error", message: err.message });
     }
   }
