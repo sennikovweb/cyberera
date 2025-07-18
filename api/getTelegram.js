@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
       await redis.set("FILES", filesList);
 
-      return res.status(200).json({ ok: true ,eventStart});
+      return res.status(200).json({ ok: true, eventStart, uuid });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: err.message });
