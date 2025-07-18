@@ -17,8 +17,21 @@ export default async function handler(req, res) {
   setCorsHeaders(res);
 
   if (req.body.deleteUuid) {
-    console.log("УДАЛИТЬ", req.body.deleteUuid);
-    return res.status(200).json({ ok: true });
+    try {
+      await redis.del(req.body.deleteUuid);
+
+      const filesRaw = await redis.get("FILES");
+      let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+      filesList = filesList.filter((entry) => entry.uuid !== req.body.deleteUuid);
+
+      await redis.set("FILES", filesList);
+		
+      return res.status(204).json({ ok: true });
+    } catch (error) {
+      console.error(error);
+      return res.status(400).json({ ok: false });
+    }
   } else {
     const longUuid = randomUUID();
     const buf = Buffer.from(longUuid.replace(/-/g, ""), "hex");
