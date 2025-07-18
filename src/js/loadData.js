@@ -17,7 +17,6 @@ export async function urlUpload() {
     startFileView("uuid");
 
     const isLive = getLiveState(Date.now(), fullLiveData.lastUpdate);
-
     if (isLive) {
       tittleCounter(fullLiveData.eventName);
       checkLiveData(); //Открыть счётчик
@@ -30,7 +29,7 @@ export async function urlUpload() {
     const shareUrlElement = document.querySelector(".author__share-url");
     shareUrlElement.textContent = eventUrl.href;
     const languageElement = getState("language") == "ru" ? document.querySelector(`.language__EN`) : getState("language") == "en" && document.querySelector(`.language__RU`);
-    const newLanguageChangeLink = `${languageElement.getAttribute("href")}?uuid=${eventUrl.searchParams.get('uuid')}`;
+    const newLanguageChangeLink = `${languageElement.getAttribute("href")}?uuid=${eventUrl.searchParams.get("uuid")}`;
     languageElement.setAttribute("href", `${newLanguageChangeLink}`);
   } catch (error) {
     console.error("error", error);
@@ -138,7 +137,7 @@ export async function loadFilesList(calendar) {
         obj.day = day;
         obj.hours = hours;
         obj.minutes = minutes;
-
+        obj.lastUpdate = file.meta.lastUpdate;
         obj.liveState = getLiveState(Date.now(), date.getTime());
         obj.eventName = file.meta.eventName;
         obj.uuid = file.uuid;
@@ -208,7 +207,15 @@ export async function loadLastFile() {
     setState("mainObj", fullResponse.data.results);
     makeRaceClassButtons();
     startFileView("last");
-    setTittle(latestFile.uuid);
+
+    if (latestFile.liveState) {
+      setState("isUuid", latestFile.uuid);
+      setState("liveTimestamp", latestFile.lastUpdate);
+      tittleCounter(latestFile.eventName);
+      checkLiveData(); //Открыть счётчик
+    } else {
+      setTittle(latestFile.uuid);
+    }
     setShareUrl(latestFile.uuid);
   } catch (error) {
     console.log("error", error);
@@ -242,8 +249,16 @@ export async function loadDateFile(uuid) {
     makeRaceClassButtons();
 
     startFileView("date");
+    const fileListData = getState("filesList").find((file) => file.uuid == uuid);
 
-    setTittle(uuid, fullResponse.data.eventName);
+    if (fileListData.liveState) {
+      setState("isUuid", fileListData.uuid);
+      setState("liveTimestamp", fileListData.lastUpdate);
+      tittleCounter(fileListData.eventName);
+      checkLiveData(); //Открыть счётчик
+    } else {
+      setTittle(fileListData.uuid);
+    }
     setShareUrl(uuid);
   } catch (error) {
     fileItemElement.classList.remove("_loading");
