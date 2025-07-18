@@ -16,53 +16,57 @@ export default async function handler(req, res) {
   }
   setCorsHeaders(res);
 
-  const longUuid = randomUUID();
-  const buf = Buffer.from(longUuid.replace(/-/g, ""), "hex");
-  let b64 = buf.toString("base64");
+  if (req.body.uuid) {
+    console.log("УДАЛИТЬ", req.body.uuid);
+  } else {
+    const longUuid = randomUUID();
+    const buf = Buffer.from(longUuid.replace(/-/g, ""), "hex");
+    let b64 = buf.toString("base64");
 
-  b64 = b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); // делаем URL-safe: + → -, / → _, убираем = в конце
+    b64 = b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); // делаем URL-safe: + → -, / → _, убираем = в конце
 
-  const uuid = b64;
+    const uuid = b64;
 
-  try {
-    const body = req.body;
-    const eventName = body.caption;
-    const data = body.jsonData;
-    const eventStart = getEventTime(data, false);
-    const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
-    const lastUpdate = lastUpdateDate.getTime();
+    try {
+      const body = req.body;
+      const eventName = body.caption;
+      const data = body.jsonData;
+      const eventStart = getEventTime(data, false);
+      const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
+      const lastUpdate = lastUpdateDate.getTime();
 
-    const completeData = {
-      uuid,
-      key: "",
-      data: {
-        lastUpdate,
+      const completeData = {
+        uuid,
+        key: "",
+        data: {
+          lastUpdate,
+          eventName,
+          results: data,
+        },
+      };
+
+      await redis.set(uuid, JSON.stringify(completeData));
+
+      const filesRaw = await redis.get("FILES");
+      let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+      const meta = {
         eventName,
-        results: data,
-      },
-    };
+        lastUpdate,
+        eventStart,
+      };
 
-    await redis.set(uuid, JSON.stringify(completeData));
+      filesList = filesList.filter((entry) => entry.uuid !== uuid);
 
-    const filesRaw = await redis.get("FILES");
-    let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+      filesList.push({ uuid, meta });
 
-    const meta = {
-      eventName,
-      lastUpdate,
-      eventStart,
-    };
+      await redis.set("FILES", filesList);
 
-    filesList = filesList.filter((entry) => entry.uuid !== uuid);
-
-    filesList.push({ uuid, meta });
-
-    await redis.set("FILES", filesList);
-
-    return res.status(200).json({ ok: true });
-  } catch (error) {
-    console.error(err);
-    return res.status(500).json({ status: "error", message: err.message });
+      return res.status(200).json({ ok: true });
+    } catch (error) {
+      console.error(err);
+      return res.status(500).json({ status: "error", message: err.message });
+    }
   }
 }
 
