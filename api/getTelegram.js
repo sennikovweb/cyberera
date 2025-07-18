@@ -17,5 +17,5 @@ export default async function handler(req, res) {
   setCorsHeaders(res);
 
   const body = req.body;
-  console.log("bodybodybody", JSON.parse(body));
+  console.log("bodybodybody", JSON.stringify(body));
 }
