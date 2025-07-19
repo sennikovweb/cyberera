@@ -47,14 +47,12 @@ export default async function handler(req, res) {
     // 2) Читаем тело запроса
 
     const body = req.body;
-    const uuid = body.uuid;
-    const key = body.key;
 
-    if (!uuid) {
+    if (!body.uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
     }
 
-    const redisResponse = await redis.get(uuid);
+    const redisResponse = await redis.get(body.uuid);
     let parsedPrevFile;
 
     if (redisResponse) {
@@ -63,14 +61,14 @@ export default async function handler(req, res) {
       } catch (error) {
         return res.status(400).json({ message: "Corrupted data in db" });
       }
-      if (parsedPrevFile.key != key) {
+      if (parsedPrevFile.key != body.key) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
 
       //Если ивент завершен
       if (body.isFinished == true) {
         parsedPrevFile.isFinished = true;
-        await redis.set(uuid, JSON.stringify(parsedPrevFile));
+        await redis.set(body.uuid, JSON.stringify(parsedPrevFile));
 
         await updateFILES(parsedPrevFile.data);
 
@@ -92,7 +90,7 @@ export default async function handler(req, res) {
     }
 
     // 3) Сохраняем данные, если они не завершены, не старые
-    await redis.set(uuid, JSON.stringify(body));
+    await redis.set(body.uuid, JSON.stringify(body));
 
     await updateFILES(body.data);
 
@@ -121,10 +119,10 @@ async function updateFILES(resData) {
   };
 
   // 4. Удаляем старую запись этого uuid (если она есть)
-  filesList = filesList.filter((entry) => entry.uuid !== uuid);
+  filesList = filesList.filter((entry) => entry.uuid !== body.uuid);
 
   // 5. Добавляем новую
-  filesList.push({ uuid: uuid, meta });
+  filesList.push({ uuid: body.uuid, meta });
 
   // 6. Перезаписываем индекс файлов
   await redis.set("FILES", filesList);
