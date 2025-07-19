@@ -72,7 +72,7 @@ export default async function handler(req, res) {
         parsedPrevFile.isFinished = true;
         await redis.set(uuid, JSON.stringify(parsedPrevFile));
 
-        updateFILES(parsedPrevFile.data);
+        await updateFILES(parsedPrevFile.data);
 
         return res.status(200).json({
           status: "success",
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(uuid, JSON.stringify(body));
 
-    updateFILES(body.data);
+    await updateFILES(body.data);
 
     // 5) Отправляем ответ
     return res.status(200).json({
