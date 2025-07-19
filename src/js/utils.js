@@ -229,8 +229,8 @@ export function setShareUrl(uuid) {
   shareUrlElement.textContent = eventUrl.href;
 }
 
-export function getLiveState(now, fileTimesmap) {
-  const diff = Math.abs(fileTimesmap - now); // разница в миллисекундах
+export function getLiveState(fileTimesmap) {
+  const diff = Math.abs(fileTimesmap - Date.now()); // разница в миллисекундах
 
   const sixHoursInMs = 6 * 60 * 60 * 1000;
 

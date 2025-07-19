@@ -18,7 +18,7 @@ export async function urlUpload() {
     makeRaceClassButtons();
     startFileView("uuid");
 
-    const isLiveTime = getLiveState(Date.now(), fullLiveData.lastUpdate);
+    //  const isLiveTime = getLiveState(Date.now(), fullLiveData.lastUpdate);
 
     if (getState("filesListLoaded") == false) {
       await getState("fileListPending");
@@ -28,7 +28,6 @@ export async function urlUpload() {
     if (!fileListData.isFinished) {
       tittleCounter(fullLiveData.eventName);
       checkLiveData(); //Открыть счётчик
-		
     } else {
       setTittle(getState("isUuid"));
     }
@@ -83,10 +82,16 @@ export async function loadFilesList(calendar) {
         obj.uuid = file.uuid;
         obj.monthName = getState("textStrings").monthsNames[month - 1];
         setState("filesList", [...getState("filesList"), obj]);
+
+        //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
+        if (file.meta.isFinished === false && getLiveState(file.meta.lastUpdate) == false) {
+          finishOldEvent(file.uuid);
+        }
       }
     });
     getState("filesListResolve")();
     setState("filesListLoaded", true);
+    console.log(getState("filesList"));
 
     if (calendar) {
       const spanLoadeingElement = document.querySelector("._no-files-span");
@@ -209,6 +214,6 @@ export async function loadDateFile(uuid) {
   clearTimeout(loadTimer);
 }
 
-async function finishOldEvent(fileUuid){
-
+async function finishOldEvent(fileUuid) {
+  console.log("Ивент старый, но не закрыт", fileUuid);
 }
