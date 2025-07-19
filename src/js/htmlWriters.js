@@ -1778,8 +1778,8 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     }
   }
 
-  const lapsPilot1 = getLapsByName(pilotsVsArr[0], pilotsHeats[0], false);
-  const lapsPilot2 = getLapsByName(pilotsVsArr[1], pilotsHeats[1], false);
+  const lapsPilot1 = getLapsByName(pilotsVsArr[0],false);
+  const lapsPilot2 = getLapsByName(pilotsVsArr[1],false);
 
   const averageLineFloat = (+lapTimeConverter(pilotsAverages[0], "float") + +lapTimeConverter(pilotsAverages[1], "float")) / 2;
   const averageLineString = lapTimeConverter(averageLineFloat, "string");
@@ -2106,7 +2106,7 @@ export function calendarRender(filesloaded) {
       if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
         isHaveFiles = true;
         dayElement.classList.add("_day__file");
-		  if (file.liveState==true){
+		  if (!file.isFinished){
 			dayElement.classList.add("_live");
 		  }
       }

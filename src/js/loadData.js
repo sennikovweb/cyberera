@@ -8,8 +8,6 @@ export async function urlUpload() {
   try {
     const eventUrl = new URL(window.location.href);
 
-    console.log("ПОСЛЕ LOAD");
-
     const fullLiveData = await getLiveData(getState("isUuid"));
     console.log("fullLiveData", fullLiveData);
 
@@ -20,10 +18,17 @@ export async function urlUpload() {
     makeRaceClassButtons();
     startFileView("uuid");
 
-    const isLive = getLiveState(Date.now(), fullLiveData.lastUpdate);
-    if (isLive) {
+    const isLiveTime = getLiveState(Date.now(), fullLiveData.lastUpdate);
+
+    if (getState("filesListLoaded") == false) {
+      await getState("fileListPending");
+    }
+    const fileListData = getState("filesList").find((file) => file.uuid == getState("isUuid"));
+
+    if (!fileListData.isFinished) {
       tittleCounter(fullLiveData.eventName);
       checkLiveData(); //Открыть счётчик
+		
     } else {
       setTittle(getState("isUuid"));
     }
@@ -60,7 +65,6 @@ export async function loadFilesList(calendar) {
 
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
-console.log('responseDataresponseDataresponseData',responseData);
 
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
@@ -83,8 +87,7 @@ console.log('responseDataresponseDataresponseData',responseData);
     });
     getState("filesListResolve")();
     setState("filesListLoaded", true);
-	 console.log('LIST',getState('filesList'));
-	 
+
     if (calendar) {
       const spanLoadeingElement = document.querySelector("._no-files-span");
       const daysElement = document.querySelector(".calendar__days");
@@ -108,7 +111,7 @@ console.log('responseDataresponseDataresponseData',responseData);
       document.querySelector(".last-file__file-name-value").innerHTML = latestFile.eventName;
       document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
       document.querySelector(".last-file__time-value").innerHTML = `${latestFile.hours}:${latestFile.minutes}`;
-      if (latestFile.liveState == true) document.querySelector(".last-file__time-value").classList.add("_live");
+      if (latestFile.isFinished != true) document.querySelector(".last-file__time-value").classList.add("_live");
 
       calendarRender(true);
     }
@@ -150,7 +153,7 @@ export async function loadLastFile() {
     makeRaceClassButtons();
     startFileView("last");
 
-    if (latestFile.liveState) {
+    if (!latestFile.isFinished) {
       tittleCounter(latestFile.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
@@ -192,7 +195,7 @@ export async function loadDateFile(uuid) {
     makeRaceClassButtons();
     startFileView("date");
 
-    if (fileListData.liveState) {
+    if (!fileListData.isFinished) {
       tittleCounter(fileListData.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
@@ -204,4 +207,8 @@ export async function loadDateFile(uuid) {
     fileItemElement.classList.add("_loading-error");
   }
   clearTimeout(loadTimer);
+}
+
+async function finishOldEvent(fileUuid){
+
 }

@@ -812,7 +812,7 @@ body {
 				background-color: #f00;
 				animation: live 1.5s linear 0s infinite normal forwards;
 			}
-	
+
 		}
 	}
 }
@@ -4969,6 +4969,7 @@ body {
 	&__container {
 
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
 		gap: 15px;
@@ -4976,6 +4977,16 @@ body {
 		visibility: hidden;
 		transform: translate(0px, 50px);
 		transition: opacity 0.2s ease 0s, transform 0.3s ease 0.2s, visibility 0s ease 0.3s;
+
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: -8px;
+			width: 100vw;
+			height: 1px;
+			background-color: $color-stat-stroke;
+			overflow: hidden;
+		}
 
 		&._active {
 			transition: opacity 0.3s ease 0s, transform 0.3s ease 0s, visibility 0s ease 0s;
@@ -4990,6 +5001,7 @@ body {
 		padding: 5px 10px 5px 10px;
 		border-radius: 4px;
 		height: 35px;
+		width: fit-content;
 	}
 }
 
