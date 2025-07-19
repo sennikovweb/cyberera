@@ -119,10 +119,10 @@ async function updateFILES(resData) {
   };
 
   // 4. Удаляем старую запись этого uuid (если она есть)
-  filesList = filesList.filter((entry) => entry.uuid !== body.uuid);
+  filesList = filesList.filter((entry) => entry.uuid !== req.body.uuid);
 
   // 5. Добавляем новую
-  filesList.push({ uuid: body.uuid, meta });
+  filesList.push({ uuid: req.body.uuid, meta });
 
   // 6. Перезаписываем индекс файлов
   await redis.set("FILES", filesList);
