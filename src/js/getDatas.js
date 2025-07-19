@@ -553,7 +553,7 @@ export function getDayFiles(date) {
         fileItemElement.time.classList.add("file__time");
         fileItemElement.timeTittle.classList.add("file__time-tittle");
         fileItemElement.timeValue.classList.add("file__time-value");
-		  if(file.liveState==true)fileItemElement.timeValue.classList.add("_live");
+        if (!file.isFinished) fileItemElement.timeValue.classList.add("_live");
 
         fileItemElement.nameTittle.innerHTML = `${getState("textStrings").event}:`;
         fileItemElement.nameValue.innerHTML = file.eventName;
@@ -578,8 +578,7 @@ export function getDayFiles(date) {
   }, 310);
 }
 
-
-export function updateLiveData(){
-	classSwitch(getState())
-	document.querySelector('.new-live-data-button').remove()
+export function updateLiveData() {
+  classSwitch(getState());
+  document.querySelector(".new-live-data-button").remove();
 }
