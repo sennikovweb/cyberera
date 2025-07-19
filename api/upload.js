@@ -45,6 +45,7 @@ export default async function handler(req, res) {
     }
 
     // 2) Читаем тело запроса
+
     const body = req.body;
     const uuid = body.uuid;
     const key = body.key;
@@ -67,6 +68,16 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
 
+      if (body.isFinished == true) {
+        redisResponse.isFinished = true;
+        await redis.set(uuid, JSON.stringify(redisResponse));
+
+        return res.status(200).json({
+          status: "success",
+          message: "finished is true!",
+        });
+      }
+
       if (Date.now() - parsedPrevFile.data.lastUpdate > STOP_LIVE_TIME) {
         return res.status(410).json({
           status: "error",
@@ -82,9 +93,7 @@ export default async function handler(req, res) {
     // 2. Считываем текущий индекс файлов
     const filesRaw = await redis.get("FILES");
 
-
     let filesList = Array.isArray(filesRaw) ? filesRaw : [];
-
 
     // 3. Готовим метаинформацию
     const meta = {
