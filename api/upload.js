@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         parsedPrevFile.isFinished = true;
         await redis.set(body.uuid, JSON.stringify(parsedPrevFile));
 
-        await updateFILES(parsedPrevFile.data, body.uuid);
+        await updateFILES(parsedPrevFile.data, body.uuid, true);
 
         return res.status(200).json({
           status: "success",
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(body.uuid, JSON.stringify(body));
 
-    await updateFILES(body.data, body.uuid);
+    await updateFILES(body.data, body.uuid, false);
 
     // 5) Отправляем ответ
     return res.status(200).json({
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
   }
 }
 
-async function updateFILES(resData, fileUuid) {
+async function updateFILES(resData, fileUuid, isFinished) {
   // 2. Считываем текущий индекс файлов
   const filesRaw = await redis.get("FILES");
 
@@ -114,7 +114,7 @@ async function updateFILES(resData, fileUuid) {
   // 3. Готовим метаинформацию
   const meta = {
     eventName: resData.eventName || "Без названия",
-    isFinished: resData.isFinished,
+    isFinished,
     eventStart: getEventStartTime(resData.results),
   };
 
