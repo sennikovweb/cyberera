@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         parsedPrevFile.isFinished = true;
         await redis.set(body.uuid, JSON.stringify(parsedPrevFile));
 
-        await updateFILES(parsedPrevFile.data);
+        await updateFILES(parsedPrevFile.data, body.uuid);
 
         return res.status(200).json({
           status: "success",
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(body.uuid, JSON.stringify(body));
 
-    await updateFILES(body.data);
+    await updateFILES(body.data, body.uuid);
 
     // 5) Отправляем ответ
     return res.status(200).json({
@@ -105,7 +105,7 @@ export default async function handler(req, res) {
   }
 }
 
-async function updateFILES(resData) {
+async function updateFILES(resData, fileUuid) {
   // 2. Считываем текущий индекс файлов
   const filesRaw = await redis.get("FILES");
 
@@ -119,10 +119,10 @@ async function updateFILES(resData) {
   };
 
   // 4. Удаляем старую запись этого uuid (если она есть)
-  filesList = filesList.filter((entry) => entry.uuid !== req.body.uuid);
+  filesList = filesList.filter((entry) => entry.uuid !== fileUuid);
 
   // 5. Добавляем новую
-  filesList.push({ uuid: req.body.uuid, meta });
+  filesList.push({ uuid: fileUuid, meta });
 
   // 6. Перезаписываем индекс файлов
   await redis.set("FILES", filesList);
