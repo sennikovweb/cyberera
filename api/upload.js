@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         parsedPrevFile.isFinished = true;
         await redis.set(body.uuid, JSON.stringify(parsedPrevFile));
 
-        await updateFILES(parsedPrevFile, body.uuid, true);
+        await updateFILES(parsedPrevFile.data, body.uuid, true);
 
         return res.status(200).json({
           status: "success",
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(body.uuid, JSON.stringify(body));
 
-    await updateFILES(body, body.uuid, false);
+    await updateFILES(body.data, body.uuid, false);
 
     // 5) Отправляем ответ
     return res.status(200).json({
@@ -113,10 +113,10 @@ async function updateFILES(resData, fileUuid, isFinished) {
 
   // 3. Готовим метаинформацию
   const meta = {
-    eventName: resData.data.eventName || "Без названия",
+    eventName: resData.eventName || "Без названия",
     lastUpdate: resData.lastUpdate,
     isFinished,
-    eventStart: getEventStartTime(resData.data.results),
+    eventStart: getEventStartTime(resData.results),
   };
 
   // 4. Удаляем старую запись этого uuid (если она есть)
