@@ -192,7 +192,7 @@ export function getMinutesSinceUpload(timePart, uploadTimestamp) {
 
   // Проверка на "timestamp из будущего"
   if (uploadTimestamp > now) {
-    return "Timestamp не может быть из будущего";
+    return "- -";
   }
 
   const diffMs = now - uploadTimestamp;
