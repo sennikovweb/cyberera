@@ -11,6 +11,7 @@ export async function urlUpload() {
     console.log("ПОСЛЕ LOAD");
 
     const fullLiveData = await getLiveData(getState("isUuid"));
+    console.log("fullLiveData", fullLiveData);
 
     setState("mainObj", fullLiveData.results);
     //  setState("isUuid", ''); Уже есть uuid
@@ -59,6 +60,7 @@ export async function loadFilesList(calendar) {
 
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
+console.log('responseDataresponseDataresponseData',responseData);
 
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
@@ -72,7 +74,7 @@ export async function loadFilesList(calendar) {
         obj.hours = hours;
         obj.minutes = minutes;
         obj.lastUpdate = file.meta.lastUpdate;
-        obj.liveState = getLiveState(Date.now(), date.getTime());
+        obj.isFinished = file.meta.isFinished;
         obj.eventName = file.meta.eventName;
         obj.uuid = file.uuid;
         obj.monthName = getState("textStrings").monthsNames[month - 1];
@@ -81,6 +83,8 @@ export async function loadFilesList(calendar) {
     });
     getState("filesListResolve")();
     setState("filesListLoaded", true);
+	 console.log('LIST',getState('filesList'));
+	 
     if (calendar) {
       const spanLoadeingElement = document.querySelector("._no-files-span");
       const daysElement = document.querySelector(".calendar__days");

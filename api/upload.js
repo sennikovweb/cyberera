@@ -114,6 +114,7 @@ async function updateFILES(resData, fileUuid, isFinished) {
   // 3. Готовим метаинформацию
   const meta = {
     eventName: resData.eventName || "Без названия",
+    lastUpdate: resData.lastUpdate,
     isFinished,
     eventStart: getEventStartTime(resData.results),
   };
