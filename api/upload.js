@@ -49,7 +49,6 @@ export default async function handler(req, res) {
     const body = req.body;
     const uuid = body.uuid;
     const key = body.key;
-    const data = body.data;
 
     if (!uuid) {
       return res.status(400).json({ status: "error", message: "event_uuid is required" });
@@ -68,16 +67,20 @@ export default async function handler(req, res) {
         return res.status(403).json({ success: false, message: "Wrong key!" });
       }
 
+      //Если ивент завершен
       if (body.isFinished == true) {
-        redisResponse.isFinished = true;
-        await redis.set(uuid, JSON.stringify(redisResponse));
+        parsedPrevFile.isFinished = true;
+        await redis.set(uuid, JSON.stringify(parsedPrevFile));
+
+        updateFILES(parsedPrevFile.data);
 
         return res.status(200).json({
           status: "success",
-          message: "finished is true!",
+          message: "finished success",
         });
       }
 
+      //Если не завершен, проверяем, не стар ли
       if (Date.now() - parsedPrevFile.data.lastUpdate > STOP_LIVE_TIME) {
         return res.status(410).json({
           status: "error",
@@ -87,29 +90,11 @@ export default async function handler(req, res) {
         });
       }
     }
-    // 3) Сохраняем данные
+
+    // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(uuid, JSON.stringify(body));
 
-    // 2. Считываем текущий индекс файлов
-    const filesRaw = await redis.get("FILES");
-
-    let filesList = Array.isArray(filesRaw) ? filesRaw : [];
-
-    // 3. Готовим метаинформацию
-    const meta = {
-      eventName: data.eventName || "Без названия",
-      lastUpdate: data.lastUpdate,
-      eventStart: getEventStartTime(data.results),
-    };
-
-    // 4. Удаляем старую запись этого uuid (если она есть)
-    filesList = filesList.filter((entry) => entry.uuid !== uuid);
-
-    // 5. Добавляем новую
-    filesList.push({ uuid: uuid, meta });
-
-    // 6. Перезаписываем индекс файлов
-    await redis.set("FILES", filesList);
+    updateFILES(body.data);
 
     // 5) Отправляем ответ
     return res.status(200).json({
@@ -120,6 +105,29 @@ export default async function handler(req, res) {
     console.error(err);
     return res.status(500).json({ status: "error", message: err.message });
   }
+}
+
+async function updateFILES(resData) {
+  // 2. Считываем текущий индекс файлов
+  const filesRaw = await redis.get("FILES");
+
+  let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+  // 3. Готовим метаинформацию
+  const meta = {
+    eventName: resData.eventName || "Без названия",
+    isFinished: resData.isFinished,
+    eventStart: getEventStartTime(resData.results),
+  };
+
+  // 4. Удаляем старую запись этого uuid (если она есть)
+  filesList = filesList.filter((entry) => entry.uuid !== uuid);
+
+  // 5. Добавляем новую
+  filesList.push({ uuid: uuid, meta });
+
+  // 6. Перезаписываем индекс файлов
+  await redis.set("FILES", filesList);
 }
 
 function getEventStartTime(data) {
