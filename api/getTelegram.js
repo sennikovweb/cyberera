@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       const completeData = {
         uuid,
         key: "",
-        isFinished: false,
+        isFinished: true,
         data: {
           lastUpdate: null,
           eventName,
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       let filesList = Array.isArray(filesRaw) ? filesRaw : [];
 
       const meta = {
-        isFinished: false,
+        isFinished: true,
         lastUpdate: null,
         eventStart,
         eventName,

@@ -77,7 +77,7 @@ export async function loadFilesList(calendar) {
         obj.hours = hours;
         obj.minutes = minutes;
         obj.lastUpdate = file.meta.lastUpdate;
-		  obj.isOldFile=isOldFile(file.meta.lastUpdate),
+        obj.isOldFile = isOldFile(file.meta.lastUpdate);
         obj.isFinished = file.meta.isFinished;
         obj.eventName = file.meta.eventName;
         obj.uuid = file.uuid;
@@ -215,6 +215,11 @@ export async function loadDateFile(uuid) {
   clearTimeout(loadTimer);
 }
 
-async function finishOldEvent(fileUuid) {
-  console.log("Ивент старый, но не закрыт", fileUuid);
+export async function markEventAsFinished(fileUuid) {
+
+//   const url = `/api/finishEvent`;
+//   const data = await fetch(url);
+
+console.log('Старый, но активынй');
+
 }
