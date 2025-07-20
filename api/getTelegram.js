@@ -52,7 +52,7 @@ export default async function handler(req, res) {
       const completeData = {
         uuid,
         key: "",
-        isFinished: true,
+        isFinished: false,
         data: {
           lastUpdate: null,
           eventName,
