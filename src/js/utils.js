@@ -230,20 +230,23 @@ export function setShareUrl(uuid) {
 }
 
 export function getLiveState(fileTimesmap) {
+  if (fileTimesmap == null) {
+    return false;
+  }
   const diff = Math.abs(fileTimesmap - Date.now()); // разница в миллисекундах
 
   const sixHoursInMs = 6 * 60 * 60 * 1000;
 
   if (diff >= sixHoursInMs) {
-    return false;
-  } else {
     return true;
+  } else {
+    return false;
   }
 }
 
 export function getDateStrings(timeFormated) {
   const [datePart, timePart] = timeFormated.split(" ");
-  const [year, month, day] = datePart.split("-").map(Number)
+  const [year, month, day] = datePart.split("-").map(Number);
   const [hours, minutes] = timePart.split(":").map((n) => n.padStart(2, "0"));
   const date = new Date(year, month - 1, day, hours, minutes);
 

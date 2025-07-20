@@ -46,14 +46,15 @@ export default async function handler(req, res) {
       const eventName = body.caption;
       const data = body.jsonData;
       const eventStart = getEventTime(data, false);
-      const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
-      const lastUpdate = lastUpdateDate.getTime();
+      // const lastUpdateDate = new Date(getEventTime(data, true).replace(" ", "T"));
+      // const lastUpdate = lastUpdateDate.getTime();
 
       const completeData = {
         uuid,
         key: "",
+        isFinished: true,
         data: {
-          lastUpdate,
+          lastUpdate: null,
           eventName,
           results: data,
         },
@@ -76,7 +77,7 @@ export default async function handler(req, res) {
 
       await redis.set("FILES", filesList);
 
-      return res.status(200).json({ ok: true, eventStart:eventStart.slice(0, -7), uuid });
+      return res.status(200).json({ ok: true, eventStart: eventStart.slice(0, -7), uuid });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ status: "error", message: err.message });
