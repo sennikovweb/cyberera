@@ -69,6 +69,7 @@ export default async function handler(req, res) {
         isFinished: true,
         lastUpdate: null,
         eventStart,
+        eventName,
       };
 
       filesList = filesList.filter((entry) => entry.uuid !== uuid);
