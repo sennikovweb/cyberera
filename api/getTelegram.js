@@ -67,7 +67,7 @@ export default async function handler(req, res) {
 
       const meta = {
         eventName,
-        lastUpdate,
+        lastUpdate: null,
         eventStart,
       };
 

@@ -229,20 +229,19 @@ export function setShareUrl(uuid) {
   shareUrlElement.textContent = eventUrl.href;
 }
 
-export function getLiveState(fileTimesmap) {
-  if (fileTimesmap == null) {
-    return false;
-  }
-  const diff = Math.abs(fileTimesmap - Date.now()); // разница в миллисекундах
-
-  const sixHoursInMs = 6 * 60 * 60 * 1000;
-
-  if (diff >= sixHoursInMs) {
-    return true;
-  } else {
-    return false;
-  }
-}
+export function isOldFile(fileTimesmap) {
+	// Если параметр null, значит, время точно прошло (возвращаем false)
+	if (fileTimesmap == null) {
+	  return true;
+	}
+ 
+	const currentTime = Date.now();
+	const timeDifference = currentTime - fileTimesmap; // Разница в миллисекундах
+	const sixHoursInMs = 6 * 60 * 60 * 1000;
+ 
+	// Если разница >= 6 часов, возвращаем false, иначе true
+	return timeDifference > sixHoursInMs;
+ }
 
 export function getDateStrings(timeFormated) {
   const [datePart, timePart] = timeFormated.split(" ");

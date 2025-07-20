@@ -1,7 +1,7 @@
 import { getState, setState } from "./sharedStates";
 import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
 import { startFileView, setTittle } from "./uiChange";
-import { getDateStrings, getLiveState, setShareUrl } from "./utils";
+import { getDateStrings, isOldFile, setShareUrl } from "./utils";
 import { tittleCounter, checkLiveData } from "./liveDataCounter";
 
 export async function urlUpload() {
@@ -77,7 +77,7 @@ export async function loadFilesList(calendar) {
         obj.hours = hours;
         obj.minutes = minutes;
         obj.lastUpdate = file.meta.lastUpdate;
-		  obj.LIVESTATE=getLiveState(file.meta.lastUpdate),
+		  obj.isOldFile=isOldFile(file.meta.lastUpdate),
         obj.isFinished = file.meta.isFinished;
         obj.eventName = file.meta.eventName;
         obj.uuid = file.uuid;
@@ -85,7 +85,7 @@ export async function loadFilesList(calendar) {
         setState("filesList", [...getState("filesList"), obj]);
 
         //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
-        if (file.meta.isFinished === false && getLiveState(file.meta.lastUpdate) == true) {
+        if (file.meta.isFinished === false && isOldFile(file.meta.lastUpdate) == true) {
           finishOldEvent(file.uuid);
         }
       }
