@@ -66,7 +66,7 @@ export default async function handler(req, res) {
       let filesList = Array.isArray(filesRaw) ? filesRaw : [];
 
       const meta = {
-        eventName,
+        isFinished: true,
         lastUpdate: null,
         eventStart,
       };
