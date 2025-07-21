@@ -144,8 +144,16 @@ export async function loadLastFile() {
   document.querySelector(".language").classList.add("_hidden");
   try {
     const latestFile = getState("filesList").reduce((latest, current) => {
-      return current.date > latest.date ? current : latest;
+      if (current.date > latest.date) {
+        return current;
+      } else if (current.date < latest.date) {
+        return latest;
+      } else if (current.date == latest.date) {
+        return current.lastUpdate > latest.lastUpdate ? current : latest;
+      }
     }, getState("filesList")[0]);
+
+    console.log('getState("filesList")', getState("filesList"));
 
     const url = `/api/getData?uuid=${latestFile.uuid}`;
 
@@ -219,7 +227,7 @@ export async function loadDateFile(uuid) {
   clearTimeout(loadTimer);
 }
 
-export async function markEventAsFinished(fileUuid) {	
+export async function markEventAsFinished(fileUuid) {
   try {
     const response = await fetch("/api/finishEvent", {
       method: "POST",
@@ -231,8 +239,7 @@ export async function markEventAsFinished(fileUuid) {
 
     if (!response.ok) throw new Error(`ошибка при завершение старого ивента: ${data.statusText}`);
 
-   //  const responseText = await response.json();
-	 
+    //  const responseText = await response.json();
   } catch (error) {
     console.error(error);
   }
