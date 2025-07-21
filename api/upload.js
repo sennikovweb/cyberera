@@ -7,7 +7,7 @@ const redis = Redis.fromEnv();
 
 const RATE_LIMIT = 10;
 const WINDOW_SEC = 60;
-const HOURS = 6;
+const HOURS = 0.0166666666666667;
 const STOP_LIVE_TIME = HOURS * 60 * 60 * 1000;
 
 function setCorsHeaders(res) {

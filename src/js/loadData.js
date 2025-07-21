@@ -9,7 +9,6 @@ export async function urlUpload() {
     const eventUrl = new URL(window.location.href);
 
     const fullLiveData = await getLiveData(getState("isUuid"));
-    console.log("fullLiveData", fullLiveData);
 
     setState("mainObj", fullLiveData.results);
     //  setState("isUuid", ''); Уже есть uuid
@@ -40,20 +39,23 @@ export async function urlUpload() {
     const newLanguageChangeLink = `${languageElement.getAttribute("href")}?uuid=${eventUrl.searchParams.get("uuid")}`;
     languageElement.setAttribute("href", `${newLanguageChangeLink}`);
   } catch (error) {
-    console.error("error", error);
-
+    console.error("ошибка про загрузке url", error);
     const wrapperElement = document.querySelector(".wrapper");
     wrapperElement.classList.add("_error");
   }
 }
 
 export async function getLiveData(uuid) {
-  const data = await fetch(`/api/getData?uuid=${uuid}`);
+  try {
+    const data = await fetch(`/api/getData?uuid=${uuid}`);
 
-  if (!data.ok) throw new Error("Ошибка загрузки");
-  const dataJson = await data.json();
+    if (!data.ok) throw new Error(`ошибка загрузки live: ${data.statusText}`);
+    const dataJson = await data.json();
 
-  return dataJson.data;
+    return dataJson.data;
+  } catch (error) {
+    console.error(`${error}`);
+  }
 }
 
 export async function loadFilesList(calendar) {
@@ -62,7 +64,7 @@ export async function loadFilesList(calendar) {
   try {
     const response = await fetch("/api/loadFiles");
 
-    if (!response.ok) throw new Error("Ошибка загрузки");
+    if (!response.ok) throw new Error(`ошибка загрузки fileList: ${response.statusText}`);
     const responseData = await response.json();
 
     responseData.files.forEach((file) => {
@@ -94,7 +96,6 @@ export async function loadFilesList(calendar) {
 
     getState("filesListResolve")();
     setState("filesListLoaded", true);
-    console.log(getState("filesList"));
 
     if (calendar) {
       const spanLoadeingElement = document.querySelector("._no-files-span");
@@ -124,7 +125,7 @@ export async function loadFilesList(calendar) {
       calendarRender(true);
     }
   } catch (error) {
-    console.error("Не удалось загрузить список файлов:", error);
+    console.error(error);
   }
 }
 
@@ -150,7 +151,7 @@ export async function loadLastFile() {
 
     const data = await fetch(url);
 
-    if (!data.ok) throw new Error("Ошибка загрузки");
+    if (!data.ok) throw new Error(`ошибка загрузки последнего файла: ${data.statusText}`);
 
     const fullResponse = await data.json();
 
@@ -169,7 +170,7 @@ export async function loadLastFile() {
     }
     setShareUrl(getState("isUuid"));
   } catch (error) {
-    console.log("error", error);
+    console.error(error);
 
     lastFileButton.classList.remove("_loading");
     lastFileButton.classList.add("_loading-error");
@@ -193,7 +194,7 @@ export async function loadDateFile(uuid) {
     const url = `/api/getData?uuid=${uuid}`;
     const data = await fetch(url);
 
-    if (!data.ok) throw new Error("Ошибка загрузки");
+    if (!data.ok) throw new Error(`ошибка загрузки файла по дате: ${data.statusText}`);
 
     const fullResponse = await data.json();
     setState("mainObj", fullResponse.data.results);
@@ -211,22 +212,28 @@ export async function loadDateFile(uuid) {
     }
     setShareUrl(getState("isUuid"));
   } catch (error) {
+    console.error(error);
     fileItemElement.classList.remove("_loading");
     fileItemElement.classList.add("_loading-error");
   }
   clearTimeout(loadTimer);
 }
 
-export async function markEventAsFinished(fileUuid) {
-  console.log("Старый, но активынй");
-  const response = await fetch("/api/finishEvent", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ uuid: fileUuid }),
-  });
+export async function markEventAsFinished(fileUuid) {	
+  try {
+    const response = await fetch("/api/finishEvent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ uuid: fileUuid }),
+    });
 
-  const responseText = await response.json();
-  console.log("response", responseText);
+    if (!response.ok) throw new Error(`ошибка при завершение старого ивента: ${data.statusText}`);
+
+   //  const responseText = await response.json();
+	 
+  } catch (error) {
+    console.error(error);
+  }
 }

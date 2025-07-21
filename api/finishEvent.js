@@ -35,8 +35,6 @@ async function updateFileInFILES(fileUuid) {
 
   //Находим объект файла
   const currentFile = filesList.find((file) => file.uuid == fileUuid);
-  console.log("currentFile", currentFile);
-  console.log("filesList", filesList);
 
   //меняем его isFinished
   currentFile.meta.isFinished = true;
