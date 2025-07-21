@@ -60,7 +60,7 @@ export async function loadFilesList(calendar) {
   if (calendar) calendarRender(false);
 
   try {
-    const response = await fetch("/api/loadFiles.js");
+    const response = await fetch("/api/loadFiles");
 
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
