@@ -173,7 +173,7 @@ export async function loadLastFile() {
     startFileView("last");
 
     if (getState("lastFile").isFinished == false) {
-      tittleCounter(latestFile.eventName);
+      tittleCounter(getState("lastFile").eventName);
       checkLiveData(); //Открыть счётчик
     } else {
       setTittle(getState("isUuid"));
