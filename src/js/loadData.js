@@ -65,7 +65,7 @@ export async function loadFilesList(calendar) {
     if (!response.ok) throw new Error("Ошибка загрузки");
     const responseData = await response.json();
 
-    responseData.files.forEach(async (file) => {
+    responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
       if (file.meta.eventStart) {
@@ -86,10 +86,12 @@ export async function loadFilesList(calendar) {
 
         //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
         if (file.meta.isFinished === false && isOldFile(file.meta.lastUpdate) == true) {
-          await markEventAsFinished(file.uuid);
+          file.meta.isFinished = true;
+          markEventAsFinished(file.uuid);
         }
       }
     });
+
     getState("filesListResolve")();
     setState("filesListLoaded", true);
     console.log(getState("filesList"));

@@ -13,15 +13,40 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
   try {
-    const filesList = await redis.get("FILES");
-    const file = await redis.get(req.body.uuid);
+    const currentUuid = req.body.uuid;
+    const file = await redis.get(currentUuid);
+    file.isFinished = true;
+    await redis.set(currentUuid, file);
 
-    console.log("filesList", filesList);
+    await updateFileInFILES();
+
     console.log("file", file);
 
     return res.status(200).json({ message: `file ${req.body.uuid} finished` });
   } catch (error) {
-	console.error(error)
-	return res.status(500).json({ message: `${error}` });
+    console.error(error);
+    return res.status(500).json({ message: `${error}` });
   }
+}
+
+async function updateFileInFILES(fileUuid) {
+  // 2. Считываем текущий индекс файлов
+  const filesRaw = await redis.get("FILES");
+
+  let filesList = Array.isArray(filesRaw) ? filesRaw : [];
+
+  //Находим объект файла
+  const currentFile = filesList.find((file) => file.uuid == fileUuid);
+
+  //меняем его isFinished
+  currentFile.meta.isFinished = true;
+
+  // Удаляем старую запись этого uuid
+  filesList = filesList.filter((entry) => entry.uuid !== fileUuid);
+
+  // Добавляем пкркднланную
+  filesList.push({ currentFile });
+
+  // Перезаписываем индекс файлов
+  await redis.set("FILES", filesList);
 }
