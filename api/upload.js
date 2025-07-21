@@ -92,6 +92,8 @@ export default async function handler(req, res) {
     // 3) Сохраняем данные, если они не завершены, не старые
     await redis.set(body.uuid, JSON.stringify(body));
 
+    console.log("body.databody.data", body.data);
+
     await updateFILES(body.data, body.uuid, false);
 
     // 5) Отправляем ответ
