@@ -45,7 +45,7 @@ async function updateFileInFILES(fileUuid) {
   filesList = filesList.filter((entry) => entry.uuid !== fileUuid);
 
   // Добавляем пкркднланную
-  filesList.push({ currentFile });
+  filesList.push(currentFile);
 
   // Перезаписываем индекс файлов
   await redis.set("FILES", filesList);
