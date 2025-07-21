@@ -20,8 +20,6 @@ export default async function handler(req, res) {
 
     await updateFileInFILES();
 
-    console.log("file", file);
-
     return res.status(200).json({ message: `file ${req.body.uuid} finished` });
   } catch (error) {
     console.error(error);
@@ -37,6 +35,8 @@ async function updateFileInFILES(fileUuid) {
 
   //Находим объект файла
   const currentFile = filesList.find((file) => file.uuid == fileUuid);
+  console.log("currentFile", currentFile);
+  console.log("filesList", filesList);
 
   //меняем его isFinished
   currentFile.meta.isFinished = true;
