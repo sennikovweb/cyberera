@@ -149,7 +149,7 @@ export async function loadLastFile() {
       } else if (current.date < latest.date) {
         return latest;
       } else if (current.date == latest.date) {
-        return current.lastUpdate > latest.lastUpdate ? current : latest;
+        return current.lastUpdate > latest.lastUpdate ? latest : current;
       }
     }, getState("filesList")[0]);
 
