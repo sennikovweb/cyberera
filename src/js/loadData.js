@@ -163,14 +163,16 @@ export async function loadLastFile() {
     const fullResponse = await data.json();
     console.log("fullResponse", fullResponse.data.lastUpdate);
 
+	 console.log('getState("lastFile")getState("lastFile")getState("lastFile")',getState("lastFile"));
+	 
     setState("mainObj", fullResponse.data.results);
     setState("isUuid", getState("lastFile").uuid);
-    setState("liveTimestamp", getState("lastFile").meta.lastUpdate);
+    setState("liveTimestamp", getState("lastFile").lastUpdate);
 
     makeRaceClassButtons();
     startFileView("last");
 
-    if (getState("lastFile").meta.isFinished == false) {
+    if (getState("lastFile").isFinished == false) {
       tittleCounter(latestFile.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
