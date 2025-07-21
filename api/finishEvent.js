@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     file.isFinished = true;
     await redis.set(currentUuid, file);
 
-    await updateFileInFILES();
+    await updateFileInFILES(fileUuid);
 
     return res.status(200).json({ message: `file ${req.body.uuid} finished` });
   } catch (error) {
