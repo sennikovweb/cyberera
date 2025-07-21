@@ -86,7 +86,7 @@ export async function loadFilesList(calendar) {
 
         //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
         if (file.meta.isFinished === false && isOldFile(file.meta.lastUpdate) == true) {
-          finishOldEvent(file.uuid);
+          markEventAsFinished(file.uuid);
         }
       }
     });
@@ -216,10 +216,12 @@ export async function loadDateFile(uuid) {
 }
 
 export async function markEventAsFinished(fileUuid) {
-
-//   const url = `/api/finishEvent`;
-//   const data = await fetch(url);
-
-console.log('Старый, но активынй');
-
+  console.log("Старый, но активынй");
+  await fetch("/api/finishEvent", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ uuid: fileUuid }),
+  });
 }
