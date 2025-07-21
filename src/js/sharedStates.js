@@ -8,6 +8,7 @@ const states = {
   parsedOK: false,
   isEvent: null,
   isUuid: null,
+  lastFileUuid:null,
   filesList: [],
   filesListLoaded: false,
   filesListResolve: null,

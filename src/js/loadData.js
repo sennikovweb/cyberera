@@ -93,6 +93,7 @@ export async function loadFilesList(calendar) {
         }
       }
     });
+    console.log("loadFilesList", getState("filesList"));
 
     getState("filesListResolve")();
     setState("filesListLoaded", true);
@@ -114,8 +115,17 @@ export async function loadFilesList(calendar) {
       });
 
       const latestFile = getState("filesList").reduce((latest, current) => {
-        return current.date > latest.date ? current : latest;
+        if (current.date > latest.date) {
+          return current;
+        } else if (current.date < latest.date) {
+          return latest;
+        } else {
+          return current;
+        }
       }, getState("filesList")[0]);
+
+      console.log("latestFilelatestFile", latestFile);
+      setState("lastFile", latestFile);
 
       document.querySelector(".last-file__file-name-value").innerHTML = latestFile.eventName;
       document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
@@ -142,35 +152,25 @@ export async function loadLastFile() {
   document.querySelector(".date-files").classList.add("_hidden");
   document.querySelector(".local-file__label").classList.add("_hidden");
   document.querySelector(".language").classList.add("_hidden");
+
   try {
-    const latestFile = getState("filesList").reduce((latest, current) => {
-      if (current.date > latest.date) {
-        return current;
-      } else if (current.date < latest.date) {
-        return latest;
-      } else if (current.date == latest.date) {
-        return current.lastUpdate > latest.lastUpdate ? latest : current;
-      }
-    }, getState("filesList")[0]);
-
-    console.log('getState("filesList")', getState("filesList"));
-
-    const url = `/api/getData?uuid=${latestFile.uuid}`;
+    const url = `/api/getData?uuid=${getState("lastFile").uuid}`;
 
     const data = await fetch(url);
 
     if (!data.ok) throw new Error(`ошибка загрузки последнего файла: ${data.statusText}`);
 
     const fullResponse = await data.json();
+    console.log("fullResponse", fullResponse.data.lastUpdate);
 
     setState("mainObj", fullResponse.data.results);
-    setState("isUuid", latestFile.uuid);
-    setState("liveTimestamp", latestFile.lastUpdate);
+    setState("isUuid", getState("lastFile").uuid);
+    setState("liveTimestamp", getState("lastFile").meta.lastUpdate);
 
     makeRaceClassButtons();
     startFileView("last");
 
-    if (!latestFile.isFinished) {
+    if (getState("lastFile").meta.isFinished == false) {
       tittleCounter(latestFile.eventName);
       checkLiveData(); //Открыть счётчик
     } else {
