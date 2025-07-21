@@ -13,12 +13,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: `Method ${req.method} Not Allowed` });
   }
   try {
-    const filesList =await redis.get("FILES");
-    const file =await redis.get(req.body.uuid);
+    const filesList = await redis.get("FILES");
+    const file = await redis.get(req.body.uuid);
 
     console.log("filesList", filesList);
     console.log("file", file);
 
-	 return res.status(200).json({ message: `file ${req.body.uuid} finished` });
-  } catch (error) {}
+    return res.status(200).json({ message: `file ${req.body.uuid} finished` });
+  } catch (error) {
+	console.error(error)
+	return res.status(500).json({ message: `${error}` });
+  }
 }
