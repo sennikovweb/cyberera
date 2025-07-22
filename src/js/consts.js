@@ -16,7 +16,10 @@ export const RU_DICT = {
   seconds: "сек.",
   ago: "назад",
   newLiveData: "Новые данные!",
-  empty:'Пока пусто<br>Обновите после первого вылета!',
+  emptyTittle:'Пока пусто',
+  emptyText:'Обновите после первого вылета!',
+  emptyButton:'Обновить',
+  emptyTime:'Обновляется...',
   pilotsTab: {
     bestLap: "Лучший круг",
     round: "Раунд",
@@ -124,7 +127,10 @@ export const EN_DICT = {
   seconds: "seconds",
   ago: "ago",
   newLiveData: "New Data!",
-  empty:'Still Empty<br>Refresh page after first qual round',
+  emptyTittle:'Still Empty',
+  emptyText:'Refresh page after first qual round',
+  emptyButton:'Refresh',
+  emptyTime:'Refreshing...',
   pilotsTab: {
     bestLap: "Best lap",
     round: "Round",

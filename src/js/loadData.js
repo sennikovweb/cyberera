@@ -18,10 +18,12 @@ export async function urlUpload() {
     startFileView("uuid");
 
     //  const isLiveTime = getLiveState(Date.now(), fullLiveData.lastUpdate);
-
+    console.log('getState("isUuid")', getState("isUuid"));
     if (getState("filesListLoaded") == false) {
       await getState("fileListPending");
     }
+    console.log('getState("filesList")getState("filesList")', getState("filesList"));
+
     const fileListData = getState("filesList").find((file) => file.uuid == getState("isUuid"));
 
     if (!fileListData.isFinished) {
@@ -42,6 +44,11 @@ export async function urlUpload() {
     console.error("ошибка про загрузке url", error);
     const wrapperElement = document.querySelector(".wrapper");
     wrapperElement.classList.add("_error");
+    const homeButton = document.querySelector(".home");
+    homeButton.classList.remove("_hidden");
+    homeButton.classList.add("_back");
+    document.querySelector(".wrapper").prepend(homeButton);
+    //  document.querySelector('.home')
   }
 }
 
@@ -70,27 +77,34 @@ export async function loadFilesList(calendar) {
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
+		console.log('file.meta.eventStartfile.meta.eventStartfile.meta.eventStart',file.meta.eventStart);
+		
       if (file.meta.eventStart) {
         const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
         obj.date = date;
         obj.year = year;
         obj.month = month - 1;
+        obj.monthName = getState("textStrings").monthsNames[month - 1];
         obj.day = day;
         obj.hours = hours;
         obj.minutes = minutes;
-        obj.lastUpdate = file.meta.lastUpdate;
-        obj.isOldFile = isOldFile(file.meta.lastUpdate);
-        obj.isFinished = file.meta.isFinished;
-        obj.eventName = file.meta.eventName;
-        obj.uuid = file.uuid;
-        obj.monthName = getState("textStrings").monthsNames[month - 1];
-        setState("filesList", [...getState("filesList"), obj]);
+      } else {
+        //Здесь если нет кругов ещё в событии, то last file показываем, а вот в дате файлов нет (date==lastUpdate)
+        obj.date = file.meta.lastUpdate;
+      }
 
-        //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
-        if (file.meta.isFinished === false && isOldFile(file.meta.lastUpdate) == true) {
-          file.meta.isFinished = true;
-          markEventAsFinished(file.uuid);
-        }
+      obj.lastUpdate = file.meta.lastUpdate;
+      obj.isOldFile = isOldFile(file.meta.lastUpdate);
+      obj.isFinished = file.meta.isFinished;
+      obj.eventName = file.meta.eventName;
+      obj.uuid = file.uuid;
+
+      setState("filesList", [...getState("filesList"), obj]);
+
+      //Узнаем, сколько времени прошло с последнего обновления незавершенного ивента, если много, то закрываем его :)
+      if (file.meta.isFinished === false && isOldFile(file.meta.lastUpdate) == true) {
+        file.meta.isFinished = true;
+        markEventAsFinished(file.uuid);
       }
     });
     console.log("loadFilesList", getState("filesList"));
@@ -124,12 +138,17 @@ export async function loadFilesList(calendar) {
         }
       }, getState("filesList")[0]);
 
-      console.log("latestFilelatestFile", latestFile);
       setState("lastFile", latestFile);
 
       document.querySelector(".last-file__file-name-value").innerHTML = latestFile.eventName;
-      document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
-      document.querySelector(".last-file__time-value").innerHTML = `${latestFile.hours}:${latestFile.minutes}`;
+
+      if (latestFile.date == latestFile.lastUpdate) {
+        document.querySelector(".last-file__date-value").innerHTML = getState("textStrings").emptyTime;
+        document.querySelector(".last-file__time-value").innerHTML = getState("textStrings").emptyTime;
+      } else {
+        document.querySelector(".last-file__date-value").innerHTML = `${latestFile.day} ${latestFile.monthName} ${latestFile.year}`;
+        document.querySelector(".last-file__time-value").innerHTML = `${latestFile.hours}:${latestFile.minutes}`;
+      }
       if (latestFile.isFinished != true) document.querySelector(".last-file__time-value").classList.add("_live");
 
       calendarRender(true);
@@ -163,8 +182,8 @@ export async function loadLastFile() {
     const fullResponse = await data.json();
     console.log("fullResponse", fullResponse.data.lastUpdate);
 
-	 console.log('getState("lastFile")getState("lastFile")getState("lastFile")',getState("lastFile"));
-	 
+    console.log('getState("lastFile")getState("lastFile")getState("lastFile")', getState("lastFile"));
+
     setState("mainObj", fullResponse.data.results);
     setState("isUuid", getState("lastFile").uuid);
     setState("liveTimestamp", getState("lastFile").lastUpdate);

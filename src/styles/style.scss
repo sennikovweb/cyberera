@@ -5070,6 +5070,21 @@ body {
 	transition: opacity 0.3s ease, visibility 0s ease, box-shadow 0.3s ease;
 	border-radius: 4px;
 
+	&._back {
+		z-index: 100;
+		top: 20%;
+		left: 50%;
+		width: 50px;
+		height: 50px;
+		box-shadow: 0px 0px 15px $color-akcent2;
+		transform: translate(-50%, 0px);
+	}
+
+	&._empty {
+		top: 6px;
+		left: 6px;
+	}
+
 	&._hidden {
 		transition: opacity 0.3s ease, visibility 0s ease 0.3s, box-shadow 0.3s ease;
 		visibility: hidden;
@@ -5094,7 +5109,27 @@ body {
 	}
 }
 
+.empty {
+	&__tittle {
+		font-size: 32px;
+	}
 
+	&__text {
+		font-size: 20px;
+	}
+
+	&__button-container {}
+
+	&__button {
+		transition: opacity 0.3s ease 0s, visibility 0s ease 0s;
+
+		&._hidden {
+			transition: opacity 0.3s ease 0s, visibility 0s ease 0.3s;
+			opacity: 0;
+			visibility: hidden;
+		}
+	}
+}
 
 
 

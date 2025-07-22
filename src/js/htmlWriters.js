@@ -1778,8 +1778,8 @@ export function writePilotsVs(nameToVs1, nameToVs2) {
     }
   }
 
-  const lapsPilot1 = getLapsByName(pilotsVsArr[0],false);
-  const lapsPilot2 = getLapsByName(pilotsVsArr[1],false);
+  const lapsPilot1 = getLapsByName(pilotsVsArr[0], false);
+  const lapsPilot2 = getLapsByName(pilotsVsArr[1], false);
 
   const averageLineFloat = (+lapTimeConverter(pilotsAverages[0], "float") + +lapTimeConverter(pilotsAverages[1], "float")) / 2;
   const averageLineString = lapTimeConverter(averageLineFloat, "string");
@@ -2106,9 +2106,9 @@ export function calendarRender(filesloaded) {
       if (file.year == getState("currentMonth").getFullYear() && file.month == getState("currentMonth").getMonth() && file.day == dayNumber && isCurrentMonth) {
         isHaveFiles = true;
         dayElement.classList.add("_day__file");
-		  if (!file.isFinished){
-			dayElement.classList.add("_live");
-		  }
+        if (!file.isFinished) {
+          dayElement.classList.add("_live");
+        }
       }
     });
 
@@ -2165,16 +2165,37 @@ export function newLiveDataHTML() {
 export function emptyEventHTML() {
   const emptyModal = document.createElement("div");
   const emptyModalContainer = document.createElement("div");
+  const emptyModalTittle = document.createElement("div");
   const emptyModalText = document.createElement("div");
+  const emptyModalButtonContainer = document.createElement("div");
+  const emptyModalButton = document.createElement("a");
 
   emptyModal.classList.add("modal", "_active");
-  emptyModalContainer.classList.add("modal__container", "_active", "_container",'empty-container');
-  emptyModalText.classList.add("modal__tittle", "empty-tittle");
+  emptyModalContainer.classList.add("modal__container", "_active", "_container", "empty-container");
+  emptyModalTittle.classList.add("empty__tittle");
+  emptyModalButtonContainer.classList.add("empty__button-container");
+  emptyModalText.classList.add("empty__text");
+  emptyModalButton.classList.add("_button", "empty__button");
+
+  const nomeButton = document.createElement("div");
+  nomeButton.innerHTML = `
+          <div class="home _empty">
+          <a href="./index.html">
+            <img src="/icons/home.svg" alt="" />
+          </a>
+        </div>`;
+
+  emptyModalTittle.innerHTML = getState("textStrings").emptyTittle;
+  emptyModalText.innerHTML = getState("textStrings").emptyText;
+  emptyModalButton.innerHTML = getState("textStrings").emptyButton;
 
   emptyModal.append(emptyModalContainer);
-  emptyModalContainer.append(emptyModalText);
+  emptyModalContainer.append(emptyModalTittle, emptyModalText, emptyModalButtonContainer,nomeButton);
+  emptyModalButtonContainer.append(emptyModalButton);
 
-  emptyModalText.innerHTML = getState("textStrings").empty;
+  const eventUrl = new URL(window.location.href);
+  eventUrl.searchParams.set("uuid", `${getState("isUuid")}`);
+  emptyModalButton.href = eventUrl.href;
 
   return emptyModal;
 }
