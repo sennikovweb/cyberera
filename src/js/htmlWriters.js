@@ -2138,7 +2138,7 @@ export function makeRaceClassButtons() {
 
   // let tabsClasses = [];
   for (let raceClass in raceClasses) {
-    if (getState("mainObj").heats_by_class[raceClass].length != 0) {
+    if (getState("mainObj").heats_by_class[raceClass].length != 0 && raceClasses[raceClass].leaderboard) {
       const classSwitchButton = document.createElement("button");
       classSwitchButton.classList.add(`class-switch-buttons__class-${raceClass}`, "_button", "class-switch-buttons__button");
       classSwitchButton.innerHTML = raceClasses[raceClass].name;
@@ -2190,7 +2190,7 @@ export function emptyEventHTML() {
   emptyModalButton.innerHTML = getState("textStrings").emptyButton;
 
   emptyModal.append(emptyModalContainer);
-  emptyModalContainer.append(emptyModalTittle, emptyModalText, emptyModalButtonContainer,nomeButton);
+  emptyModalContainer.append(emptyModalTittle, emptyModalText, emptyModalButtonContainer, nomeButton);
   emptyModalButtonContainer.append(emptyModalButton);
 
   const eventUrl = new URL(window.location.href);
