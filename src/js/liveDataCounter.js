@@ -5,7 +5,7 @@ import { newLiveDataHTML, makeRaceClassButtons } from "./htmlWriters";
 import { tabSwitch, startFileView } from "./uiChange";
 
 export function tittleCounter(eventName) {
-  document.querySelector(".main-tittle__display-name").innerHTML = eventName
+  document.querySelector(".main-tittle__display-name").innerHTML = eventName;
   document.querySelector(".main-tittle__date").innerHTML = "-";
   document.querySelector(".main-tittle__time").innerHTML = "-";
   const timer1 = setInterval(() => {
@@ -62,7 +62,10 @@ export function checkLiveData() {
 
             //удаляем кнопку и включаем функцию ещё раз
             updateLiveDataButton.remove();
-            checkLiveData();
+            const repeatTmr = setTimeout(() => {
+              checkLiveData();
+              clearTimeout(repeatTmr);
+            }, 10000);
           },
           { once: true }
         );
