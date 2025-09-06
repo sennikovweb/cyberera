@@ -32,9 +32,6 @@ export function checkLiveData() {
           "click",
           async function () {
             updateLiveDataButton.classList.add("_no-event");
-            //очищаем таймер, как только событие при клике
-            clearInterval(getState("checkLiveDataInterval"));
-            console.log("ТАЙМЕР");
 
             //при клике на кнопку нужно получить самые свежие данные, поэтому просим их ещё раз
             const freshData = await getLiveData(getState("isUuid"));
@@ -75,6 +72,9 @@ export function checkLiveData() {
           },
           { once: true }
         );
+        //очищаем таймер, как только newLiveData true
+        clearInterval(getState("checkLiveDataInterval"));
+        console.log("ТАЙМЕР");
       }
     }, 10000)
   );
