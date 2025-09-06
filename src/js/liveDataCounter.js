@@ -23,6 +23,7 @@ export function checkLiveData() {
 
       if (getState("liveTimestamp") != newData.lastUpdate && getState("newLiveData") == false) {
         setState("newLiveData", true);
+        setState("liveTimestamp", newData.lastUpdate);
       }
       if (getState("newLiveData")) {
         const updateLiveDataButton = newLiveDataHTML();
@@ -33,7 +34,6 @@ export function checkLiveData() {
           function () {
             updateLiveDataButton.classList.add("_no-event");
             setState("mainObj", newData.results);
-            setState("liveTimestamp", newData.lastUpdate);
 
             //Очищаем кнопки классов - вдруг поменялись
             document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
