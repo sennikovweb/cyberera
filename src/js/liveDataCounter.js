@@ -23,7 +23,6 @@ export function checkLiveData() {
 
       if (getState("liveTimestamp") != newData.lastUpdate && getState("newLiveData") == false) {
         setState("newLiveData", true);
-        setState("liveTimestamp", newData.lastUpdate);
       }
       if (getState("newLiveData")) {
         const updateLiveDataButton = newLiveDataHTML();
@@ -31,9 +30,16 @@ export function checkLiveData() {
 
         updateLiveDataButton.addEventListener(
           "click",
-          function () {
+          async function () {
             updateLiveDataButton.classList.add("_no-event");
-            setState("mainObj", newData.results);
+            //очищаем таймер, как только событие при клике
+            clearInterval(getState("checkLiveDataInterval"));
+            console.log("ТАЙМЕР");
+
+            //при клике на кнопку нужно получить самые свежие данные, поэтому просим их ещё раз
+            const freshData = await getLiveData(getState("isUuid"));
+            setState("mainObj", freshData.results);
+            setState("liveTimestamp", freshData.lastUpdate);
 
             //Очищаем кнопки классов - вдруг поменялись
             document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
@@ -69,8 +75,6 @@ export function checkLiveData() {
           },
           { once: true }
         );
-        //очищаем таймер, как только событие н
-        clearInterval(getState("checkLiveDataInterval"));
       }
     }, 10000)
   );
