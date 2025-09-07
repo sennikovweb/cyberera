@@ -2,13 +2,14 @@ const states = {
   mainObj: {},
   consecutivesCount: 3,
   currentClass: 1,
+  allRaceClassesId: [],
   language: "ru",
   CONSOLE_DEBUG: false,
   textStrings: {},
   parsedOK: false,
   isEvent: null,
   isUuid: null,
-  lastFileUuid:null,
+  lastFileUuid: null,
   filesList: [],
   filesListLoaded: false,
   filesListResolve: null,
@@ -19,14 +20,41 @@ const states = {
   liveTimestamp: null,
   newLiveData: false,
   checkLiveDataInterval: null,
+  isTournamentTab: false,
+  tournamentRoundsQuantity: 3,
+  tournamentFinalRoundsQuantity: 5,
+  tournamentRaceQuantity: 14,
+  tournamentPilotsPerHeat: 4,
+  finalTypesByClass: [],
+  fullRHData: {},
+  raceClassesWithFinals: [],
 };
+
+const subscribers = {};
 
 states.fileListPending = new Promise((resolve) => {
   states.filesListResolve = resolve;
 });
 
+export const subscribe = (key, func) => {
+  if (!subscribers[key]) subscribers[key] = [];
+  subscribers[key].push(func);
+};
+
+export const unsubscribe = (key, func) => {
+  if (!subscribers[key]) return;
+  subscribers[key] = subscribers[key].filter((fn) => fn !== func);
+};
+
 export function setState(key, value) {
   states[key] = value;
+
+  if (subscribers[key]) {
+    console.log("SUBSCRIBES", subscribers[key]);
+    subscribers[key].forEach((func) => {
+      func(value);
+    });
+  }
 }
 export function getState(key) {
   return states[key];

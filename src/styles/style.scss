@@ -172,6 +172,12 @@ body {
 		pointer-events: none;
 	}
 
+	&._disabled {
+		pointer-events: none;
+		opacity: 0.4;
+		background-color: $color-grey;
+	}
+
 	&._active {
 		transition: all 0.3s ease;
 		box-shadow: 0px 0px 0px $color-grey, 0px 0px 10px $color-dark inset;
@@ -5132,6 +5138,362 @@ body {
 }
 
 
+
+.tournament {
+	width: 100%;
+
+	&__tittle {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 50px;
+		align-items: center;
+
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: -10px;
+			left: 0;
+			width: 100%;
+			height: 3px;
+			background-color: $color-stat-stroke;
+		}
+
+	}
+
+	&__event-name {
+		font-size: 26px;
+		justify-self: end;
+	}
+
+	&__final-name {
+		justify-self: start;
+		font-size: 24px;
+	}
+
+	&__switcher {
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 100px;
+		height: 20px;
+		border: 1px solid $color-akcent1;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		border-radius: 4px;
+
+		@media(hover:hover) {
+			&:hover {
+				box-shadow: 0px 0px 5px $color-akcent1;
+			}
+
+			&:active {
+				transition: all 0.15s ease;
+				box-shadow: 0px 0px 10px $color-akcent1;
+			}
+		}
+
+		@media(hover:none) {
+			&:active {
+				transition: all 0.15s ease;
+				box-shadow: 0px 0px 10px $color-akcent1;
+			}
+		}
+
+		&::after,
+		&::before {
+			content: '';
+			width: 90%;
+			height: 1px;
+			position: absolute;
+			left: 50%;
+			background-color: $color-akcent1;
+			transition: transform 0.5s ease, box-shadow 0.3s ease;
+			transform: translate(-50%, 0);
+		}
+
+		&:before {
+			top: 3px;
+		}
+
+		&::after {
+			bottom: 3px;
+		}
+
+	}
+
+	&__low-strip {
+		background-color: $color-grey;
+		opacity: 0.7;
+		width: 100%;
+		height: 2px;
+		grid-column: 1/5;
+		grid-row: 17/18;
+		transform: translate(0px, -15px);
+	}
+
+	&__container {
+		// height: 100vh;
+		// display: flex;
+		// flex-direction: column;
+		// gap: 10px;		
+		// font-size: 18px;
+	}
+
+	&__buttons {
+		display: flex;
+		gap: 5px;
+		justify-content: space-between;
+	}
+
+	&__full-table {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		// justify-content: center;
+		// align-items: center;
+		gap: 30px;
+		// height: 100%;
+	}
+
+	&__race {
+		position: relative;
+		padding: 10px;
+		width: 100%;
+		border-radius: 8px;
+		border: 1px solid $color-akcent2;
+		display: flex;
+		flex-direction: column;
+		transition: all 1s ease-out;
+		// height: 4rem;
+	}
+
+	._low-table {
+		border: 1px solid $color-akcent1;
+	}
+
+	._current-race {
+		box-shadow: 0px 0px 10px $color-akcent2 inset, 0px 0px 15px $color-akcent2;
+	}
+
+	._last-complete-race {
+		box-shadow: 0px 0px 10px $color-akcent1Vs inset, 0px 0px 15px $color-akcent1Vs;
+	}
+
+	._next-race {
+		box-shadow: 0px 0px 10px $color-grey inset, 0px 0px 15px $color-grey;
+	}
+
+
+	&__race-tittles {
+		position: relative;
+		margin: 0px 0px 25px 0px;
+		display: grid;
+		grid-template-columns: 1fr 2fr 1fr;
+		align-items: center;
+
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: -5px;
+			left: 0;
+			width: 100%;
+			height: 1px;
+			background-color: $color-stat-stroke;
+		}
+	}
+
+	&__race-num {
+		font-size: 16px;
+		margin: 0px 0px 0px 5px;
+		justify-self: start;
+	}
+
+	&__race-phase {
+		font-size: 16px;
+		margin: 0px 0px 0px 5px;
+		justify-self: center;
+	}
+
+	&__race-status {
+		font-size: 20px;
+		font-weight: 700;
+		border-radius: 7px;
+		padding: 0px 10px;
+		justify-self: end;
+	}
+
+	&__race-sub-tittles {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr 0.5fr;
+		align-items: end;
+		justify-items: center;
+		margin: 0px 0px 10px 0px;
+
+	}
+
+	&__race-name-tittle {
+		justify-self: start;
+		margin: 0px 0px 0px 5px;
+
+	}
+
+	&__race-strokes {
+		display: grid;
+		gap: 10px;
+		height: 100%;
+	}
+
+	&__pilot-items {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr 0.5fr;
+		align-items: stretch;
+		gap: 10px;
+	}
+
+	&__pilot-name {
+		line-height: 120%;
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		// width: 100%;
+	}
+
+	&__pilot-rounds {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+
+	&__pilot-round {
+		width: 100%;
+		text-align: center;
+		position: relative;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		border-radius: 6px;
+		transition: all 0.3s ease;
+
+		&._no-event {
+			pointer-events: none;
+		}
+
+		@media(hover:hover) {
+			&:hover {
+				box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 5px $color-akcent2 inset;
+			}
+
+			&:active {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 10px $color-akcent2 inset;
+			}
+		}
+
+		@media(hover:none) {
+			&._active-animation {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 5px $color-akcent2 inset;
+			}
+
+			&:active {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 10px $color-akcent2 inset;
+			}
+		}
+
+		&:not(:last-child) {
+			&::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				right: 0;
+				width: 1px;
+				height: 100%;
+				background-color: $color-stat-stroke;
+			}
+
+		}
+	}
+
+	&__pilot-place {
+		text-align: center;
+		font-weight: bold;
+		// font-size: 22px;
+	}
+
+	._race-subtittle {
+		font-weight: 700;
+
+		// font-size: 20px;
+		// height: 20px;
+	}
+
+	._race-items {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	._race-item {
+		padding: 4px;
+		border: 1px solid $color-akcent1;
+		border-radius: 5px;
+	}
+
+	._name-item {
+		cursor: pointer;
+		transition: all 0.3s ease;
+
+		&._no-event {
+			pointer-events: none;
+		}
+
+		&._active {
+			transition: all 0.3s ease;
+			border: 1px solid $color-akcent1Vs;
+			box-shadow: 0px 0px 0px $color-akcent1Vs, 0px 0px 10px $color-akcent1Vs inset;
+
+			&:hover {
+				box-shadow: 0px 0px 5px $color-akcent1Vs, 0px 0px 10px $color-akcent1Vs inset;
+			}
+		}
+
+		@media(hover:hover) {
+			&:hover {
+				box-shadow: 0px 0px 5px $color-akcent2, 0px 0px 0px $color-akcent2 inset;
+			}
+
+			&:active {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 10px $color-akcent2, 0px 0px 5px $color-akcent2 inset;
+			}
+		}
+
+		@media(hover:none) {
+			&._active-animation {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 10px $color-akcent2, 0px 0px 5px $color-akcent2 inset;
+			}
+
+			&:active {
+				transition: all 0.1s ease;
+				box-shadow: 0px 0px 10px $color-akcent2, 0px 0px 5px $color-akcent2 inset;
+			}
+		}
+
+	}
+
+	._place-item {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0px 0px 5px $color-akcent2 inset;
+	}
+}
 
 
 @keyframes ready-animation {

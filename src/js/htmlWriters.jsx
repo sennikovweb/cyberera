@@ -1,7 +1,12 @@
-import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getRoundsByHeats } from "./getDatas";
-import { lapTimeConverter } from "./utils";
-import { lapNodeShow, classSwitch } from "./uiChange";
-import { getState, setAkcent, setState } from "./sharedStates";
+import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getRoundsByHeats } from "./getDatas.js";
+import { lapTimeConverter, arraysEqual } from "./utils.js";
+import { lapNodeShow, classSwitch,tabSwitch } from "./uiChange.jsx";
+import { getState, setAkcent, setState, setTab, getTab, addButton, getButton, getLocalFileElement } from "./sharedStates.js";
+
+import React from "react";
+import { createRoot } from "react-dom/client";
+
+import Tournament from "../jsx/Tournament/Tournament.jsx";
 
 export function writePilotsHTML() {
   // Рисуем страницу пилотов
@@ -2135,24 +2140,44 @@ export function makeRaceClassButtons() {
   //Делаем кнопки Классов
   const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
   const raceClasses = getState("mainObj").classes;
+  console.log("raceClassesraceClassesraceClassesraceClasses", raceClasses);
 
-  // let tabsClasses = [];
+  const raceClassesId = [];
+  const raceClassesNames = [];
+
   for (let raceClass in raceClasses) {
-    if (getState("mainObj").heats_by_class[raceClass].length != 0 && raceClasses[raceClass].leaderboard) {
-      const classSwitchButton = document.createElement("button");
-      classSwitchButton.classList.add(`class-switch-buttons__class-${raceClass}`, "_button", "class-switch-buttons__button");
-      classSwitchButton.innerHTML = raceClasses[raceClass].name;
-      classButtonsContainer.append(classSwitchButton);
-      classSwitchButton.setAttribute("value", `${raceClass}`);
-      classSwitchButton.addEventListener("click", classSwitch);
+    if ((getState("mainObj").heats_by_class[raceClass].length != 0 && raceClasses[raceClass].leaderboard) || getState("raceClassesWithFinals")?.includes(raceClasses[raceClass].id)) {
+      raceClassesId.push(raceClasses[raceClass].id);
+      raceClassesNames.push({ id: raceClasses[raceClass].id, name: raceClasses[raceClass].name, key: raceClass });
     }
   }
+  console.log("CLASS EQUALLLL", arraysEqual(getState("allRaceClassesId"), raceClassesId));
+  console.log("CLASS EQUALLLLCLASS EQUALLLL");
+  if (arraysEqual(getState("allRaceClassesId"), raceClassesId)) {
+    return;
+  } else {
+    setState("allRaceClassesId", raceClassesId);
 
-  const classSwitchButtons = document.querySelectorAll(".class-switch-buttons__button");
-  const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
-  lastClassButtonSwitch.classList.add("_active", "_no-event");
+    if (document.querySelectorAll(".class-switch-buttons__button").length > 0) {
+      document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
+        raceClass.remove();
+      });
+    }
 
-  setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+    raceClassesNames.forEach((raceClass) => {
+      const classSwitchButton = document.createElement("button");
+      classSwitchButton.classList.add(`class-switch-buttons__class-${raceClass.id}`, "_button", "class-switch-buttons__button");
+      classSwitchButton.innerHTML = raceClass.name;
+      classButtonsContainer.append(classSwitchButton);
+      classSwitchButton.setAttribute("value", `${raceClass.id}`);
+      classSwitchButton.addEventListener("click", classSwitch);
+    });
+    const classSwitchButtons = document.querySelectorAll(".class-switch-buttons__button");
+    const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
+    lastClassButtonSwitch.classList.add("_active", "_no-event");
+
+    setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+  }
 }
 
 export function newLiveDataHTML() {
@@ -2198,4 +2223,152 @@ export function emptyEventHTML() {
   emptyModalButton.href = eventUrl.href;
 
   return emptyModal;
+}
+
+export async function tournamentRender(isTournament, isEmptyHeats, fileType) {
+  if (isTournament && !getState("isTournamentTab")) {
+    //Добавляем турнирную вкладку, если он есть
+    const tournamentTab = document.createElement("div");
+    tournamentTab.setAttribute("id", "tournamentTab");
+    tournamentTab.classList.add("tournament", "tab");
+    document.querySelector(".tabs-wrapper").append(tournamentTab);
+    const mainTabs = getTab("main") ? getTab("main") : [{},{},{}];
+    setTab("main", [...mainTabs, { name: "tournament", opened: false, element: document.querySelector(".tournament") }]);
+
+    //Рендерим её
+    const root = createRoot(tournamentTab);
+    root.render(<Tournament fullRHData={getState("fullRHData")} currentClass={getState("currentClass")} />);
+
+    //добавляем кнопку, если ещё нет
+    if (!document.querySelector(".buttons__tournament")) {
+      const tournamentButton = document.createElement("button");
+      tournamentButton.classList.add("buttons__tournament", "_button");
+      tournamentButton.innerHTML = "Турнир";
+      document.querySelector(".buttons__container").append(tournamentButton);
+      addButton("tournament", tournamentButton);
+
+      //добавляем клик по кнопки вкладки
+      getButton("tournament").addEventListener("click", function () {
+        tabSwitch(getTab("main")[3].name, getTab("main"));
+      });
+    }
+    setState("isTournamentTab", true);
+  } else if (getState("isTournamentTab") && isTournament) {
+    setTab("main", [
+      ...getTab("main"),
+      { name: "tournament", opened: document.querySelector(".tournament").classList.contains("_active") ? true : false, element: document.querySelector(".tournament") },
+    ]);
+  } else if (getState("isTournamentTab") && !isTournament) {
+    setState("isTournamentTab", false);
+    document.querySelector(".buttons__tournament")?.remove();
+    document.getElementById("tournamentTab")?.remove();
+  }
+
+  if (isEmptyHeats) {
+    //ДУБЛИРОВАНИЕ КОДА __надо бы переделать StartView
+    if (fileType != "classSwitch") {
+      //Кнопка поделиться
+      const shareElement = document.querySelector(".author__share");
+
+      shareElement.classList.remove("_hide");
+
+      shareElement.addEventListener("click", async function () {
+        const urlToCopy = document.querySelector(".author__share-url").textContent;
+        try {
+          await navigator.clipboard.writeText(urlToCopy);
+          shareElement.classList.add("_success");
+          const timer = setTimeout(() => {
+            shareElement.classList.remove("_success");
+            clearTimeout(timer);
+          }, 1000);
+        } catch (error) {
+          console.log("error", error);
+
+          shareElement.classList.add("_error");
+          const timer = setTimeout(() => {
+            shareElement.classList.remove("_error");
+            clearTimeout(timer);
+          }, 1000);
+        }
+      });
+
+      if (fileType == "uuid") {
+        const wrapperElement = document.querySelector(".wrapper");
+        wrapperElement.classList.add("_loading-hide");
+
+        await new Promise((resolve) => {
+          wrapperElement.addEventListener("transitionend", function (e) {
+            if (e.target == wrapperElement && e.propertyName == "opacity") {
+              resolve();
+            }
+          });
+        });
+        document.querySelector(".main").classList.remove("_hide");
+        wrapperElement.classList.remove("_loading-hide");
+        wrapperElement.classList.remove("_hide");
+      } else if (fileType == "last") {
+        const lastFileButton = document.querySelector(".last-file__item");
+        lastFileButton.classList.remove("_loading");
+        lastFileButton.classList.add("_move");
+
+        await new Promise((resolve) => {
+          lastFileButton.addEventListener("transitionend", function (e) {
+            if (e.propertyName === "transform") {
+              resolve();
+            }
+          });
+        });
+      } else if (fileType == "date") {
+        const fileItemElement = document.querySelector("._uploading-file");
+        fileItemElement.classList.add("_hidden");
+
+        await new Promise((resolve) => {
+          fileItemElement.addEventListener("transitionend", function (e) {
+            if (e.propertyName == "opacity") {
+              resolve();
+            }
+          });
+        });
+        window.scrollTo({
+          top: 0,
+        });
+      } else if (fileType == "local") {
+        getLocalFileElement("button").style.transition = "all 1s ease";
+        getLocalFileElement("button").style.transform = `translate(${window.innerWidth / 2 + getLocalFileElement("button").offsetWidth}px, 0px)`; //едем
+        getLocalFileElement("label").style.transition = "all 1s ease";
+        getLocalFileElement("label").style.transform = `translate(-${window.innerWidth / 2 + getLocalFileElement("label").offsetWidth}px, 0px)`; //едем
+        await new Promise((resolve) => {
+          getLocalFileElement("button").addEventListener("transitionend", function (e) {
+            if (e.propertyName == "transform") {
+              resolve();
+            }
+          });
+        });
+        window.scrollTo({
+          top: 0,
+        });
+      }
+
+      //Удаляем лишнее из html
+      document.querySelector(".last-file").remove();
+      document.querySelector(".date-files").remove();
+      document.querySelector(".calendar").remove();
+      getLocalFileElement("button").remove();
+      getLocalFileElement("form").remove();
+      getLocalFileElement("tittle").remove();
+
+      //Удаляем классы hidden для нужного
+      document.querySelector(".main-tittle").classList.remove("_hidden");
+      getButton("container").classList.add("_active");
+      document.querySelector(".class-switch-buttons__container").classList.add("_active");
+      document.querySelector(".home").classList.remove("_hidden");
+
+      // tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    } else {
+      //Смена классов
+      document.querySelector(".class-switch-buttons__container").classList.remove("_no-event");
+
+      // tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+    }
+  }
 }

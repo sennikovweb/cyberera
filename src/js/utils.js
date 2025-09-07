@@ -230,18 +230,18 @@ export function setShareUrl(uuid) {
 }
 
 export function isOldFile(fileTimesmap) {
-	// Если параметр null, значит, время точно прошло (возвращаем false)
-	if (fileTimesmap == null) {
-	  return true;
-	}
- 
-	const currentTime = Date.now();
-	const timeDifference = currentTime - fileTimesmap; // Разница в миллисекундах
-	const sixHoursInMs = 6 * 60 * 60 * 1000;
- 
-	// Если разница >= 6 часов, возвращаем false, иначе true
-	return timeDifference > sixHoursInMs;
- }
+  // Если параметр null, значит, время точно прошло (возвращаем false)
+  if (fileTimesmap == null) {
+    return true;
+  }
+
+  const currentTime = Date.now();
+  const timeDifference = currentTime - fileTimesmap; // Разница в миллисекундах
+  const sixHoursInMs = 6 * 60 * 60 * 1000;
+
+  // Если разница >= 6 часов, возвращаем false, иначе true
+  return timeDifference > sixHoursInMs;
+}
 
 export function getDateStrings(timeFormated) {
   const [datePart, timePart] = timeFormated.split(" ");
@@ -250,4 +250,8 @@ export function getDateStrings(timeFormated) {
   const date = new Date(year, month - 1, day, hours, minutes);
 
   return { date, year, month, day, hours, minutes };
+}
+
+export function arraysEqual(arr1, arr2) {
+  return arr1.length === arr2.length && arr1.every((element, index) => element === arr2[index]);
 }

@@ -1,8 +1,8 @@
-import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils";
-import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas";
-import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions";
-import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender, emptyEventHTML } from "./htmlWriters";
-import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates";
+import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils.js";
+import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas.js";
+import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions.js";
+import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender, emptyEventHTML, tournamentRender } from "./htmlWriters.jsx";
+import { getButton, getState, setState, addButton, getLocalFileElement, setTab, getTab } from "./sharedStates.js";
 
 export async function startFileView(fileType) {
   try {
@@ -10,13 +10,32 @@ export async function startFileView(fileType) {
   } catch (error) {
     if (getState("CONSOLE_DEBUG")) console.log("Не найдена информация о consecutives count");
   }
-  if (!Object.keys(getState("mainObj").heats).length) {
+
+  const heatsNum = getState("mainObj")["heats_by_class"][getState("currentClass")];
+
+  const heatsData = Object.entries(getState("mainObj")["heats"])
+    .filter(([key]) => heatsNum.includes(+key))
+    .map(([, value]) => value);
+
+  //  Object.keys(getState("mainObj").heats).length
+  if (!heatsData.length && getState("raceClassesWithFinals")?.includes(+getState("currentClass") == false)) {
     //Проверяем, есть ли вообще круги, или только создали
     document.querySelector(".main").classList.remove("_hide");
     document.querySelector(".main").append(emptyEventHTML());
-    //  console.log("EMPTYEMPTYEMPTYEMPTYEMPTYEMPTY");
+  } else if (!heatsData.length && getState("raceClassesWithFinals")?.includes(+getState("currentClass"))) {
+    console.log("EMPTY BUT FINAL!!!!");
+    document.querySelector(".buttons__pilots").classList.add("_disabled");
+    document.querySelector(".buttons__leaderboard").classList.add("_disabled");
+    document.querySelector(".buttons__rounds").classList.add("_disabled");
+
+    tournamentRender(true, true, fileType);
   } else {
+    document.querySelector(".buttons__pilots").classList.remove("_disabled");
+    document.querySelector(".buttons__leaderboard").classList.remove("_disabled");
+    document.querySelector(".buttons__rounds").classList.remove("_disabled");
+
     document.querySelector(".tabs-wrapper").append(writePilotsHTML(), writeLeaderboardHTML(), writeRoundsHTML()); //добавляем HTML пилоты, круги, подряд и раунды
+
     console.log("StartViewFile", getState("mainObj"));
 
     //определяем вкладки, чтобы навесить на них событие, тут же информация для tabSwitch функции
@@ -25,6 +44,11 @@ export async function startFileView(fileType) {
       { name: "leaderboard", opened: false, element: document.querySelector(".leaderboard") },
       { name: "rounds", opened: false, element: document.querySelector(".rounds") },
     ]);
+    const isTournament = getState("raceClassesWithFinals")?.includes(+getState("currentClass")) ? true : false;
+
+    tournamentRender(isTournament, false, fileType);
+    //  if (isTournament && !getState("isTournamentTab")) {
+    //  }
 
     setTab("leader", [
       { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
@@ -149,18 +173,19 @@ export async function startFileView(fileType) {
       document.querySelector(".class-switch-buttons__container").classList.add("_active");
       document.querySelector(".home").classList.remove("_hidden");
 
-      tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+      // tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
     } else {
       //Смена классов
       document.querySelector(".class-switch-buttons__container").classList.remove("_no-event");
-      tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
+
+      // tabSwitch(getTab("main")[1].name, getTab("main")); //открываем вкладку LEaderboard сразу
     }
   }
 }
 ////////////////////////////////////////////////////////////
 
 export function classSwitch(e) {
-  console.log(e);
+  //   console.log(e);
 
   const curentButton = e.target;
   const allButtons = document.querySelectorAll(".class-switch-buttons__button");
@@ -181,9 +206,9 @@ export function classSwitch(e) {
     const pilotsTab = document.querySelector(".pilots");
     const leaderboardTab = document.querySelector(".leaderboard");
     const roundsTab = document.querySelector(".rounds");
-    pilotsTab.remove();
-    leaderboardTab.remove();
-    roundsTab.remove();
+    pilotsTab?.remove();
+    leaderboardTab?.remove();
+    roundsTab?.remove();
   }, 50);
 
   setTimeout(() => {
@@ -202,7 +227,7 @@ export function tabSwitch(toOpen, tabss) {
   });
 
   tabss.forEach((tab) => {
-    if (getButton([tab.name]).classList.contains("_ready")) {
+    if (getButton([tab.name])?.classList.contains("_ready")) {
       if (getState("CONSOLE_DEBUG")) console.log("TRUUUUUE");
       getButton([tab.name]).classList.remove("_ready");
     }

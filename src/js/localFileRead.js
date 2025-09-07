@@ -1,6 +1,6 @@
 import { getState, setState, getLocalFileElement } from "./sharedStates";
 import { getAnimationDurationTime } from "./utils";
-import { makeRaceClassButtons } from "./htmlWriters";
+import { makeRaceClassButtons } from "./htmlWriters.jsx";
 import { setTittle, startFileView } from "./uiChange";
 
 export async function addLocalFile() {

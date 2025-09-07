@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-	 "vercel-dev": "vercel dev",
+    "vercel-dev": "vercel dev",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -14,6 +14,10 @@
     "vite": "^7.0.4"
   },
   "dependencies": {
-    "@upstash/redis": "^1.35.1"
+    "@upstash/redis": "^1.35.1",
+    "@vitejs/plugin-react": "^5.0.2",
+    "motion": "^12.23.12",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   }
 }

@@ -6,6 +6,7 @@ import { tabSwitch, roundStatsStrokeWidthChange, moveMonth } from "./js/uiChange
 import { loadFilesList, loadLastFile, urlUpload, loadDateFile } from "./js/loadData";
 import { setState, getState, getButton, getLocalFileElement, getTab } from "./js/sharedStates";
 
+
 ////////////////////////////////////////////
 if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
   //Анимация кнопок на тач экранах
@@ -90,6 +91,7 @@ getButton("leaderboard").addEventListener("click", function () {
 getButton("rounds").addEventListener("click", function () {
   tabSwitch(getTab("main")[2].name, getTab("main"));
 });
+
 
 window.addEventListener("resize", function () {
   roundStatsStrokeWidthChange();

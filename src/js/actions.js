@@ -1,5 +1,5 @@
 import { getState, getTab, setTab, getButton, setState, getDuel, setDuel, getAkcent, addButton } from "./sharedStates";
-import { writeInRoundHTML, writeAllLapsHTML, writePilotsVs } from "./htmlWriters";
+import { writeInRoundHTML, writeAllLapsHTML, writePilotsVs } from "./htmlWriters.jsx";
 import { tabSwitch, tabHeightChange, spoilerOnOff, modalOnOff, lapNodeShow, allLapsGraphScale, pilotsVsGraphScale, allLapsGraphChoosing, pilotsVsGraphChoosing, setAkcentValues } from "./uiChange";
 import { spoilerButtonAnimation, inRoundShow, allLapsShow, pilotsVsShow } from "./animations";
 import { getLapData, getHeatTabsRounds } from "./getDatas";

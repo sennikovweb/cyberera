@@ -1,5 +1,5 @@
 import { getState, setState } from "./sharedStates";
-import { calendarRender, makeRaceClassButtons } from "./htmlWriters";
+import { calendarRender, makeRaceClassButtons } from "./htmlWriters.jsx";
 import { startFileView, setTittle } from "./uiChange";
 import { getDateStrings, isOldFile, setShareUrl } from "./utils";
 import { tittleCounter, checkLiveData } from "./liveDataCounter";
@@ -11,6 +11,17 @@ export async function urlUpload() {
     const fullLiveData = await getLiveData(getState("isUuid"));
 
     setState("mainObj", fullLiveData.results);
+    setState("fullRHData", fullLiveData);
+    setState("finalTypesByClass", fullLiveData.finalTypesByClass);
+    const raceClassesWithFinals = fullLiveData.finalTypesByClass?.filter((raceClass) => raceClass.finalType != "");
+    setState(
+      "raceClassesWithFinals",
+      raceClassesWithFinals?.map((raceClass) => raceClass.raceClassId)
+    );
+
+    console.log("raceClassesWithFinals", getState("raceClassesWithFinals"));
+
+    console.log("FULL OBJJJ", fullLiveData);
     //  setState("isUuid", ''); Уже есть uuid
     setState("liveTimestamp", fullLiveData.lastUpdate);
 
@@ -77,8 +88,8 @@ export async function loadFilesList(calendar) {
     responseData.files.forEach((file) => {
       ///Собираем объект всех файлов из репозитория
       const obj = {};
-		console.log('file.meta.eventStartfile.meta.eventStartfile.meta.eventStart',file.meta.eventStart);
-		
+      console.log("file.meta.eventStartfile.meta.eventStartfile.meta.eventStart", file.meta.eventStart);
+
       if (file.meta.eventStart) {
         const { date, year, month, day, hours, minutes } = getDateStrings(file.meta.eventStart);
         obj.date = date;
@@ -185,6 +196,14 @@ export async function loadLastFile() {
     console.log('getState("lastFile")getState("lastFile")getState("lastFile")', getState("lastFile"));
 
     setState("mainObj", fullResponse.data.results);
+    setState("fullRHData", fullResponse.data);
+    setState("finalTypesByClass", fullResponse.data.finalTypesByClass);
+    const raceClassesWithFinals = fullResponse.data.finalTypesByClass?.filter((raceClass) => raceClass.finalType != "");
+    setState(
+      "raceClassesWithFinals",
+      raceClassesWithFinals?.map((raceClass) => raceClass.raceClassId)
+    );
+
     setState("isUuid", getState("lastFile").uuid);
     setState("liveTimestamp", getState("lastFile").lastUpdate);
 
@@ -227,6 +246,14 @@ export async function loadDateFile(uuid) {
 
     const fullResponse = await data.json();
     setState("mainObj", fullResponse.data.results);
+    setState("fullRHData", fullResponse.data);
+    setState("finalTypesByClass", fullResponse.data.finalTypesByClass);
+    const raceClassesWithFinals = fullResponse.data.finalTypesByClass?.filter((raceClass) => raceClass.finalType != "");
+    setState(
+      "raceClassesWithFinals",
+      raceClassesWithFinals?.map((raceClass) => raceClass.raceClassId)
+    );
+
     setState("isUuid", uuid);
     setState("liveTimestamp", fileListData.lastUpdate);
 
