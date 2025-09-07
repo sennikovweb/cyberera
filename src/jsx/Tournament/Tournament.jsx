@@ -4,7 +4,6 @@ import { getState, subscribe, unsubscribe } from "../../js/sharedStates";
 import HorizontalTable from "./HorizontalTable";
 import DirectionSwitcher from "./DirectionSwitcher";
 
-import { testRaceData, testRaceDataNotFull1, testRaceDataNotFull2, raceEmpty, roundEmpty, noResultHeats2 } from "./testConst";
 import { getResultRaces, setDuelPlaces, setRaceScores, setRaceStatus, getPlannedRaces, addEmptyRaces } from "./utils";
 
 function Tournament({ fullRHData, currentClass }) {
