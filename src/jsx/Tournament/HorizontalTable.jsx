@@ -31,7 +31,7 @@ function HorizontalTable({ raceData, activePilot }) {
 
   return (
     <>
-      <div className="tournament__full-table" style={{ gridTemplateRows: `repeat(24, ${getState("tournamentPilotsPerHeat") - 1}rem)` }}>
+      <div className="tournament__full-table" style={{ gridTemplateRows: `repeat(24, ${getState("tournamentPilotsPerHeat")*15+2}px)` }}>
         {raceData.map((race, index) => {
           return (
             <RaceCard

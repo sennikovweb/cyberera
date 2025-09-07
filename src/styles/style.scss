@@ -105,6 +105,7 @@ h6 {
 $color-back: #0b0c10;
 
 $color-dark: #1f2833;
+// $color-dark2: #1f28339f;
 $color-dark-animation: #1f283334;
 $color-grey: #c5c6c7;
 $color-akcent2: #66fcf1;
@@ -5141,7 +5142,6 @@ body {
 
 .tournament {
 	width: 100%;
-
 	&__tittle {
 		position: relative;
 		display: grid;
@@ -5233,17 +5233,12 @@ body {
 	}
 
 	&__container {
+		// background-color: $color-dark;
 		// height: 100vh;
 		// display: flex;
 		// flex-direction: column;
 		// gap: 10px;		
 		// font-size: 18px;
-	}
-
-	&__buttons {
-		display: flex;
-		gap: 5px;
-		justify-content: space-between;
 	}
 
 	&__full-table {
@@ -5264,6 +5259,10 @@ body {
 		display: flex;
 		flex-direction: column;
 		transition: all 1s ease-out;
+
+		font-size: 28px;
+		letter-spacing: 0.15rem;
+
 		// height: 4rem;
 	}
 
@@ -5303,23 +5302,33 @@ body {
 	}
 
 	&__race-num {
-		font-size: 16px;
+		font-size: 32px;
+		letter-spacing: 0.13rem;
+
+
 		margin: 0px 0px 0px 5px;
 		justify-self: start;
 	}
 
 	&__race-phase {
-		font-size: 16px;
+		font-size: 32px;
+		letter-spacing: 0.13rem;
+
+
 		margin: 0px 0px 0px 5px;
 		justify-self: center;
 	}
 
 	&__race-status {
-		font-size: 20px;
+		font-size: 32px;
+		letter-spacing: 0.13rem;
+
+
 		font-weight: 700;
 		border-radius: 7px;
 		padding: 0px 10px;
 		justify-self: end;
+
 	}
 
 	&__race-sub-tittles {
@@ -5328,13 +5337,12 @@ body {
 		align-items: end;
 		justify-items: center;
 		margin: 0px 0px 10px 0px;
-
+		color: $color-stat-frame;
 	}
 
 	&__race-name-tittle {
 		justify-self: start;
 		margin: 0px 0px 0px 5px;
-
 	}
 
 	&__race-strokes {
@@ -5491,7 +5499,7 @@ body {
 		justify-content: center;
 		align-items: center;
 		justify-content: center;
-		box-shadow: 0px 0px 5px $color-akcent2 inset;
+		box-shadow: 0px 0px 5px $color-akcent2 inset, 0px 0px 2px $color-akcent2;
 	}
 }
 
