@@ -21,7 +21,7 @@ function RaceCard({ raceData, raceIndex, gridPositionsData, pilotButton, activeP
           <h4 className="tournament__race-place-tittle _race-subtittle">Баллы</h4>
         </div>
         <div className="tournament__race-strokes" style={{ gridTemplateRows: `repeat(${pilotsQuantity}, 1fr)` }}>
-          {raceData.pilotsRacePlaces.map((pilotData, index) => {
+          {raceData.pilotsRacePlaces?.map((pilotData, index) => {
             return (
               <motion.div
                 layout

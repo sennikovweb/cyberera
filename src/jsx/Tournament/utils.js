@@ -186,36 +186,42 @@ export const getPlannedRaces = (slots, roundsQuantity, pilotsPerHeat = 4) => {
   const plannedRaces = slots.map((heat, index) => {
     let pilots = heat.pilots;
 
-    if (pilots.length < pilotsPerHeat) {
-      const fullPilots = Array.from({ length: pilotsPerHeat }, (_, index) => {
-        if (pilots[index]) {
-          return pilots[index];
-        } else {
-          return { id: 0, callsign: null };
-        }
+    if (pilots) {
+      if (pilots.length < pilotsPerHeat) {
+        const fullPilots = Array.from({ length: pilotsPerHeat }, (_, index) => {
+          if (pilots[index]) {
+            return pilots[index];
+          } else {
+            return { id: 0, callsign: null };
+          }
+        });
+        pilots = fullPilots;
+      }
+
+      const pilotsId = pilots.map((pilot) => pilot.id);
+      const pilotsNames = pilots.map((pilot) => {
+        return { id: pilot.id, name: pilot.callsign };
       });
-      pilots = fullPilots;
+      const racePlaces = pilots.map((pilot) => {
+        return { id: pilot.id };
+      });
+
+      const emptyRounds = Array.from({ length: roundsQuantity }, (round) => {
+        const emptyRound = pilotsId.map((pilotId) => {
+          return { id: pilotId, time: 0, laps: 0, place: 0 };
+        });
+        return emptyRound;
+      });
+
+      const status = index == 0 ? "next" : "planned";
+      return { pilotsId, pilotsNames, pilotsRoundPlaces: emptyRounds, pilotsRacePlaces: racePlaces, roundInfo: [], status: status };
+    } else {
+      console.log("Пилотов в слотах нет!");
     }
-
-    const pilotsId = pilots.map((pilot) => pilot.id);
-    const pilotsNames = pilots.map((pilot) => {
-      return { id: pilot.id, name: pilot.callsign };
-    });
-    const racePlaces = pilots.map((pilot) => {
-      return { id: pilot.id };
-    });
-
-    const emptyRounds = Array.from({ length: roundsQuantity }, (round) => {
-      const emptyRound = pilotsId.map((pilotId) => {
-        return { id: pilotId, time: 0, laps: 0, place: 0 };
-      });
-      return emptyRound;
-    });
-
-    const status = index == 0 ? "next" : "planned";
-    return { pilotsId, pilotsNames, pilotsRoundPlaces: emptyRounds, pilotsRacePlaces: racePlaces, roundInfo: [], status: status };
   });
-  return plannedRaces;
+
+  //возвращаем, только есть пилотов с лотах нашли
+  return plannedRaces.filter((race) => race);
 };
 
 export const addEmptyRaces = (allKnownRaces, raceQuantity, pilotsPerHeat = 4) => {
