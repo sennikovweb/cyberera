@@ -22,21 +22,22 @@ function Tournament({ fullRHData, currentClass }) {
 
   console.log("fullDatafullDatafullData", fullData);
 
-  const dublicatedHeatsData = fullData.dublicatedHeats.filter((heat) => heat.classId == raceClass);
-  const dublicatedHeatsId = dublicatedHeatsData.map((heat) => heat.heatId);
-  const dublicateIds = dublicatedHeatsData.map((heat) => heat.dublicateId);
+  const duplicatedHeatsData = fullData.duplicatedHeats.filter((heat) => heat.classId == raceClass);
+  const duplicatedHeatsId = duplicatedHeatsData.map((heat) => heat.heatId);
+  const duplicateIds = duplicatedHeatsData.map((heat) => heat.duplicateId);
 
-  const noResultsHeats = fullData.noResultsHeats.filter((heat) => heat.classId == raceClass).filter((heat) => dublicateIds?.includes(heat.heatId) == false);
-  console.log("noResultsHeatsnoResultsHeats", noResultsHeats);
+  const noResultsHeats = fullData.noResultsHeats.filter((heat) => heat.classId == raceClass).filter((heat) => duplicateIds?.includes(heat.heatId) == false);
+
+  const deletedRounds = fullData.deletedRounds;
 
   const heatsNum = getState("mainObj")["heats_by_class"][raceClass];
   const heatsNumSorted = [];
   heatsNum.forEach((num) => {
-    if (dublicatedHeatsId?.includes(num)) {
-      const dublicateDataForCurrent = dublicatedHeatsData.filter((heat) => heat.heatId == num);
-      const dublicateIdForCurrent = dublicateDataForCurrent.map((dublicated) => dublicated.dublicateId);
+    if (duplicatedHeatsId?.includes(num)) {
+      const duplicateDataForCurrent = duplicatedHeatsData.filter((heat) => heat.heatId == num);
+      const duplicateIdForCurrent = duplicateDataForCurrent.map((duplicated) => duplicated.duplicateId);
 
-      heatsNumSorted.push(num, ...dublicateIdForCurrent);
+      heatsNumSorted.push(num, ...duplicateIdForCurrent);
     } else if (heatsNumSorted?.includes(num)) {
       return;
     } else {
@@ -64,6 +65,8 @@ function Tournament({ fullRHData, currentClass }) {
 
   //Здесь собираем все раунды
   const rounds = heatsData.map((heat) => heat.rounds).flat();
+
+  console.log("roundsroundsrounds", rounds);
 
   //собираем массив всех выполненных гонок
   const races = getResultRaces(rounds);

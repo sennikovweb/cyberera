@@ -1,4 +1,4 @@
-import { getTransitionDurationTime, getMinutesSinceUpload } from "./utils.js";
+import { getTransitionDurationTime, getMinutesSinceUpload, updateUrl } from "./utils.js";
 import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas.js";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions.js";
 import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender, emptyEventHTML, tournamentRender } from "./htmlWriters.jsx";
@@ -70,6 +70,7 @@ export async function startFileView(fileType) {
     getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
 
     tabSwitch(getTab("leader")[0].name, getTab("leader"));
+
     tabHeightChange(getTab("leader")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
 
     tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
@@ -202,6 +203,8 @@ export function classSwitch(e) {
   tabSwitch("closeAll", getTab("main"));
   setState("currentClass", raceClassNum);
 
+  updateUrl('raceclass',raceClassNum)
+
   setTimeout(() => {
     const pilotsTab = document.querySelector(".pilots");
     const leaderboardTab = document.querySelector(".leaderboard");
@@ -264,6 +267,9 @@ export function tabSwitch(toOpen, tabss) {
         });
         if (getState("CONSOLE_DEBUG")) console.log("T A B O P E N", tab);
       }, closingtime);
+		console.log('tabtabtabtab',tab);
+		
+		// updateUrl({ tab.name: toOpen });
     }
   });
 
@@ -275,6 +281,7 @@ export function tabSwitch(toOpen, tabss) {
       });
     }, 500);
   }
+
 }
 
 export function tabHeightChange(tabElement, tabItemsElement, firstState) {

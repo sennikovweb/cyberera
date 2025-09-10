@@ -1,6 +1,6 @@
 import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getRoundsByHeats } from "./getDatas.js";
-import { lapTimeConverter, arraysEqual } from "./utils.js";
-import { lapNodeShow, classSwitch,tabSwitch } from "./uiChange.jsx";
+import { lapTimeConverter, arraysEqual, updateUrl } from "./utils.js";
+import { lapNodeShow, classSwitch, tabSwitch } from "./uiChange.jsx";
 import { getState, setAkcent, setState, setTab, getTab, addButton, getButton, getLocalFileElement } from "./sharedStates.js";
 
 import React from "react";
@@ -2152,7 +2152,6 @@ export function makeRaceClassButtons() {
     }
   }
   console.log("CLASS EQUALLLL", arraysEqual(getState("allRaceClassesId"), raceClassesId));
-  console.log("CLASS EQUALLLLCLASS EQUALLLL");
   if (arraysEqual(getState("allRaceClassesId"), raceClassesId)) {
     return;
   } else {
@@ -2177,6 +2176,11 @@ export function makeRaceClassButtons() {
     lastClassButtonSwitch.classList.add("_active", "_no-event");
 
     setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+
+
+    //  updateUrl("raceclass", newCurrentClass);
+    //  params.set("raceclass", newCurrentClass);
+    //  history.pushState({}, "", `?${params}`);
   }
 }
 
@@ -2232,7 +2236,7 @@ export async function tournamentRender(isTournament, isEmptyHeats, fileType) {
     tournamentTab.setAttribute("id", "tournamentTab");
     tournamentTab.classList.add("tournament", "tab");
     document.querySelector(".tabs-wrapper").append(tournamentTab);
-    const mainTabs = getTab("main") ? getTab("main") : [{},{},{}];
+    const mainTabs = getTab("main") ? getTab("main") : [{}, {}, {}];
     setTab("main", [...mainTabs, { name: "tournament", opened: false, element: document.querySelector(".tournament") }]);
 
     //Рендерим её

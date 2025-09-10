@@ -255,3 +255,26 @@ export function getDateStrings(timeFormated) {
 export function arraysEqual(arr1, arr2) {
   return arr1.length === arr2.length && arr1.every((element, index) => element === arr2[index]);
 }
+
+export function updateUrl(key, value) {
+  const url = new URL(window.location);
+  const uuidParam = url.searchParams.get("uuid");
+
+  const classRaceParam = url.searchParams.get("raceclass");
+  const mainTabParam = url.searchParams.get("tab");
+  const leaderboardTypeParam = url.searchParams.get("leaderType");
+
+  const searchParams = new URLSearchParams();
+  searchParams.set("uuid", uuidParam);
+
+  classRaceParam && searchParams.set("raceclass", classRaceParam);
+  mainTabParam && searchParams.set("tab", mainTabParam);
+  leaderboardTypeParam && searchParams.set("leaderType", leaderboardTypeParam);
+
+  if (key == "raceclass") {
+    searchParams.set(key, value);
+    const newUrl = `${url.pathname}?${searchParams.toString()}`;
+    history.pushState(null, "", newUrl);
+  }
+  
+}
