@@ -1,7 +1,7 @@
 import { getLapsByName, getConsecutivesByName, getRound, getPilotsStats, getRoundsByHeats } from "./getDatas.js";
 import { lapTimeConverter, arraysEqual, updateUrl } from "./utils.js";
 import { lapNodeShow, classSwitch, tabSwitch } from "./uiChange.jsx";
-import { getState, setAkcent, setState, setTab, getTab, addButton, getButton, getLocalFileElement } from "./sharedStates.js";
+import { getState, setAkcent, setState, setTab, getTab, addButton, getButton, getLocalFileElement, unsubscribe } from "./sharedStates.js";
 
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -2140,19 +2140,20 @@ export function makeRaceClassButtons() {
   //Делаем кнопки Классов
   const classButtonsContainer = document.querySelector(".class-switch-buttons__container");
   const raceClasses = getState("mainObj").classes;
-  console.log("raceClassesraceClassesraceClassesraceClasses", raceClasses);
 
   const raceClassesId = [];
   const raceClassesNames = [];
 
+  //проверяем классы в results и в raceClassesWithFinals
   for (let raceClass in raceClasses) {
     if ((getState("mainObj").heats_by_class[raceClass].length != 0 && raceClasses[raceClass].leaderboard) || getState("raceClassesWithFinals")?.includes(raceClasses[raceClass].id)) {
       raceClassesId.push(raceClasses[raceClass].id);
       raceClassesNames.push({ id: raceClasses[raceClass].id, name: raceClasses[raceClass].name, key: raceClass });
     }
   }
-  console.log("CLASS EQUALLLL", arraysEqual(getState("allRaceClassesId"), raceClassesId));
+
   if (arraysEqual(getState("allRaceClassesId"), raceClassesId)) {
+    console.log("Нет новых классов");
     return;
   } else {
     setState("allRaceClassesId", raceClassesId);
@@ -2171,16 +2172,25 @@ export function makeRaceClassButtons() {
       classSwitchButton.setAttribute("value", `${raceClass.id}`);
       classSwitchButton.addEventListener("click", classSwitch);
     });
+
     const classSwitchButtons = document.querySelectorAll(".class-switch-buttons__button");
-    const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
-    lastClassButtonSwitch.classList.add("_active", "_no-event");
 
-    setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+    const url = new URL(window.location);
+    const raceclassParam = url.searchParams.get("raceclass");
 
-
-    //  updateUrl("raceclass", newCurrentClass);
-    //  params.set("raceclass", newCurrentClass);
-    //  history.pushState({}, "", `?${params}`);
+    if (raceclassParam) {
+      classSwitchButtons.forEach((button) => {
+        if (button.getAttribute("value") == raceclassParam) {
+          button.classList.add("_active", "_no-event");
+        }
+      });
+      setState("currentClass", raceclassParam);
+    } else {
+      const lastClassButtonSwitch = classSwitchButtons[classSwitchButtons.length - 1];
+      lastClassButtonSwitch.classList.add("_active", "_no-event");
+      setState("currentClass", lastClassButtonSwitch.getAttribute("value"));
+      updateUrl("raceclass", lastClassButtonSwitch.getAttribute("value"));
+    }
   }
 }
 
@@ -2240,8 +2250,13 @@ export async function tournamentRender(isTournament, isEmptyHeats, fileType) {
     setTab("main", [...mainTabs, { name: "tournament", opened: false, element: document.querySelector(".tournament") }]);
 
     //Рендерим её
-    const root = createRoot(tournamentTab);
-    root.render(<Tournament fullRHData={getState("fullRHData")} currentClass={getState("currentClass")} />);
+    console.log("StartRender");
+
+    setState("reactRoot", createRoot(tournamentTab));
+
+    getState("reactRoot").render(<Tournament fullRHData={getState("fullRHData")} currentClass={getState("currentClass")} />);
+
+    console.log("endRender");
 
     //добавляем кнопку, если ещё нет
     if (!document.querySelector(".buttons__tournament")) {
@@ -2253,7 +2268,9 @@ export async function tournamentRender(isTournament, isEmptyHeats, fileType) {
 
       //добавляем клик по кнопки вкладки
       getButton("tournament").addEventListener("click", function () {
-        tabSwitch(getTab("main")[3].name, getTab("main"));
+        console.log("TRY OPEN");
+
+        tabSwitch(getTab("main")[3].name, getTab("main"), "main");
       });
     }
     setState("isTournamentTab", true);
@@ -2265,7 +2282,14 @@ export async function tournamentRender(isTournament, isEmptyHeats, fileType) {
   } else if (getState("isTournamentTab") && !isTournament) {
     setState("isTournamentTab", false);
     document.querySelector(".buttons__tournament")?.remove();
+    console.log('getState("reactRoot")getState("reactRoot")', getState("reactRoot"));
+
+    getState("reactRoot").unmount();
+    setState("reactRoot", null);
     document.getElementById("tournamentTab")?.remove();
+
+    //  unsubscribe("fullRHData", handleUpdate);
+    //  unsubscribe("currentClass", raceClassUpdate);
   }
 
   if (isEmptyHeats) {

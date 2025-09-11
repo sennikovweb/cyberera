@@ -343,9 +343,9 @@ export function fromInRoundToRoundAction(buttonPressed) {
 export function leaderboardTabAction(e) {
   const itemsElement = document.querySelector(".leaderboard__items");
   if (e.target.closest(".leaderboard__lap-button")) {
-    tabSwitch(getTab("leader")[0].name, getTab("leader"));
+    tabSwitch(getTab("leaderboard")[0].name, getTab("leaderboard"),'leaderboard');
 
-    tabHeightChange(getTab("leader")[0].element, itemsElement, false);
+    tabHeightChange(getTab("leaderboard")[0].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[0].element.offsetHeight;
@@ -356,9 +356,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[0].element));
   }
   if (e.target.closest(".leaderboard__consecutive-button")) {
-    tabSwitch(getTab("leader")[1].name, getTab("leader"));
+    tabSwitch(getTab("leaderboard")[1].name, getTab("leaderboard"),'leaderboard');
 
-    tabHeightChange(getTab("leader")[1].element, itemsElement, false);
+    tabHeightChange(getTab("leaderboard")[1].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[1].element.offsetHeight;
@@ -369,9 +369,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[1].element));
   }
   if (e.target.closest(".leaderboard__count-button")) {
-    tabSwitch(getTab("leader")[2].name, getTab("leader"));
+    tabSwitch(getTab("leaderboard")[2].name, getTab("leaderboard"),'leaderboard');
 
-    tabHeightChange(getTab("leader")[2].element, itemsElement, false);
+    tabHeightChange(getTab("leaderboard")[2].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[2].element.offsetHeight;
@@ -381,9 +381,9 @@ export function leaderboardTabAction(e) {
     // }, getTransitionDurationTime(tabsLeader[2].element));
   }
   if (e.target.closest(".leaderboard__average-button")) {
-    tabSwitch(getTab("leader")[3].name, getTab("leader"));
+    tabSwitch(getTab("leaderboard")[3].name, getTab("leaderboard"),'leaderboard');
 
-    tabHeightChange(getTab("leader")[3].element, itemsElement, false);
+    tabHeightChange(getTab("leaderboard")[3].element, itemsElement, false);
 
     // setTimeout(() => {
     // 	const tabWidth = tabsLeader[3].element.offsetHeight;

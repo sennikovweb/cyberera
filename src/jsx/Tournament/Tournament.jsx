@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 
-import { getState, subscribe, unsubscribe } from "../../js/sharedStates";
+import { getState, getTab, subscribe, unsubscribe } from "../../js/sharedStates";
 import HorizontalTable from "./HorizontalTable";
 import DirectionSwitcher from "./DirectionSwitcher";
 
 import { getResultRaces, setDuelPlaces, setRaceScores, setRaceStatus, getPlannedRaces, addEmptyRaces } from "./utils";
+import { tabSwitch } from "../../js/uiChange";
+import { getParamTabIndex } from "../../js/utils";
+import { div } from "motion/react-client";
+import VerticalTable from "./VerticalTable";
 
 function Tournament({ fullRHData, currentClass }) {
   const [fullData, setFullData] = useState(fullRHData);
   const [raceClass, setRaceClass] = useState(currentClass);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1023);
 
   const [activeTabId, setActiveTabId] = useState(1);
 
@@ -28,8 +34,6 @@ function Tournament({ fullRHData, currentClass }) {
 
   const noResultsHeats = fullData.noResultsHeats.filter((heat) => heat.classId == raceClass).filter((heat) => duplicateIds?.includes(heat.heatId) == false);
 
-  const deletedRounds = fullData.deletedRounds;
-
   const heatsNum = getState("mainObj")["heats_by_class"][raceClass];
   const heatsNumSorted = [];
   heatsNum.forEach((num) => {
@@ -44,6 +48,11 @@ function Tournament({ fullRHData, currentClass }) {
       heatsNumSorted.push(num);
     }
   });
+
+  const deletedRounds = fullData.deleteRounds;
+  const deletedRoundsInHeats = deletedRounds.filter((data) => heatsNumSorted.includes(data.heatId));
+  console.log("deletedRoundsdeletedRoundsdeletedRounds", deletedRounds);
+  console.log("deletedRoundsInHeats", deletedRoundsInHeats);
 
   console.log("heatsNum", heatsNum);
   console.log("heatsNumSorted", heatsNumSorted);
@@ -64,7 +73,19 @@ function Tournament({ fullRHData, currentClass }) {
     .filter((heatData) => heatData.heat_id);
 
   //Здесь собираем все раунды
-  const rounds = heatsData.map((heat) => heat.rounds).flat();
+  const rounds = heatsData
+    .map((heat) => {
+      if (deletedRoundsInHeats.length > 0) {
+        const deletedRoundsInHeat = deletedRoundsInHeats.find((data) => data.heatId == heat.heat_id)?.deletedRoundNum || [];
+        const filteredRounds = heat.rounds.filter((round) => !deletedRoundsInHeat.includes(round.id));
+        console.log("filteredRounds", filteredRounds);
+        console.log("heat.roundsheat.rounds", heat.rounds);
+        return filteredRounds;
+      } else {
+        return heat.rounds;
+      }
+    })
+    .flat();
 
   console.log("roundsroundsrounds", rounds);
 
@@ -108,10 +129,30 @@ function Tournament({ fullRHData, currentClass }) {
     const raceClassUpdate = (value) => {
       setRaceClass(value);
     };
+    console.log("SUBSCRIBE");
 
     subscribe("fullRHData", handleUpdate);
     subscribe("currentClass", raceClassUpdate);
+
+    const mainTabParam = getParamTabIndex("main");
+
+    if (mainTabParam == 3) tabSwitch(getTab("main")[mainTabParam].name, getTab("main"), "main", true);
+
+    return () => {
+      unsubscribe("fullRHData", handleUpdate);
+      unsubscribe("currentClass", raceClassUpdate);
+      console.log("UNNNNNNNSUBSCRIBE");
+    };
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1023);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <div className="tournament__container tab-items">
@@ -121,7 +162,7 @@ function Tournament({ fullRHData, currentClass }) {
           <DirectionSwitcher />
         </div>
 
-        <HorizontalTable raceData={allRaces} />
+        {isMobile ? <VerticalTable raceData={allRaces} /> : <HorizontalTable raceData={allRaces} />}
       </div>
     </>
   );

@@ -28,6 +28,7 @@ const states = {
   finalTypesByClass: [],
   fullRHData: {},
   raceClassesWithFinals: [],
+  reactRoot:null,
 };
 
 const subscribers = {};

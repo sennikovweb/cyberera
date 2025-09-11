@@ -6,7 +6,6 @@ import { tabSwitch, roundStatsStrokeWidthChange, moveMonth } from "./js/uiChange
 import { loadFilesList, loadLastFile, urlUpload, loadDateFile } from "./js/loadData";
 import { setState, getState, getButton, getLocalFileElement, getTab } from "./js/sharedStates";
 
-
 ////////////////////////////////////////////
 if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
   //Анимация кнопок на тач экранах
@@ -81,17 +80,16 @@ getLocalFileElement("form").addEventListener("submit", startLocalFile);
 
 //////////////////////////////////////////
 getButton("pilots").addEventListener("click", function () {
-  tabSwitch(getTab("main")[0].name, getTab("main"));
+  tabSwitch(getTab("main")[0].name, getTab("main"), "main");
 });
 
 getButton("leaderboard").addEventListener("click", function () {
-  tabSwitch(getTab("main")[1].name, getTab("main"));
+  tabSwitch(getTab("main")[1].name, getTab("main"), "main");
 });
 
 getButton("rounds").addEventListener("click", function () {
-  tabSwitch(getTab("main")[2].name, getTab("main"));
+  tabSwitch(getTab("main")[2].name, getTab("main"), "main");
 });
-
 
 window.addEventListener("resize", function () {
   roundStatsStrokeWidthChange();

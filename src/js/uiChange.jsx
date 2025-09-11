@@ -1,4 +1,4 @@
-import { getTransitionDurationTime, getMinutesSinceUpload, updateUrl } from "./utils.js";
+import { getTransitionDurationTime, getMinutesSinceUpload, updateUrl, getParamTabIndex } from "./utils.js";
 import { getLapsByName, getHeatTabsRounds, getDateinfo } from "./getDatas.js";
 import { pilotTabAction, roundsTabAction, leaderboardTabAction } from "./actions.js";
 import { writePilotsHTML, writeLeaderboardHTML, writeRoundsHTML, calendarRender, emptyEventHTML, tournamentRender } from "./htmlWriters.jsx";
@@ -13,13 +13,16 @@ export async function startFileView(fileType) {
 
   const heatsNum = getState("mainObj")["heats_by_class"][getState("currentClass")];
 
-  const heatsData = Object.entries(getState("mainObj")["heats"])
-    .filter(([key]) => heatsNum.includes(+key))
-    .map(([, value]) => value);
+  const heatsData =
+    Object.entries(getState("mainObj")["heats"])
+      .filter(([key]) => heatsNum.includes(+key))
+      .map(([, value]) => value) || [];
 
   //  Object.keys(getState("mainObj").heats).length
-  if (!heatsData.length && getState("raceClassesWithFinals")?.includes(+getState("currentClass") == false)) {
+  if (heatsData.length == 0 && !getState("raceClassesWithFinals")?.includes(+getState("currentClass"))) {
     //Проверяем, есть ли вообще круги, или только создали
+    console.log("ПУСТО!");
+
     document.querySelector(".main").classList.remove("_hide");
     document.querySelector(".main").append(emptyEventHTML());
   } else if (!heatsData.length && getState("raceClassesWithFinals")?.includes(+getState("currentClass"))) {
@@ -47,10 +50,8 @@ export async function startFileView(fileType) {
     const isTournament = getState("raceClassesWithFinals")?.includes(+getState("currentClass")) ? true : false;
 
     tournamentRender(isTournament, false, fileType);
-    //  if (isTournament && !getState("isTournamentTab")) {
-    //  }
 
-    setTab("leader", [
+    setTab("leaderboard", [
       { name: "lap", opened: false, element: document.querySelector(".leaderboard-lap") },
       { name: "consecutive", opened: false, element: document.querySelector(".leaderboard-consecutive") },
       { name: "count", opened: false, element: document.querySelector(".leaderboard-count") },
@@ -69,9 +70,20 @@ export async function startFileView(fileType) {
     getTab("main")[1].element.addEventListener("click", leaderboardTabAction); //открываем события вкладки Leaderboard
     getTab("main")[2].element.addEventListener("click", roundsTabAction); //открываем события вкладки Rounds
 
-    tabSwitch(getTab("leader")[0].name, getTab("leader"));
+    const mainTabParam = getParamTabIndex("main");
+    console.log("mainTabParammainTabParammainTabParammainTabParam", mainTabParam);
 
-    tabHeightChange(getTab("leader")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
+    //переключаемся на вкладку турнира
+    if (mainTabParam == -1) {
+      updateUrl("main", "pilot");
+      tabSwitch(getTab("main")[0].name, getTab("main"), "main", true);
+    } else if (mainTabParam != 3) {
+      tabSwitch(getTab("main")[getParamTabIndex("main")].name, getTab("main"), "main", true);
+    }
+
+    tabSwitch(getTab("leaderboard")[getParamTabIndex("leaderboard")].name, getTab("leaderboard"), "leaderboard", true);
+
+    tabHeightChange(getTab("leaderboard")[0].element, document.querySelector(".leaderboard__items"), true); //динамическая высота окна для Leaderboard
 
     tabSwitch(getTab("rounds")[0].name, getTab("rounds"));
     tabHeightChange(getTab("rounds")[0].element, document.querySelector(".rounds__items"), true); //динамическая высота окна для Rounds
@@ -203,7 +215,13 @@ export function classSwitch(e) {
   tabSwitch("closeAll", getTab("main"));
   setState("currentClass", raceClassNum);
 
-  updateUrl('raceclass',raceClassNum)
+  updateUrl("raceclass", raceClassNum);
+
+  const mainTabParam = getParamTabIndex("main");
+  //переключаемся на вкладку турнира
+  if (getState("raceClassesWithFinals").includes(+raceClassNum) && mainTabParam == 3) {
+    tabSwitch(getTab("main")[mainTabParam].name, getTab("main"), "main", true);
+  }
 
   setTimeout(() => {
     const pilotsTab = document.querySelector(".pilots");
@@ -219,7 +237,7 @@ export function classSwitch(e) {
   }, 150);
 }
 
-export function tabSwitch(toOpen, tabss) {
+export function tabSwitch(toOpen, tabss, tabsName = "none", replace = false) {
   //функция смены вкладок
   let closingtime = 0; //время смены вкладок - перед открытием первой ровна нулю
 
@@ -253,8 +271,9 @@ export function tabSwitch(toOpen, tabss) {
 
   tabss.forEach((tab) => {
     if (toOpen == tab.name) {
-      //ищем вкладку, которую открыть
+      //ищем вкладку, которую открыть'
       getButton([tab.name]).classList.add("_active", "_no-event"); //сразу красим кнопку и запрещаем нажиматься
+
       const tabItems = tab.element.firstElementChild;
       setTimeout(() => {
         tab.element.classList.add("_active");
@@ -267,9 +286,10 @@ export function tabSwitch(toOpen, tabss) {
         });
         if (getState("CONSOLE_DEBUG")) console.log("T A B O P E N", tab);
       }, closingtime);
-		console.log('tabtabtabtab',tab);
-		
-		// updateUrl({ tab.name: toOpen });
+
+      if (tabsName != "none") {
+        updateUrl(tabsName, tab.name, replace);
+      }
     }
   });
 
@@ -281,7 +301,6 @@ export function tabSwitch(toOpen, tabss) {
       });
     }, 500);
   }
-
 }
 
 export function tabHeightChange(tabElement, tabItemsElement, firstState) {

@@ -94,3 +94,54 @@ async function refreshData(isTournament) {
     clearTimeout(repeatTmr);
   }, 10000);
 }
+
+
+
+
+// updateLiveDataButton.classList.add("_no-event");
+
+// //при клике на кнопку нужно получить самые свежие данные, поэтому просим их ещё раз
+// const freshData = await getLiveData(getState("isUuid"));
+// setState("mainObj", freshData.results);
+// setState("liveTimestamp", freshData.lastUpdate);
+
+// //Очищаем кнопки классов - вдруг поменялись
+// document.querySelectorAll(".class-switch-buttons__button").forEach((raceClass) => {
+//   raceClass.remove();
+// });
+
+// //получаем новые кнопки классов и выбиравем последнюю
+// makeRaceClassButtons();
+// tabSwitch("closeAll", getTab("main"));
+
+// //удаляем html
+// setTimeout(() => {
+//   const pilotsTab = document.querySelector(".pilots");
+//   const leaderboardTab = document.querySelector(".leaderboard");
+//   const roundsTab = document.querySelector(".rounds");
+//   pilotsTab.remove();
+//   leaderboardTab.remove();
+//   roundsTab.remove();
+// }, 50);
+
+// //добавляем html
+// setTimeout(() => {
+//   startFileView("classSwitch");
+// }, 150);
+// setState("newLiveData", false);
+
+// //удаляем кнопку и включаем функцию ещё раз
+// updateLiveDataButton.remove();
+// const repeatTmr = setTimeout(() => {
+//   checkLiveData();
+//   clearTimeout(repeatTmr);
+// }, 10000);
+// },
+// { once: true }
+// );
+// //очищаем таймер, как только newLiveData true
+// clearInterval(getState("checkLiveDataInterval"));
+// console.log("ТАЙМЕР");
+// }
+// }, 10000)
+// );

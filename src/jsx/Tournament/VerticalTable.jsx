@@ -4,7 +4,7 @@ import { DOUBLE_ELIM_GRIDS } from "./const";
 
 import { getState } from "../../js/sharedStates";
 
-function HorizontalTable({ raceData, activePilot }) {
+function VerticalTable({ raceData, activePilot }) {
   const [activePilotId, setActivePilotId] = useState(null);
   const [activeRaces, setActiveRaces] = useState("");
 
@@ -31,7 +31,7 @@ function HorizontalTable({ raceData, activePilot }) {
 
   return (
     <>
-      <div className="tournament__full-table" style={{ gridTemplateRows: `repeat(24, minmax(${getState("tournamentPilotsPerHeat")*15+2}px, auto)` }}>
+      <div className="tournament__vertical-table" >
         {raceData.map((race, index) => {
           return (
             <RaceCard
@@ -40,16 +40,16 @@ function HorizontalTable({ raceData, activePilot }) {
               pilotButton={choosePilot}
               activePilot={activePilotId}
               raceIndex={index}
-              gridPositionsData={DOUBLE_ELIM_GRIDS.horizontal}
+              gridPositionsData={DOUBLE_ELIM_GRIDS.vertical}
               doubleElimLows={DOUBLE_ELIM_GRIDS.lowTableRaces}
               activeRaces={activeRaces}
               pilotsQuantity={getState("tournamentPilotsPerHeat")}
             />
           );
         })}
-        <div className="tournament__low-strip"></div>
+        {/* <div className="tournament__low-strip"></div> */}
       </div>
     </>
   );
 }
-export default HorizontalTable;
+export default VerticalTable;

@@ -1,4 +1,4 @@
-import { getState } from "./sharedStates";
+import { getState, getTab } from "./sharedStates";
 
 export function timeSumer(previouseDate, previousLapTime) {
   //посчитать время по дате и время круга;
@@ -256,25 +256,52 @@ export function arraysEqual(arr1, arr2) {
   return arr1.length === arr2.length && arr1.every((element, index) => element === arr2[index]);
 }
 
-export function updateUrl(key, value) {
+export function updateUrl(key, value, replace = false) {
+  const order = ["uuid", "raceclass", "main", "leaderboard"];
+
   const url = new URL(window.location);
   const uuidParam = url.searchParams.get("uuid");
 
   const classRaceParam = url.searchParams.get("raceclass");
-  const mainTabParam = url.searchParams.get("tab");
-  const leaderboardTypeParam = url.searchParams.get("leaderType");
+  const mainTabParam = url.searchParams.get("main");
+  const leaderboardTypeParam = url.searchParams.get("leaderboard");
 
   const searchParams = new URLSearchParams();
   searchParams.set("uuid", uuidParam);
 
   classRaceParam && searchParams.set("raceclass", classRaceParam);
-  mainTabParam && searchParams.set("tab", mainTabParam);
-  leaderboardTypeParam && searchParams.set("leaderType", leaderboardTypeParam);
+  mainTabParam && searchParams.set("main", mainTabParam);
+  leaderboardTypeParam && searchParams.set("leaderboard", leaderboardTypeParam);
+  //   if (!leaderboardTypeParam) {
+  //     const leaderboardTypeTab = getTab("leaderboard")?.find((tab) => tab.opened == true);
+  //     searchParams.set("leaderboard", leaderboardTypeTab?.name || "lap");
+  //   }
 
-  if (key == "raceclass") {
-    searchParams.set(key, value);
-    const newUrl = `${url.pathname}?${searchParams.toString()}`;
+  searchParams.set(key, value);
+
+  const sortedParams = new URLSearchParams();
+
+  order.forEach((paramName) => {
+    if (searchParams.has(paramName)) {
+      sortedParams.set(paramName, searchParams.get(paramName));
+    }
+  });
+
+  const newUrl = `${url.pathname}?${sortedParams.toString()}`;
+  if (replace) {
+    history.replaceState(null, "", newUrl);
+  } else {
     history.pushState(null, "", newUrl);
   }
-  
+}
+
+export function getParamTabIndex(paramName) {
+  const url = new URL(window.location);
+  const paramValue = url.searchParams.get(paramName);
+  if (paramValue) {
+    const tabIndex = getTab(paramName).findIndex((tab) => tab.name == paramValue);
+    return tabIndex;
+  } else {
+    return 0;
+  }
 }

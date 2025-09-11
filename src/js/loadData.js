@@ -16,16 +16,16 @@ export async function urlUpload() {
     const raceClassesWithFinals = fullLiveData.finalTypesByClass?.filter((raceClass) => raceClass.finalType != "");
     setState(
       "raceClassesWithFinals",
-      raceClassesWithFinals?.map((raceClass) => raceClass.raceClassId)
+      raceClassesWithFinals?.map((raceClass) => raceClass.raceClassId)||[]
     );
 
-    console.log("raceClassesWithFinals", getState("raceClassesWithFinals"));
 
     console.log("FULL OBJJJ", fullLiveData);
     //  setState("isUuid", ''); Уже есть uuid
     setState("liveTimestamp", fullLiveData.lastUpdate);
 
     makeRaceClassButtons();
+  
     startFileView("uuid");
 
     //  const isLiveTime = getLiveState(Date.now(), fullLiveData.lastUpdate);
