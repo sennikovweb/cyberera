@@ -49,7 +49,7 @@ function Tournament({ fullRHData, currentClass }) {
     }
   });
 
-  const deletedRounds = fullData.deleteRounds;
+  const deletedRounds = fullData.deletedRounds;
   const deletedRoundsInHeats = deletedRounds.filter((data) => heatsNumSorted.includes(data.heatId));
   console.log("deletedRoundsdeletedRoundsdeletedRounds", deletedRounds);
   console.log("deletedRoundsInHeats", deletedRoundsInHeats);
