@@ -4,11 +4,12 @@ import { getState, getTab, subscribe, unsubscribe } from "../../js/sharedStates"
 import HorizontalTable from "./HorizontalTable";
 import DirectionSwitcher from "./DirectionSwitcher";
 
-import { getResultRaces, setDuelPlaces, setRaceScores, setRaceStatus, getPlannedRaces, addEmptyRaces } from "./utils";
+import { getResultRaces, setDuelPlaces, setRaceScores, setRaceStatus, getPlannedRaces, addEmptyRaces, getChannelsAndColors } from "./utils";
 import { tabSwitch } from "../../js/uiChange";
 import { getParamTabIndex } from "../../js/utils";
 import { div } from "motion/react-client";
 import VerticalTable from "./VerticalTable";
+import { COLORS } from "./const";
 
 function Tournament({ fullRHData, currentClass }) {
   const [fullData, setFullData] = useState(fullRHData);
@@ -19,20 +20,24 @@ function Tournament({ fullRHData, currentClass }) {
   const [activeTabId, setActiveTabId] = useState(1);
 
   const results = fullData.results;
-  //   const currentClass = getState("currentClass");
-  //   const
+
+  const channelsAndColors = getChannelsAndColors(fullData.channels, COLORS);
+
   const roundsQuantity = getState("tournamentRoundsQuantity");
   const finalRoundsQuantity = getState("tournamentFinalRoundsQuantity");
   const raceQuantity = getState("tournamentRaceQuantity");
   const pilotsPerHeat = getState("tournamentPilotsPerHeat");
 
-  console.log("fullDatafullDatafullData", fullData);
-
   const duplicatedHeatsData = fullData.duplicatedHeats.filter((heat) => heat.classId == raceClass);
   const duplicatedHeatsId = duplicatedHeatsData.map((heat) => heat.heatId);
   const duplicateIds = duplicatedHeatsData.map((heat) => heat.duplicateId);
 
-  const noResultsHeats = fullData.noResultsHeats.filter((heat) => heat.classId == raceClass).filter((heat) => duplicateIds?.includes(heat.heatId) == false);
+  const allSlots = fullData.noResultsHeats.filter((heat) => heat.classId == raceClass)
+
+  const noResultsHeats = allSlots.filter((slot) => slot.isResults == false).filter((heat) => duplicateIds?.includes(heat.heatId) == false);
+
+  console.log('allSlotsallSlots',allSlots);
+  
 
   const heatsNum = getState("mainObj")["heats_by_class"][raceClass];
   const heatsNumSorted = [];
@@ -51,11 +56,6 @@ function Tournament({ fullRHData, currentClass }) {
 
   const deletedRounds = fullData.deletedRounds;
   const deletedRoundsInHeats = deletedRounds.filter((data) => heatsNumSorted.includes(data.heatId));
-  console.log("deletedRoundsdeletedRoundsdeletedRounds", deletedRounds);
-  console.log("deletedRoundsInHeats", deletedRoundsInHeats);
-
-  console.log("heatsNum", heatsNum);
-  console.log("heatsNumSorted", heatsNumSorted);
 
   //   const heatsData = Object.entries(results["heats"])
   //     .filter(([key]) => heatsNumSorted.includes(+key))
@@ -78,8 +78,6 @@ function Tournament({ fullRHData, currentClass }) {
       if (deletedRoundsInHeats.length > 0) {
         const deletedRoundsInHeat = deletedRoundsInHeats.find((data) => data.heatId == heat.heat_id)?.deletedRoundNum || [];
         const filteredRounds = heat.rounds.filter((round) => !deletedRoundsInHeat.includes(round.id));
-        console.log("filteredRounds", filteredRounds);
-        console.log("heat.roundsheat.rounds", heat.rounds);
         return filteredRounds;
       } else {
         return heat.rounds;
@@ -90,7 +88,7 @@ function Tournament({ fullRHData, currentClass }) {
   console.log("roundsroundsrounds", rounds);
 
   //собираем массив всех выполненных гонок
-  const races = getResultRaces(rounds);
+  const races = getResultRaces(rounds,allSlots);
 
   //Ставим баллы за дуэли, если они есть
   const raceWithDuels = setDuelPlaces(races, raceQuantity, roundsQuantity, finalRoundsQuantity);
@@ -162,7 +160,7 @@ function Tournament({ fullRHData, currentClass }) {
           <DirectionSwitcher />
         </div>
 
-        {isMobile ? <VerticalTable raceData={allRaces} /> : <HorizontalTable raceData={allRaces} />}
+        {isMobile ? <VerticalTable raceData={allRaces} /> : <HorizontalTable channelsAndColors={channelsAndColors} raceData={allRaces} />}
       </div>
     </>
   );

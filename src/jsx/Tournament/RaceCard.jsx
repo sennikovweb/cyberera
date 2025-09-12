@@ -1,6 +1,7 @@
 import { motion, LayoutGroup } from "motion/react";
 import { DOUBLE_ELIM_GRIDS } from "./const";
-function RaceCard({ raceData, raceIndex, gridPositionsData, pilotButton, activePilot, doubleElimLows, activeRaces, pilotsQuantity }) {
+import ChannelAndColor from "../ChannelAndColor";
+function RaceCard({ channelsAndColors, raceData, raceIndex, gridPositionsData, pilotButton, activePilot, doubleElimLows, activeRaces, pilotsQuantity }) {
   const [isCurrentRace, isCompleteRace, isNextRace] = activeRaces || [];
   return (
     <>
@@ -22,6 +23,13 @@ function RaceCard({ raceData, raceIndex, gridPositionsData, pilotButton, activeP
         </div>
         <div className="tournament__race-strokes" style={{ gridTemplateRows: `repeat(${pilotsQuantity}, 1fr)` }}>
           {raceData.pilotsRacePlaces?.map((pilotData, index) => {
+            if (index >= pilotsQuantity && !pilotData.id) return null;
+            const pilotInfo = raceData.pilotsNames.find((pilot) => pilot.id == pilotData.id);
+            const nodeIndex = pilotInfo?.nodeIndex;
+            const channelData = channelsAndColors.find((node) => node.nodeIndex == nodeIndex);
+            const pilotName = pilotInfo?.name;
+
+            const pilotPlace = pilotData.place;
             return (
               <motion.div
                 layout
@@ -30,7 +38,9 @@ function RaceCard({ raceData, raceIndex, gridPositionsData, pilotButton, activeP
                 name={`pilot-${pilotData.id ? pilotData.id : index + 999}-race-${raceIndex}`}
                 className="tournament__pilot-items">
                 <div pilot-id={pilotData.id} onClick={pilotButton} className={`tournament__pilot-name _name-item _race-item ${activePilot == pilotData.id ? "_active" : ""}`}>
-                  {raceData.pilotsNames.filter((pilot) => pilot.id == pilotData.id)[0]?.name}
+                  <p>{pilotPlace}</p>
+                  {pilotName}
+                  {channelData && <ChannelAndColor channel={channelData.channel} color={channelData.color} />}
                 </div>
                 <div
                   className="tournament__pilot-rounds _race-item"

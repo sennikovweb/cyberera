@@ -5355,6 +5355,7 @@ body {
 	}
 
 	&__race-strokes {
+
 		display: grid;
 		gap: 10px;
 		height: 100%;
@@ -5369,10 +5370,36 @@ body {
 
 	&__pilot-name {
 		line-height: 120%;
-		display: flex;
-		justify-content: start;
+		display: grid;
+		grid-template-columns: auto 1fr auto;
 		align-items: center;
+		gap: 10px;
+
 		// width: 100%;
+		p {
+			position: relative;
+
+			&::after {
+				content: '';
+				position: absolute;
+				top: 50%;
+				right: -4px;
+				width: 1px;
+				height: 140%;
+				transform: translate(0, -50%);
+				background-color: $color-stat-stroke;
+			}
+		}
+
+		.channel-and-color {
+			text-align: center;
+			font-weight: 700;
+			color: $color-back;
+			padding: 5px;
+			border-radius: 5px;
+			border: 1px solid $color-grey;
+			width: clamp(30px, 1.6vw, 50px);
+		}
 	}
 
 	&__pilot-rounds {

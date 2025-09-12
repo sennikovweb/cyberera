@@ -33,3 +33,5 @@ export const DOUBLE_ELIM_GRIDS = {
     { raceId: 14, gridRow: "14/15", gridColumn: "1/2" },
   ],
 };
+
+export const COLORS = ['#ff0000','#004cff','#ffee00','#00ff08','#ff0099','#ff8400','#9500ff','#00fff7']

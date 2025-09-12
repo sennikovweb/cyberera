@@ -4,22 +4,33 @@ export const setEmptyRace = (pilotsQuatity) => {
     return { id: 0 };
   });
   const pilotsNames = Array.from({ length: pilotsQuatity }, (_, index) => {
-    return { id: 0, name: null };
+    return { id: 0, name: null, nodeIndex: null };
   });
 
   return { pilotsId, pilotsNames, pilotsRoundPlaces: [], pilotsRacePlaces };
 };
 
-export const getResultRaces = (roundsArr) => {
+export const getResultRaces = (roundsArr, allSlots) => {
   const races = [];
 
   roundsArr.forEach((round) => {
-    const pilotsId = round.nodes.map((pilot) => pilot["pilot_id"]);
+    const pilotsId = round.nodes.map((pilot) => pilot["pilot_id"]).filter((id) => id != 0);
 
     const pilotsNames = pilotsId.map((pilotId) => {
-      const pilotNode = round.nodes.filter((pilot) => pilot.pilot_id == pilotId);
-      const name = pilotNode[0].callsign;
-      return { id: pilotId, name: name };
+      const pilotNode = round.nodes.find((pilot) => pilot.pilot_id == pilotId);
+      const heatId = +round.heatId;
+      const currentHeatSlotsPilots = allSlots.find((slot) => slot.heatId == heatId)?.pilots;
+      const slotNodeIndex = currentHeatSlotsPilots?.find((pilot) => pilot.id == pilotId);
+      const nodeIndex = slotNodeIndex?.nodeIndex || pilotNode.node_index;
+
+      // console.log("pilotNode", pilotNode);
+
+      // const pilotSlotInfo = slotInfo?.pilots.find((pilotInSlot) => pilotInSlot.id == pilotId);
+
+      // const name = pilotSlotInfo?.callsign
+      // const nodeIndex = pilotSlotInfo?.nodeIndex
+
+      return { id: pilotId, name: pilotNode.callsign, nodeIndex: nodeIndex };
     });
     const pilotsRoundPlaces = round.nodes
       .map((pilot) => {
@@ -69,6 +80,7 @@ export const getResultRaces = (roundsArr) => {
         const raceData = { pilotsId, pilotsNames, pilotsRoundPlaces: [pilotsRoundPlaces], roundInfo: [roundInfo], roundsSum: 1 };
         races.push(raceData);
       } else {
+        races[races.length - 1].pilotsNames = pilotsNames; //Обновляем pilotNames, чтобы были последние каналы
         races[races.length - 1].pilotsRoundPlaces.push(pilotsRoundPlaces);
         races[races.length - 1].roundInfo.push(roundInfo);
         races[races.length - 1].roundsSum = prevRoundsSum + 1;
@@ -200,7 +212,7 @@ export const getPlannedRaces = (slots, roundsQuantity, pilotsPerHeat = 4) => {
 
       const pilotsId = pilots.map((pilot) => pilot.id);
       const pilotsNames = pilots.map((pilot) => {
-        return { id: pilot.id, name: pilot.callsign };
+        return { id: pilot.id, name: pilot.callsign, nodeIndex: pilot.nodeIndex };
       });
       const racePlaces = pilots.map((pilot) => {
         return { id: pilot.id };
@@ -242,3 +254,47 @@ export const addEmptyRaces = (allKnownRaces, raceQuantity, pilotsPerHeat = 4) =>
   }
   return fullQuantityRaces;
 };
+
+// export const getChannel = (channelRawData, nodeIndex) => {
+//   const band = channelRawData.frequencies.b[nodeIndex];
+//   const channel = channelRawData.frequencies.c[nodeIndex];
+// };
+
+export const getChannelsAndColors = (channelRawData, colorsArr) => {
+  const bands = channelRawData.frequencies.b;
+  const channels = channelRawData.frequencies.c;
+
+  const channelsIndex = bands.map((band, index) => {
+    const channelData = {};
+
+    if (band) {
+      channelData.channel = `${band}${channels[index]}`;
+      channelData.nodeIndex = index;
+    } else {
+      channelData.channel = null;
+    }
+
+    return channelData;
+  });
+
+  const channelsFiltered = channelsIndex.filter((channel) => channel.channel != null);
+
+  const channelsAndColors = channelsFiltered.map((channel, index) => {
+    return { ...channel, color: colorsArr[index] };
+  });
+  return channelsAndColors;
+};
+
+// export const getColors = (channelRawData, colorsArr) => {
+//   const bands = channelRawData.frequencies.b;
+//   const channels = channelRawData.frequencies.c;
+//   const bandFiltered = bands.filter((band) => band != null);
+//   const channelsFiltered = channels.filter((channel) => channel != null);
+//   const colors = bandFiltered.map((band, index) => {
+//     const colorData = {};
+//     colorData.channel = `${band}${channelsFiltered[index]}`;
+//     colorData.color = colorsArr[index];
+//     return colorData;
+//   });
+//   return colors;
+// };
