@@ -160,7 +160,7 @@ function Tournament({ fullRHData, currentClass }) {
           <DirectionSwitcher />
         </div>
 
-        {isMobile ? <VerticalTable raceData={allRaces} /> : <HorizontalTable channelsAndColors={channelsAndColors} raceData={allRaces} />}
+        {isMobile ? <VerticalTable channelsAndColors={channelsAndColors} raceData={allRaces} /> : <HorizontalTable channelsAndColors={channelsAndColors} raceData={allRaces} />}
       </div>
     </>
   );
