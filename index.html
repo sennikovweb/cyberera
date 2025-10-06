@@ -5,13 +5,72 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon16.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon16.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.ico" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TinyWhoop74 Results Viewer</title>
+
+    <style>
+      /* POPUP STYLES */
+      .popup {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(3px);
+      }
+      .popup._active {
+        display: flex;
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .popup__content {
+        background: #0d0d0d;
+        border: 1px solid #333;
+        border-radius: 12px;
+        padding: 24px;
+        width: 90%;
+        max-width: 800px;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      }
+      .popup__content h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: #00ffff;
+      }
+      .popup__table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .popup__table th, .popup__table td {
+        border: 1px solid #333;
+        padding: 10px;
+        text-align: center;
+      }
+      .popup__table th {
+        background: #111;
+        color: #00ffff;
+      }
+      .popup__table tr:nth-child(even) {
+        background: #1a1a1a;
+      }
+      .popup__close {
+        display: block;
+        margin: 20px auto 0;
+      }
+    </style>
   </head>
+
   <body>
     <div class="wrapper _hide">
       <div class="main _hide">
+
         <div class="main-tittle _hidden">
           <div class="main-tittle__container _container">
             <h2 class="main-tittle__display-name"></h2>
@@ -49,13 +108,7 @@
               <button class="calendar__next-month _disabled"><span></span></button>
             </div>
             <div class="calendar__weekdays">
-              <div>Пн</div>
-              <div>Вт</div>
-              <div>Ср</div>
-              <div>Чт</div>
-              <div>Пт</div>
-              <div>Сб</div>
-              <div>Вс</div>
+              <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
             </div>
             <div class="calendar__days _no-files"></div>
           </div>
@@ -75,18 +128,13 @@
         <form class="local-file__form">
           <div class="local-file__container _container">
             <input class="local-file__file" type="file" id="local-file" />
-            <label class="local-file__label" for="local-file">
-              <span>Выберите файл</span>
-            </label>
+            <label class="local-file__label" for="local-file"><span>Выберите файл</span></label>
           </div>
           <button class="local-file__button _button">Загрузить</button>
         </form>
 
-        <!-- Новая кнопка Google Диск -->
         <div class="leaderboard-link _container" style="margin-top:20px;">
-          <a href="https://docs.google.com/spreadsheets/d/1TqhH4EkdwhjMW6brkwafpWlkVY7fw8bwWwXDk0JyGXk/edit?usp=sharing" target="_blank" class="_button">
-            LeaderBoard
-          </a>
+          <a href="#" class="buttons__leaderboard _button">Лидерборд</a>
         </div>
 
         <div class="class-switch-buttons">
@@ -96,37 +144,29 @@
         <div class="buttons">
           <div class="buttons__container _container _buttons-wrapper">
             <button class="buttons__pilots _button">Пилоты</button>
-            <button class="buttons__leaderboard _button">Лидерборд</button>
             <button class="buttons__rounds _button">Раунды</button>
           </div>
         </div>
 
-        <div class="tabs-wrapper"></div>
-
-        <form class="pilots-vs-form" id="pilots-vs-form" action="#" method="GET"></form>
-
-        <div class="language">
-          <a href="./index_en.html" class="language__EN">
-            <img src="/icons/en.png" alt="EN" />
-          </a>
-        </div>
-
-        <div class="home _hidden">
-          <a href="./index.html">
-            <img src="/icons/home.svg" alt="" />
-          </a>
-        </div>
-
         <footer class="author">
           <div class="author__container _container">
-            <div class="author__share _hide">
-              <p>Поделиться</p>
-              <img src="/icons/share.svg" alt="" />
-              <p class="author__share-url"></p>
-            </div>
             <a href="http://t.me/sharikov_stepan" target="_blank" class="author__text">by BeeHolder</a>
           </div>
         </footer>
+      </div>
+    </div>
+
+    <!-- POPUP ЛИДЕРБОРД -->
+    <div id="leaderboardPopup" class="popup">
+      <div class="popup__content">
+        <h2>Лидерборд</h2>
+        <table id="leaderboardTable" class="popup__table">
+          <thead>
+            <tr><th>№</th><th>Пилот</th><th>Лучший круг</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button class="_button popup__close">Закрыть</button>
       </div>
     </div>
 
