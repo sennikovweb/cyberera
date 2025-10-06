@@ -143,7 +143,93 @@ body {
 		overflow: hidden;
 	}
 }
+/* ===== Leaderboard ===== */
 
+.leaderboard {
+  margin-top: 40px;
+  margin-bottom: 60px;
+  color: $color-grey;
+
+  &__container {
+    background-color: $color-dark;
+    border-radius: 12px;
+    box-shadow: 0 0 10px $color-dark-animation;
+    padding: 20px;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 600;
+    color: $color-akcent2;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  &__table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 16px;
+    min-width: 400px;
+
+    thead {
+      background-color: $color-akcent1;
+      color: $color-dark;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      border: 1px solid $color-stat-stroke;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    tbody tr:hover {
+      background-color: rgba(102, 252, 241, 0.08);
+      transition: background 0.3s ease;
+    }
+  }
+
+  /* ====== Адаптив ====== */
+  @media (max-width: 767px) {
+    &__container {
+      padding: 15px;
+    }
+
+    &__title {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    &__table {
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    &__table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    &__table {
+      min-width: 360px;
+    }
+  }
+}
 
 
 
