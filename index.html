@@ -5,6 +5,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon16.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon16.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon16.ico" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RotorHazard Results Viewer</title>
   </head>
@@ -18,10 +19,10 @@
             <div class="main-tittle__time"></div>
           </div>
         </div>
-
         <div class="last-file">
           <div class="last-file__container _container">
             <h2 class="last-file__tittle">Последняя загрузка</h2>
+
             <div class="file__item last-file__item _no-files pseudo-button">
               <span class="_no-files-span"></span>
               <div class="file__file-name">
@@ -60,36 +61,15 @@
           </div>
         </div>
 
-        <!-- Блок таблицы результатов -->
-        <div class="overall-results _hidden">
-          <div class="overall-results__container _container">
-            <h2 class="overall-results__title">Результаты последней трассы</h2>
-            <table class="overall-results__table">
-              <thead>
-                <tr>
-                  <th>№</th>
-                  <th>Пилот</th>
-                  <th>Лучший круг</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-            <div class="overall-results__update"></div>
-          </div>
-        </div>
-        <!-- Конец блока -->
-
         <div class="date-files">
           <div class="date-files__container _container">
             <div class="date-files__items _hidden"></div>
           </div>
         </div>
-
         <div class="local-file__tittle">
           <p>или</p>
           <p>выберите свой ...Results.JSON</p>
         </div>
-
         <form class="local-file__form">
           <div class="local-file__container _container">
             <input class="local-file__file" type="file" id="local-file" />
@@ -99,11 +79,10 @@
           </div>
           <button class="local-file__button _button">Загрузить</button>
         </form>
-
+  
         <div class="class-switch-buttons">
           <div class="class-switch-buttons__container _container _buttons-wrapper"></div>
         </div>
-
         <div class="buttons">
           <div class="buttons__container _container _buttons-wrapper">
             <button class="buttons__pilots _button">Пилоты</button>
@@ -111,7 +90,6 @@
             <button class="buttons__rounds _button">Раунды</button>
           </div>
         </div>
-
         <div class="tabs-wrapper"></div>
 
         <form class="pilots-vs-form" id="pilots-vs-form" action="#" method="GET"></form>
@@ -140,7 +118,6 @@
         </footer>
       </div>
     </div>
-
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
