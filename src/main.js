@@ -129,7 +129,7 @@ async function renderOverallResults() {
   }
 
   try {
-    const resp = await fetch('/data/results.json', { cache: 'no-cache' });
+    const resp = await fetch('/results.json', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const data = await resp.json();
 
