@@ -37,7 +37,7 @@
   <script type="module">
     async function loadLeaderboard() {
       try {
-        const response = await fetch('leaderboard.json');
+        const response = await fetch('/leaderboard.json'); // путь от корня сайта
         const data = await response.json();
 
         const tbody = document.querySelector('#leaderboardTable tbody');
