@@ -14,7 +14,7 @@ function parseTimeToSeconds(s) {
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (m) =>
-    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;', "'": "&#39;" }[m]
   );
 }
 
@@ -34,7 +34,6 @@ async function renderAllResults() {
       return;
     }
 
-    // Сортируем по лучшему времени
     data.sort((a, b) => parseTimeToSeconds(a.best) - parseTimeToSeconds(b.best));
 
     tbody.innerHTML = data
