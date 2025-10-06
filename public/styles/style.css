@@ -5385,3 +5385,95 @@ body {
     }
   }
 }
+/*--------------------*/
+/* Таблица "Результаты последней трассы" */
+
+.overall-results {
+  width: 100%;
+  margin: 30px 0;
+  overflow-x: auto;
+  border-radius: 10px;
+  background-color: $color-dark;
+  padding: 20px;
+
+  &__title {
+    font-size: 24px;
+    color: $color-akcent1;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    color: $color-grey;
+    text-align: center;
+
+    th,
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(197, 198, 199, 0.2);
+    }
+
+    th {
+      background-color: $color-dark;
+      color: $color-akcent2;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    tr {
+      transition: background 0.3s, color 0.3s;
+
+      &:nth-child(even) {
+        background-color: rgba(31, 40, 51, 0.3);
+      }
+
+      &:hover {
+        background-color: $color-akcent1Vs;
+        color: $color-dark;
+        cursor: default;
+      }
+    }
+
+    td {
+      color: $color-grey;
+    }
+  }
+
+  &__update {
+    margin-top: 10px;
+    font-size: 14px;
+    color: $color-akcent2;
+    text-align: right;
+  }
+
+  &._hidden {
+    display: none;
+  }
+
+  &._show {
+    display: block;
+  }
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 767px) {
+  .overall-results {
+    padding: 10px;
+
+    &__table {
+      font-size: 14px;
+
+      th,
+      td {
+        padding: 8px 10px;
+      }
+    }
+
+    &__title {
+      font-size: 20px;
+    }
+  }
+}
