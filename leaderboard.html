@@ -9,10 +9,12 @@
 <body>
   <div class="wrapper">
     <div class="main">
+      <!-- Заголовок -->
       <div class="main-tittle__container _container">
         <h2 class="main-tittle__display-name">Лидерборд</h2>
       </div>
 
+      <!-- Таблица -->
       <div class="leaderboard-table _container" style="margin-top: 2rem;">
         <table id="leaderboardTable" style="width: 100%; border-collapse: collapse;">
           <thead>
@@ -23,21 +25,24 @@
             </tr>
           </thead>
           <tbody>
-            <!-- Строки будут подгружены из JS -->
+            <!-- Строки подгружаются автоматически из JS -->
           </tbody>
         </table>
       </div>
 
+      <!-- Кнопка возврата -->
       <div style="margin-top: 2rem;">
         <a href="./index.html" class="_button">← Вернуться на главную</a>
       </div>
     </div>
   </div>
 
+  <!-- Скрипт подгрузки JSON -->
   <script type="module">
     async function loadLeaderboard() {
       try {
-        const response = await fetch('/leaderboard.json'); // путь от корня сайта
+        const response = await fetch('/leaderboard.json'); // файл из public
+        if (!response.ok) throw new Error('Файл не найден');
         const data = await response.json();
 
         const tbody = document.querySelector('#leaderboardTable tbody');
@@ -54,6 +59,8 @@
         });
       } catch (err) {
         console.error('Ошибка при загрузке таблицы:', err);
+        const tbody = document.querySelector('#leaderboardTable tbody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Не удалось загрузить таблицу</td></tr>';
       }
     }
 
