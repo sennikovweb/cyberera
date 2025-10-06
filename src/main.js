@@ -8,12 +8,11 @@ import { setState, getState, getButton, getLocalFileElement, getTab } from "./js
 
 ////////////////////////////////////////////
 if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
-  //Анимация кнопок на тач экранах
   document.addEventListener("click", function (event) {
     if (event.target.closest("button")) {
       event.target.classList.add("_active-animation");
       setTimeout(() => {
-        event.target.classList.remove("_active-animation"); ///
+        event.target.classList.remove("_active-animation");
       }, 100);
     }
   });
@@ -21,11 +20,8 @@ if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
 
 ////////////////////////////////////////////
 setState("language", document.querySelector("html").getAttribute("lang"));
-
 setState("textStrings", getState("language") == "ru" ? RU_DICT : getState("language") == "en" && EN_DICT);
-
 setState("isUuid", new URLSearchParams(window.location.search).get("uuid"));
-// setState("isEvent", new URLSearchParams(window.location.search).get("event"));
 
 if (getState("isUuid")) {
   loadFilesList(false);
@@ -39,7 +35,6 @@ if (getState("isUuid")) {
 ///////////////////////////////////
 document.querySelector(".calendar__prev-month").addEventListener("click", () => moveMonth("right", "left"));
 document.querySelector(".calendar__next-month").addEventListener("click", () => moveMonth("left", "right"));
-
 document.querySelector(".calendar__days").addEventListener("click", function (e) {
   const day = e.target.closest(".calendar__day");
   if (e.target == day && day.classList.contains("_day__file")) {
@@ -50,20 +45,16 @@ document.querySelector(".calendar__days").addEventListener("click", function (e)
     e.target.classList.add("_active");
   }
 });
-
 document.querySelector(".date-files__items").addEventListener("click", function (e) {
   if (e.target.closest(".file__item")) {
     const fileItemElement = e.target.closest(".file__item");
-
     const fileName = fileItemElement.id;
     const dateFileElements = document.querySelectorAll(".file__item");
-
     dateFileElements.forEach((elem) => {
       if (elem != fileItemElement) {
         elem.classList.add("_hidden", "_no-event");
       }
     });
-
     fileItemElement.classList.add("_active", "_uploading-file");
     loadDateFile(fileName);
   }
@@ -82,11 +73,9 @@ getLocalFileElement("form").addEventListener("submit", startLocalFile);
 getButton("pilots").addEventListener("click", function () {
   tabSwitch(getTab("main")[0].name, getTab("main"));
 });
-
 getButton("leaderboard").addEventListener("click", function () {
   tabSwitch(getTab("main")[1].name, getTab("main"));
 });
-
 getButton("rounds").addEventListener("click", function () {
   tabSwitch(getTab("main")[2].name, getTab("main"));
 });
@@ -94,3 +83,17 @@ getButton("rounds").addEventListener("click", function () {
 window.addEventListener("resize", function () {
   roundStatsStrokeWidthChange();
 });
+
+//////////////////////////////////////////
+// Показ/скрытие лидерборда только на главной странице
+function toggleLeaderboard() {
+  const path = window.location.pathname;
+  const leaderboard = document.querySelector('.leaderboard');
+  if (!leaderboard) return;
+  if (!path.endsWith('index.html') && path !== '/') {
+    leaderboard.style.display = 'none';
+  } else {
+    leaderboard.style.display = 'block';
+  }
+}
+window.addEventListener('DOMContentLoaded', toggleLeaderboard);
