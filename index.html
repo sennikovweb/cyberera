@@ -133,8 +133,11 @@
           <button class="local-file__button _button">Загрузить</button>
         </form>
 
+        <!-- Оставил ссылку на внешний LeaderBoard (если нужна) -->
         <div class="leaderboard-link _container" style="margin-top:20px;">
-          <a href="#" class="buttons__leaderboard _button">Лидерборд</a>
+          <a href="https://docs.google.com/spreadsheets/d/1TqhH4EkdwhjMW6brkwafpWlkVY7fw8bwWwXDk0JyGXk/edit?usp=sharing" target="_blank" class="_button">
+            LeaderBoard
+          </a>
         </div>
 
         <div class="class-switch-buttons">
@@ -144,6 +147,8 @@
         <div class="buttons">
           <div class="buttons__container _container _buttons-wrapper">
             <button class="buttons__pilots _button">Пилоты</button>
+            <!-- ВАЖНО: кнопка leaderboard должна быть тут, чтобы getButton("leaderboard") её находил -->
+            <button class="buttons__leaderboard _button">Лидерборд</button>
             <button class="buttons__rounds _button">Раунды</button>
           </div>
         </div>
@@ -157,9 +162,9 @@
     </div>
 
     <!-- POPUP ЛИДЕРБОРД -->
-    <div id="leaderboardPopup" class="popup">
-      <div class="popup__content">
-        <h2>Лидерборд</h2>
+    <div id="leaderboardPopup" class="popup" aria-hidden="true">
+      <div class="popup__content" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
+        <h2 id="leaderboardTitle">Лидерборд</h2>
         <table id="leaderboardTable" class="popup__table">
           <thead>
             <tr><th>№</th><th>Пилот</th><th>Лучший круг</th></tr>
