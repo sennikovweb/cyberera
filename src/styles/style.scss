@@ -5301,3 +5301,87 @@ body {
 		box-shadow: 0px 0px 0px $color-back inset;
 	}
 }
+/*--------------------------------------
+  Таблица "Все пилоты"
+--------------------------------------*/
+.overall-results {
+  margin: 40px auto;
+  padding: 20px;
+  background-color: $color-dark;
+  border-radius: 12px;
+  max-width: 900px;
+  color: $color-grey;
+  font-size: 16px;
+
+  &._hidden {
+    display: none;
+  }
+
+  &._show {
+    display: block;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: $color-akcent2;
+    margin-bottom: 20px;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid $color-stat-stroke;
+    }
+
+    th {
+      background-color: $color-dark-animation;
+      color: $color-akcent1;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: $color-dark-animation;
+    }
+
+    td:first-child {
+      width: 50px;
+    }
+
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    td:nth-child(3) {
+      text-align: center;
+    }
+  }
+
+  &__update {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: right;
+    color: $color-akcent2;
+  }
+}
+
+/* Адаптив для мобильных экранов */
+@media (max-width: 767px) {
+  .overall-results {
+    padding: 15px;
+
+    &__table th, &__table td {
+      padding: 8px 6px;
+      font-size: 14px;
+    }
+
+    &__title {
+      font-size: 20px;
+    }
+  }
+}
