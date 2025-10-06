@@ -74,3 +74,40 @@ getButton("rounds").addEventListener("click", function () {
 });
 
 window.addEventListener("resize", roundStatsStrokeWidthChange);
+// === POPUP ЛИДЕРБОРД ===
+const popup = document.getElementById('leaderboardPopup');
+const openBtn = document.querySelector('.buttons__leaderboard');
+const closeBtn = popup.querySelector('.popup__close');
+const tbody = popup.querySelector('#leaderboardTable tbody');
+
+async function loadLeaderboard() {
+  try {
+    const response = await fetch('/leaderboard.json');
+    const data = await response.json();
+    tbody.innerHTML = '';
+
+    data.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row["№"]}</td>
+        <td>${row["Пилот"]}</td>
+        <td>${row["ЛучшийКруг"]}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error('Ошибка загрузки лидерборда:', err);
+    tbody.innerHTML = '<tr><td colspan="3">Ошибка загрузки данных</td></tr>';
+  }
+}
+
+openBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  await loadLeaderboard();
+  popup.classList.add('_active');
+});
+
+closeBtn.addEventListener('click', () => popup.classList.remove('_active'));
+popup.addEventListener('click', (e) => {
+  if (e.target === popup) popup.classList.remove('_active');
+});
