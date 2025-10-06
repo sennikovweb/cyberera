@@ -85,15 +85,21 @@ window.addEventListener("resize", function () {
 });
 
 //////////////////////////////////////////
-// Показ/скрытие лидерборда только на главной странице
+// Показ/скрытие лидерборда только на главной странице, игнорируя uuid в URL
 function toggleLeaderboard() {
   const path = window.location.pathname;
+  const urlParams = new URLSearchParams(window.location.search);
+  const hasUuid = urlParams.has("uuid");
   const leaderboard = document.querySelector('.leaderboard');
+
   if (!leaderboard) return;
-  if (!path.endsWith('index.html') && path !== '/') {
+
+  // Скрываем лидерборд, если есть uuid или если это не главная страница
+  if (hasUuid || (!path.endsWith('index.html') && path !== '/')) {
     leaderboard.style.display = 'none';
   } else {
     leaderboard.style.display = 'block';
   }
 }
+
 window.addEventListener('DOMContentLoaded', toggleLeaderboard);
