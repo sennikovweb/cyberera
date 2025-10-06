@@ -5301,3 +5301,59 @@ body {
 		box-shadow: 0px 0px 0px $color-back inset;
 	}
 }
+/*--------------------------------------
+  Таблица "Результаты последней трассы"
+--------------------------------------*/
+.overall-results {
+  margin: 40px auto;
+  padding: 20px;
+  background-color: $color-dark;
+  border-radius: 12px;
+  max-width: 800px;
+  color: $color-grey;
+  font-size: 16px;
+
+  &._hidden {
+    display: none;
+  }
+
+  &._show {
+    display: block;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: $color-akcent2;
+    margin-bottom: 20px;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+
+    th, td {
+      padding: 12px 8px;
+      border-bottom: 1px solid $color-stat-stroke;
+    }
+
+    th {
+      background-color: $color-dark-animation;
+      color: $color-akcent1;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: $color-dark-animation;
+    }
+  }
+
+  &__update {
+    margin-top: 10px;
+    font-size: 14px;
+    text-align: right;
+    color: $color-akcent2;
+  }
+}
