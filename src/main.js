@@ -59,7 +59,7 @@ function openEvent(uuid, callback) {
 }
 
 // ------------------- Открытие события через клики -------------------
-document.querySelector(".date-files__items").addEventListener("click", function(e) {
+document.querySelector(".date-files__items").addEventListener("click", function (e) {
   const fileItem = e.target.closest(".file__item");
   if (!fileItem) return;
   openEvent(fileItem.id, () => loadDateFile(fileItem.id));
@@ -70,7 +70,7 @@ document.querySelector(".date-files__items").addEventListener("click", function(
   fileItem.classList.add("_active", "_uploading-file");
 });
 
-document.querySelector(".last-file__item").addEventListener("click", function() {
+document.querySelector(".last-file__item").addEventListener("click", function () {
   openEvent(this.id, loadLastFile);
   this.classList.add("_active");
 });
@@ -105,6 +105,13 @@ async function loadResultsTable() {
 
     container.innerHTML = ""; // очищаем контейнер перед загрузкой
 
+    // 🔹 Добавляем заголовок перед таблицей
+    const title = document.createElement("h2");
+    title.className = "track-title";
+    title.textContent = "Лучший круг на Трассе №4";
+    container.appendChild(title);
+
+    // Создаём таблицу
     const table = document.createElement("table");
     table.className = "results-table";
 
@@ -121,13 +128,14 @@ async function loadResultsTable() {
     data.forEach((row, index) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${index + 1}</td>       <!-- № -->
-        <td>${row.pilot}</td>       <!-- Пилот -->
-        <td>${row.time}</td>        <!-- Время -->
+        <td>${index + 1}</td>
+        <td>${row.pilot}</td>
+        <td>${row.time}</td>
       `;
       table.appendChild(tr);
     });
 
+    // Добавляем таблицу после заголовка
     container.appendChild(table);
 
   } catch (err) {
