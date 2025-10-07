@@ -108,9 +108,9 @@ async function loadResultsTable() {
 
     const header = document.createElement("tr");
     header.innerHTML = `
+      <th>№</th>
       <th>Пилот</th>
-      <th>Время (сек)</th>
-      <th>Дата</th>
+      <th>Лучший круг</th>
     `;
     table.appendChild(header);
 
