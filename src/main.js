@@ -7,6 +7,7 @@ import { loadFilesList, loadLastFile, urlUpload, loadDateFile } from "./js/loadD
 import { setState, getState, getButton, getLocalFileElement, getTab } from "./js/sharedStates";
 
 ////////////////////////////////////////////
+// Эффекты для мобильных кнопок
 if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
   document.addEventListener("click", function (event) {
     if (event.target.closest("button")) {
@@ -16,10 +17,12 @@ if (window.matchMedia("((hover: none) and (pointer: coarse))").matches) {
   });
 }
 
+// ------------------- Установка состояния -------------------
 setState("language", document.querySelector("html").getAttribute("lang"));
 setState("textStrings", getState("language") == "ru" ? RU_DICT : EN_DICT);
 setState("isUuid", new URLSearchParams(window.location.search).get("uuid"));
 
+// ------------------- Инициализация страницы -------------------
 if (getState("isUuid")) {
   loadFilesList(false);
   urlUpload("uuid");
@@ -29,6 +32,7 @@ if (getState("isUuid")) {
   loadFilesList(true);
 }
 
+// ------------------- Календарь -------------------
 document.querySelector(".calendar__prev-month").addEventListener("click", () => moveMonth("right", "left"));
 document.querySelector(".calendar__next-month").addEventListener("click", () => moveMonth("left", "right"));
 
@@ -42,9 +46,14 @@ document.querySelector(".calendar__days").addEventListener("click", function (e)
   }
 });
 
+// ------------------- Открытие события -------------------
 document.querySelector(".date-files__items").addEventListener("click", function (e) {
   const fileItemElement = e.target.closest(".file__item");
   if (!fileItemElement) return;
+
+  // Очищаем таблицу при открытии события
+  const resultsContainer = document.getElementById("results-container");
+  if (resultsContainer) resultsContainer.innerHTML = "";
 
   const dateFileElements = document.querySelectorAll(".file__item");
   dateFileElements.forEach((elem) => {
@@ -60,9 +69,11 @@ document.querySelector(".last-file__item").addEventListener("click", function ()
   loadLastFile();
 });
 
+// ------------------- Загрузка локальных файлов -------------------
 getLocalFileElement("input").addEventListener("change", addLocalFile);
 getLocalFileElement("form").addEventListener("submit", startLocalFile);
 
+// ------------------- Таб-система -------------------
 getButton("pilots").addEventListener("click", function () {
   tabSwitch(getTab("main")[0].name, getTab("main"));
 });
@@ -73,19 +84,10 @@ getButton("rounds").addEventListener("click", function () {
   tabSwitch(getTab("main")[2].name, getTab("main"));
 });
 
+// ------------------- Адаптив для круговой статистики -------------------
 window.addEventListener("resize", roundStatsStrokeWidthChange);
 
 // ------------------- RESULTS TABLE -------------------
-window.addEventListener("DOMContentLoaded", () => {
-  const isUuid = getState("isUuid");
-
-  // строго проверяем — если есть uuid и он непустой, выходим
-  if (isUuid && isUuid !== "null" && isUuid !== "") return;
-
-  // Загружаем таблицу
-  loadResultsTable();
-});
-
 async function loadResultsTable() {
   try {
     const res = await fetch("/results.json");
@@ -120,5 +122,23 @@ async function loadResultsTable() {
 
   } catch (err) {
     console.error("Ошибка при загрузке таблицы:", err);
+    const container = document.getElementById("results-container");
+    if (container) container.textContent = "Ошибка при загрузке таблицы результатов.";
   }
 }
+
+// Загружаем таблицу только если это главная страница
+window.addEventListener("DOMContentLoaded", () => {
+  const isUuid = getState("isUuid");
+  if (!isUuid || isUuid === "null" || isUuid === "") {
+    loadResultsTable();
+  }
+});
+
+// ------------------- Очистка таблицы при загрузке события через urlUpload -------------------
+const originalUrlUpload = urlUpload;
+window.urlUpload = function(type) {
+  const resultsContainer = document.getElementById("results-container");
+  if (resultsContainer) resultsContainer.innerHTML = "";
+  originalUrlUpload(type);
+};
