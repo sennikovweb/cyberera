@@ -74,3 +74,46 @@ getButton("rounds").addEventListener("click", function () {
 });
 
 window.addEventListener("resize", roundStatsStrokeWidthChange);
+async function loadResultsTable() {
+  // Проверяем, есть ли в URL параметр uuid
+  const params = new URLSearchParams(window.location.search);
+  const uuid = params.get('uuid');
+
+  // Если параметр есть — значит это страница события, таблицу не показываем
+  if (uuid) return;
+
+  // Загружаем JSON с результатами
+  const res = await fetch('/results.json');
+  const data = await res.json();
+
+  const container = document.getElementById('results-container');
+  if (!container) return;
+
+  // Создаём таблицу
+  const table = document.createElement('table');
+  table.className = 'results-table';
+
+  // Заголовки
+  const header = document.createElement('tr');
+  header.innerHTML = `
+    <th>Пилот</th>
+    <th>Время (сек)</th>
+    <th>Дата</th>
+  `;
+  table.appendChild(header);
+
+  // Заполняем строки
+  data.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${row.pilot}</td>
+      <td>${row.time}</td>
+      <td>${row.date}</td>
+    `;
+    table.appendChild(tr);
+  });
+
+  container.appendChild(table);
+}
+
+loadResultsTable();
