@@ -76,15 +76,18 @@ getButton("rounds").addEventListener("click", function () {
 window.addEventListener("resize", roundStatsStrokeWidthChange);
 
 // ------------------- RESULTS TABLE -------------------
-window.addEventListener("DOMContentLoaded", async () => {
-  // Берём глобальное состояние isUuid, которое уже задано ранее
-  const isUuid = getState("isUuid"); 
+window.addEventListener("DOMContentLoaded", () => {
+  const isUuid = getState("isUuid");
 
-  // Если это страница события — не показываем таблицу
-  if (isUuid) return;
+  // строго проверяем — если есть uuid и он непустой, выходим
+  if (isUuid && isUuid !== "null" && isUuid !== "") return;
 
+  // Загружаем таблицу
+  loadResultsTable();
+});
+
+async function loadResultsTable() {
   try {
-    // Загружаем JSON с результатами
     const res = await fetch("/results.json");
     if (!res.ok) throw new Error("Файл results.json не найден");
     const data = await res.json();
@@ -92,11 +95,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("results-container");
     if (!container) return;
 
-    // Создаём таблицу
     const table = document.createElement("table");
     table.className = "results-table";
 
-    // Заголовок таблицы
     const header = document.createElement("tr");
     header.innerHTML = `
       <th>Пилот</th>
@@ -105,7 +106,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     `;
     table.appendChild(header);
 
-    // Добавляем строки с данными
     data.forEach(row => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -120,8 +120,5 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   } catch (err) {
     console.error("Ошибка при загрузке таблицы:", err);
-    const container = document.getElementById("results-container");
-    if (container) container.textContent = "Ошибка при загрузке таблицы результатов.";
   }
-});
-// ------------------- END RESULTS TABLE -------------------
+}
