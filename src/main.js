@@ -25,7 +25,7 @@ setState("isUuid", new URLSearchParams(window.location.search).get("uuid"));
 // ------------------- Инициализация страницы -------------------
 if (getState("isUuid")) {
   loadFilesList(false);
-  urlUpload("uuid");
+  urlUpload(getState("isUuid"));
 } else {
   document.querySelector(".main").classList.remove("_hide");
   document.querySelector(".wrapper").classList.remove("_hide");
@@ -41,32 +41,38 @@ document.querySelector(".calendar__days").addEventListener("click", function (e)
   if (e.target == day && day.classList.contains("_day__file")) {
     getLocalFileElement("tittle").classList.add("_hidden");
     getLocalFileElement("label").classList.add("_hidden");
-    getDayFiles(e.target.id);
+    openEvent(day.id, () => getDayFiles(day.id));
     e.target.classList.add("_active");
   }
 });
 
-// ------------------- Открытие события -------------------
-document.querySelector(".date-files__items").addEventListener("click", function (e) {
-  const fileItemElement = e.target.closest(".file__item");
-  if (!fileItemElement) return;
+// ------------------- Универсальная функция открытия события -------------------
+function clearResultsTable() {
+  const container = document.getElementById("results-container");
+  if (container) container.innerHTML = "";
+}
 
-  // Очищаем таблицу при открытии события
-  const resultsContainer = document.getElementById("results-container");
-  if (resultsContainer) resultsContainer.innerHTML = "";
+function openEvent(uuid, callback) {
+  setState("isUuid", uuid);
+  clearResultsTable();
+  if (callback) callback();
+}
 
+// ------------------- Открытие события через клики -------------------
+document.querySelector(".date-files__items").addEventListener("click", function(e) {
+  const fileItem = e.target.closest(".file__item");
+  if (!fileItem) return;
+  openEvent(fileItem.id, () => loadDateFile(fileItem.id));
   const dateFileElements = document.querySelectorAll(".file__item");
-  dateFileElements.forEach((elem) => {
-    if (elem != fileItemElement) elem.classList.add("_hidden", "_no-event");
+  dateFileElements.forEach(elem => {
+    if (elem !== fileItem) elem.classList.add("_hidden", "_no-event");
   });
-
-  fileItemElement.classList.add("_active", "_uploading-file");
-  loadDateFile(fileItemElement.id);
+  fileItem.classList.add("_active", "_uploading-file");
 });
 
-document.querySelector(".last-file__item").addEventListener("click", function () {
+document.querySelector(".last-file__item").addEventListener("click", function() {
+  openEvent(this.id, loadLastFile);
   this.classList.add("_active");
-  loadLastFile();
 });
 
 // ------------------- Загрузка локальных файлов -------------------
@@ -127,18 +133,10 @@ async function loadResultsTable() {
   }
 }
 
-// Загружаем таблицу только если это главная страница
+// Загружаем таблицу только на главной
 window.addEventListener("DOMContentLoaded", () => {
   const isUuid = getState("isUuid");
   if (!isUuid || isUuid === "null" || isUuid === "") {
     loadResultsTable();
   }
 });
-
-// ------------------- Очистка таблицы при загрузке события через urlUpload -------------------
-const originalUrlUpload = urlUpload;
-window.urlUpload = function(type) {
-  const resultsContainer = document.getElementById("results-container");
-  if (resultsContainer) resultsContainer.innerHTML = "";
-  originalUrlUpload(type);
-};
