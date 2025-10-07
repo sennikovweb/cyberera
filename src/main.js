@@ -74,46 +74,54 @@ getButton("rounds").addEventListener("click", function () {
 });
 
 window.addEventListener("resize", roundStatsStrokeWidthChange);
-async function loadResultsTable() {
-  // Проверяем, есть ли в URL параметр uuid
-  const params = new URLSearchParams(window.location.search);
-  const uuid = params.get('uuid');
 
-  // Если параметр есть — значит это страница события, таблицу не показываем
-  if (uuid) return;
+// ------------------- RESULTS TABLE -------------------
+window.addEventListener("DOMContentLoaded", async () => {
+  // Берём глобальное состояние isUuid, которое уже задано ранее
+  const isUuid = getState("isUuid"); 
 
-  // Загружаем JSON с результатами
-  const res = await fetch('/results.json');
-  const data = await res.json();
+  // Если это страница события — не показываем таблицу
+  if (isUuid) return;
 
-  const container = document.getElementById('results-container');
-  if (!container) return;
+  try {
+    // Загружаем JSON с результатами
+    const res = await fetch("/results.json");
+    if (!res.ok) throw new Error("Файл results.json не найден");
+    const data = await res.json();
 
-  // Создаём таблицу
-  const table = document.createElement('table');
-  table.className = 'results-table';
+    const container = document.getElementById("results-container");
+    if (!container) return;
 
-  // Заголовки
-  const header = document.createElement('tr');
-  header.innerHTML = `
-    <th>Пилот</th>
-    <th>Время (сек)</th>
-    <th>Дата</th>
-  `;
-  table.appendChild(header);
+    // Создаём таблицу
+    const table = document.createElement("table");
+    table.className = "results-table";
 
-  // Заполняем строки
-  data.forEach(row => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${row.pilot}</td>
-      <td>${row.time}</td>
-      <td>${row.date}</td>
+    // Заголовок таблицы
+    const header = document.createElement("tr");
+    header.innerHTML = `
+      <th>Пилот</th>
+      <th>Время (сек)</th>
+      <th>Дата</th>
     `;
-    table.appendChild(tr);
-  });
+    table.appendChild(header);
 
-  container.appendChild(table);
-}
+    // Добавляем строки с данными
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row.pilot}</td>
+        <td>${row.time}</td>
+        <td>${row.date}</td>
+      `;
+      table.appendChild(tr);
+    });
 
-loadResultsTable();
+    container.appendChild(table);
+
+  } catch (err) {
+    console.error("Ошибка при загрузке таблицы:", err);
+    const container = document.getElementById("results-container");
+    if (container) container.textContent = "Ошибка при загрузке таблицы результатов.";
+  }
+});
+// ------------------- END RESULTS TABLE -------------------
