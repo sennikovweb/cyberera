@@ -103,23 +103,27 @@ async function loadResultsTable() {
     const container = document.getElementById("results-container");
     if (!container) return;
 
+    container.innerHTML = ""; // очищаем контейнер перед загрузкой
+
     const table = document.createElement("table");
     table.className = "results-table";
 
+    // Заголовки
     const header = document.createElement("tr");
     header.innerHTML = `
       <th>№</th>
       <th>Пилот</th>
-      <th>Лучший круг</th>
+      <th>Время</th>
     `;
     table.appendChild(header);
 
-    data.forEach(row => {
+    // Заполняем строки
+    data.forEach((row, index) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${row.pilot}</td>
-        <td>${row.time}</td>
-        <td>${row.date}</td>
+        <td>${index + 1}</td>       <!-- № -->
+        <td>${row.pilot}</td>       <!-- Пилот -->
+        <td>${row.time}</td>        <!-- Время -->
       `;
       table.appendChild(tr);
     });
@@ -133,7 +137,7 @@ async function loadResultsTable() {
   }
 }
 
-// Загружаем таблицу только на главной
+// Загружаем таблицу только на главной странице
 window.addEventListener("DOMContentLoaded", () => {
   const isUuid = getState("isUuid");
   if (!isUuid || isUuid === "null" || isUuid === "") {
