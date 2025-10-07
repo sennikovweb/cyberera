@@ -10690,25 +10690,22 @@ body {
 }
 // ------------------- Таблица результатов -------------------
 .results-table {
-  width: 100%; // максимально под контейнер
-  max-height: 400px; // примерно как календарь, можно подогнать
+  width: 100%;
+  max-height: 500px; // увеличить высоту таблицы
   overflow-y: auto;
   border-collapse: collapse;
   margin: 20px 0;
   font-family: 'Calibri', sans-serif;
-  font-size: 0.95rem;
+  font-size: 1.1rem; // увеличиваем шрифт
   color: $color-grey;
   background-color: $color-dark;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  
-  display: block; // чтобы была вертикальная прокрутка
-  table-layout: fixed;
 
   th, td {
-    padding: 12px 10px;
+    padding: 16px 12px; // увеличиваем отступы
     text-align: center;
-    min-width: 80px;
+    min-width: 100px; // увеличиваем минимальную ширину ячеек
   }
 
   th {
@@ -10723,15 +10720,14 @@ body {
 
   td {
     border-bottom: 1px solid rgba(197,198,199,0.2);
-    word-wrap: break-word;
   }
 
   tr:nth-child(even) {
-    background-color: rgba(197,198,199,0.05); // полосатые строки
+    background-color: rgba(197,198,199,0.05);
   }
 
   tr:hover {
-    background-color: rgba(102,252,241,0.1); // hover
+    background-color: rgba(102,252,241,0.1);
     transition: background-color 0.2s;
   }
 }
@@ -10739,10 +10735,10 @@ body {
 // Адаптив для планшетов
 @media (max-width: 768px) {
   .results-table {
-    font-size: 0.85rem;
+    font-size: 1rem;
     th, td {
-      padding: 10px 8px;
-      min-width: 70px;
+      padding: 14px 10px;
+      min-width: 90px;
     }
   }
 }
@@ -10750,13 +10746,10 @@ body {
 // Адаптив для мобильных
 @media (max-width: 480px) {
   .results-table {
-    width: 100%;
-    display: block;
-    overflow-x: auto;
-    font-size: 0.8rem;
-
+    font-size: 0.95rem;
     th, td {
-      white-space: nowrap;
+      padding: 12px 8px;
+      min-width: 80px;
     }
   }
 }
