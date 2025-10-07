@@ -10772,3 +10772,71 @@ body {
     }
   }
 }
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-family: 'Calibri', sans-serif;
+  font-size: 0.9rem;
+  color: $color-grey;
+  background-color: $color-dark;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+  th, td {
+    padding: 12px 15px;
+    text-align: center;
+  }
+
+  th {
+    background-color: $color-dark-animation;
+    font-weight: 600;
+    color: $color-akcent2;
+    border-bottom: 2px solid $color-akcent1;
+  }
+
+  td {
+    border-bottom: 1px solid rgba(197,198,199,0.2);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover {
+    background-color: rgba(102,252,241,0.1); // светлый акцент при hover
+    transition: background-color 0.2s;
+  }
+
+  // Полосатые строки
+  tr:nth-child(even) {
+    background-color: rgba(197,198,199,0.05);
+  }
+
+  // Подсветка лучшего круга (первое место)
+  tr:first-child {
+    background-color: rgba(148,69,162,0.2);
+    th:first-child, td:first-child {
+      color: $color-akcent1Vs;
+      font-weight: 700;
+    }
+  }
+}
+
+// Адаптив
+@media (max-width: 768px) {
+  .results-table {
+    font-size: 0.8rem;
+    th, td { padding: 10px; }
+  }
+}
+
+@media (max-width: 480px) {
+  .results-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    th, td { white-space: nowrap; }
+  }
+}
