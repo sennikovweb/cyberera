@@ -102,18 +102,18 @@ h6 {
 /*--------------------*/
 
 //.........Цвета
-$color-back: #0b0c10;
+$color-back: #131313;
 
-$color-dark: #1f2833;
-$color-dark-animation: #1f283334;
-$color-grey: #c5c6c7;
-$color-akcent2: #66fcf1;
-$color-akcent1: #45a293;
+$color-dark: #1A1A1A;
+$color-dark-animation: #1A1A1A34;
+$color-#9A8855: #E6C870;
+$color-akcent2: #FFD700;
+$color-akcent1: #FFC300;
 
 
 $color-akcent1Vs: #9445a2;
-$color-stat-stroke: #c5c6c721;
-$color-stat-frame: #c5c6c7eb;
+$color-stat-stroke: #E6C870;
+$color-stat-frame: #E6C870;
 // $color-dark: #324255;
 
 
@@ -173,20 +173,20 @@ body {
 
 	&._active {
 		transition: all 0.3s ease;
-		box-shadow: 0px 0px 0px $color-grey, 0px 0px 10px $color-dark inset;
+		box-shadow: 0px 0px 0px $color-#9A8855, 0px 0px 10px $color-dark inset;
 		background-color: $color-akcent2;
 
 	}
 
 	@media(hover:hover) {
 		&:hover {
-			box-shadow: 0px 0px 10px $color-grey;
+			box-shadow: 0px 0px 10px $color-#9A8855;
 		}
 
 		&:active {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 	}
 
@@ -194,13 +194,13 @@ body {
 		&._active-animation {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 
 		&:active {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 	}
 }
@@ -245,7 +245,7 @@ body {
 }
 
 ._button-time {
-	color: $color-grey;
+	color: $color-#9A8855;
 	background-color: transparent;
 	border: 1px solid $color-akcent1;
 	font-size: 25px;
@@ -304,7 +304,7 @@ body {
 	width: 40px;
 	height: 40px;
 	background-color: transparent;
-	// border: 1px solid $color-grey;
+	// border: 1px solid $color-#9A8855;
 	transition: all 0.4s linear;
 	cursor: pointer;
 
@@ -406,7 +406,7 @@ body {
 	height: 40px;
 	cursor: pointer;
 
-	// background-color: $color-grey;
+	// background-color: $color-#9A8855;
 	&::after,
 	&::before {
 		content: '';
@@ -414,7 +414,7 @@ body {
 		top: 7px;
 		width: 2px;
 		height: 29px;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 	}
 
 	&::after {
@@ -501,7 +501,7 @@ body {
 
 
 .wrapper {
-	color: $color-grey;
+	color: $color-#9A8855;
 	overflow: hidden;
 	min-height: 120%;
 
@@ -528,11 +528,11 @@ body {
 
 	&._error {
 		&::before {
-			background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+			background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #FFC94D 50%, $color-dark-animation 70%, $color-dark-animation 100%);
 			background-size: 200% 100%;
 			animation: no-files 2s linear 0s infinite normal forwards;
 
-			// box-shadow: 0px 0px 50px #f00 inset;
+			// box-shadow: 0px 0px 50px #FFC94D inset;
 		}
 
 	}
@@ -808,7 +808,7 @@ body {
 				width: 10px;
 				height: 10px;
 				border-radius: 50%;
-				background-color: #f00;
+				background-color: #FFC94D;
 				animation: live 1.5s linear 0s infinite normal forwards;
 			}
 
@@ -879,7 +879,7 @@ body {
 
 			&::after,
 			&::before {
-				background-color: $color-grey;
+				background-color: $color-#9A8855;
 			}
 		}
 
@@ -1006,7 +1006,7 @@ body {
 		border: 2px solid $color-akcent1;
 		width: 40px;
 		height: 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 		font-size: 18px;
 		box-shadow: 0px 0px 20px $color-akcent1 inset;
 		cursor: none;
@@ -1045,7 +1045,7 @@ body {
 			position: relative;
 			z-index: 10;
 			border: 2px solid $color-akcent1;
-			color: $color-grey;
+			color: $color-#9A8855;
 			box-shadow: 0px 0px 10px $color-akcent1 inset;
 
 			&:before {
@@ -1114,7 +1114,7 @@ body {
 				z-index: 20;
 				opacity: 0.7;
 				border-radius: 50%;
-				background-color: #f00;
+				background-color: #FFC94D;
 				animation: live-calendar 1.5s linear 0s infinite normal forwards;
 			}
 		}
@@ -1221,13 +1221,13 @@ body {
 		}
 
 		&._error {
-			color: #f00;
-			border: 1px solid #f00;
+			color: #FFC94D;
+			border: 1px solid #FFC94D;
 			animation: error-animation 1s ease 0s 1 normal forwards;
 		}
 
 		&._error-parsing {
-			box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 20px #f00 inset;
+			box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 20px #FFC94D inset;
 		}
 
 		@media(hover:hover) {
@@ -1295,9 +1295,9 @@ body {
 		}
 
 		&._error-parsing {
-			color: #f00;
-			border: 1px solid #f00;
-			box-shadow: 0px 0px 10px #f00, 0px 0px 10px #f00 inset;
+			color: #FFC94D;
+			border: 1px solid #FFC94D;
+			box-shadow: 0px 0px 10px #FFC94D, 0px 0px 10px #FFC94D inset;
 			animation: error-animation 0.8s ease 0s 1 normal forwards;
 		}
 
@@ -1397,13 +1397,13 @@ body {
 }
 
 .tab-items {
-	border: 1px solid $color-grey;
+	border: 1px solid $color-#9A8855;
 	padding: 20px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
 	gap: 25px;
-	background-color: #1f2833cd;
+	background-color: #1A1A1Acd;
 	visibility: hidden;
 	opacity: 0;
 	transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s ease 0.3s;
@@ -1507,7 +1507,7 @@ body {
 
 
 	&__stats {
-		// border: 1px solid $color-grey;
+		// border: 1px solid $color-#9A8855;
 		// border-radius: 20px;
 		margin: 20px 0px 0px 0px;
 
@@ -2114,7 +2114,7 @@ body {
 	z-index: 100;
 	width: 100%;
 	height: 120%;
-	background-color: #0b0c10d4;
+	background-color: #131313d4;
 
 	transition: opacity 0.3s ease 0.2s, visibility 0s ease 0.3s;
 	visibility: hidden;
@@ -2133,7 +2133,7 @@ body {
 		width: 95%;
 		height: clamp(400px, 75%, 1000px);
 		inset: 5% 0 0 0;
-		border: 1px solid $color-grey;
+		border: 1px solid $color-#9A8855;
 		background-color: $color-dark;
 		display: flex;
 		flex-direction: column;
@@ -2219,7 +2219,7 @@ body {
 	flex: 0 0 40%;
 	border-radius: 10px;
 	display: flex;
-	// border: 1px solid $color-grey;
+	// border: 1px solid $color-#9A8855;
 	position: relative;
 	padding: 0px 10px;
 
@@ -2248,7 +2248,7 @@ body {
 		font-size: 25px;
 		letter-spacing: 0.4px;
 		margin: 0px 0px 0px 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 		grid-row: 1/2;
 		grid-column: 1/2;
 
@@ -2265,7 +2265,7 @@ body {
 		font-size: 20px;
 		letter-spacing: 0.4px;
 		margin: 0px 0px 0px 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 
 		@media(max-width:510px) {
 			// margin: 0px 0px 0px 8px;
@@ -2305,7 +2305,7 @@ body {
 			position: absolute;
 			bottom: 10px;
 			left: 10px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 			transition: all 0.2s ease;
 			z-index: 30;
 		}
@@ -2352,7 +2352,7 @@ body {
 
 		&._hidden-text {
 			span {
-				color: #1f283300;
+				color: #1A1A1A00;
 			}
 		}
 
@@ -2401,7 +2401,7 @@ body {
 		transform: translate(-50%, 0px);
 		width: 50%;
 		background-color: $color-akcent1;
-		// box-shadow: 0px 0px 5px $color-grey inset;
+		// box-shadow: 0px 0px 5px $color-#9A8855 inset;
 		transition: all 0.5s ease;
 
 		&._hidden-columns {
@@ -2424,10 +2424,10 @@ body {
 		// top: 0%;
 		// left: 50%;
 		transform: translate(-50%, -32px);
-		background-color: #1b222b;
+		background-color: #131313;
 		padding: 5px;
 		border-radius: 5px;
-		color: #c5c6c7aa;
+		color: #E6C870;
 		font-size: 20px;
 		border: 1px solid $color-akcent1;
 		z-index: 40;
@@ -2447,14 +2447,14 @@ body {
 		}
 
 		&::after {
-			border-top: 10px solid #1b222b;
+			border-top: 10px solid #131313;
 			bottom: -19px;
 		}
 
 		&._akcent {
 			border: 1px solid $color-akcent2;
 			background-color: $color-dark;
-			color: $color-grey;
+			color: $color-#9A8855;
 
 			&::before,
 			&::after {
@@ -2505,7 +2505,7 @@ body {
 
 .all-laps {
 	&::-webkit-scrollbar-track {
-		background-color: #f00;
+		background-color: #FFC94D;
 	}
 
 
@@ -2830,7 +2830,7 @@ body {
 
 		&._no-event {
 			pointer-events: none;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 	}
 
@@ -2966,7 +2966,7 @@ body {
 		left: 0;
 		width: 100%;
 		height: 1px;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 
 	}
 }
@@ -3343,7 +3343,7 @@ body {
 	}
 
 	._hidden-graph-area-lap-node {
-		color: #1f283300;
+		color: #1A1A1A00;
 
 		span {
 			height: 0%;
@@ -3469,7 +3469,7 @@ body {
 		-webkit-appearance: none;
 		/* Для старых версий Safari и Chrome */
 		width: 100%;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 		height: 2px;
 		cursor: pointer;
 		z-index: 100;
@@ -3483,12 +3483,12 @@ body {
 			pointer-events: none;
 
 			&::-moz-range-thumb {
-				background: $color-grey;
+				background: $color-#9A8855;
 				opacity: 0;
 			}
 
 			&::-webkit-slider-thumb {
-				background: $color-grey;
+				background: $color-#9A8855;
 				opacity: 0;
 			}
 		}
@@ -3549,7 +3549,7 @@ body {
 		flex: 0 0 50px;
 
 		&._no-event {
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 			pointer-events: none;
 		}
 
@@ -3577,7 +3577,7 @@ body {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		// border: 1px solid #f00;
+		// border: 1px solid #FFC94D;
 		transform: translate(0px, 10px);
 		opacity: 0;
 		visibility: hidden;
@@ -3666,7 +3666,7 @@ body {
 			width: 98%;
 			transform: translate(-50%, 0);
 			height: 1px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 
 
@@ -3750,7 +3750,7 @@ body {
 		grid-column: 2/3;
 		overflow: auto;
 
-		// border: 1px solid #0f0;
+		// border: 1px solid #FFEA70;
 	}
 
 	&__stats-row-container {
@@ -3786,7 +3786,7 @@ body {
 			width: 98%;
 			transform: translate(-50%, 0);
 			height: 2px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 
 		@media(max-width:767px) {
@@ -3807,7 +3807,7 @@ body {
 	&__single-laps-row {
 		grid-column: 2/3;
 		overflow: auto;
-		// border: 1px solid #0f0;
+		// border: 1px solid #FFEA70;
 	}
 
 	&__single-laps-row-container {
@@ -4317,7 +4317,7 @@ body {
 
 		&._no-event {
 			pointer-events: none;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 	}
 
@@ -5007,7 +5007,7 @@ body {
 .author {
 	width: 100%;
 	height: 30px;
-	background-color: #1f283353;
+	background-color: #1A1A1A53;
 
 	&__container {
 		display: flex;
@@ -5046,7 +5046,7 @@ body {
 		}
 
 		&._error {
-			color: #f00;
+			color: #FFC94D;
 		}
 	}
 
@@ -5259,7 +5259,7 @@ body {
 	}
 
 	100% {
-		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #FFC94D 50%, $color-dark-animation 70%, $color-dark-animation 100%);
 	}
 
 }
@@ -5276,15 +5276,15 @@ body {
 
 @keyframes live {
 	0% {
-		box-shadow: 0px 0px 2px #f00;
+		box-shadow: 0px 0px 2px #FFC94D;
 	}
 
 	50% {
-		box-shadow: 0px 0px 10px #f00;
+		box-shadow: 0px 0px 10px #FFC94D;
 	}
 
 	100% {
-		box-shadow: 0px 0px 2px #f00;
+		box-shadow: 0px 0px 2px #FFC94D;
 	}
 }
 
@@ -5310,7 +5310,7 @@ body {
   background-color: $color-dark;
   border-radius: 12px;
   max-width: 900px;
-  color: $color-grey;
+  color: $color-#9A8855;
   font-size: 16px;
 
   &._hidden {
@@ -5489,18 +5489,18 @@ h6 {
 /*--------------------*/
 
 //.........Цвета
-$color-back: #0b0c10;
+$color-back: #131313;
 
-$color-dark: #1f2833;
-$color-dark-animation: #1f283334;
-$color-grey: #c5c6c7;
-$color-akcent2: #66fcf1;
-$color-akcent1: #45a293;
+$color-dark: #1A1A1A;
+$color-dark-animation: #1A1A1A34;
+$color-#9A8855: #E6C870;
+$color-akcent2: #FFD700;
+$color-akcent1: #FFC300;
 
 
 $color-akcent1Vs: #9445a2;
-$color-stat-stroke: #c5c6c721;
-$color-stat-frame: #c5c6c7eb;
+$color-stat-stroke: #E6C870;
+$color-stat-frame: #E6C870;
 // $color-dark: #324255;
 
 
@@ -5560,20 +5560,20 @@ body {
 
 	&._active {
 		transition: all 0.3s ease;
-		box-shadow: 0px 0px 0px $color-grey, 0px 0px 10px $color-dark inset;
+		box-shadow: 0px 0px 0px $color-#9A8855, 0px 0px 10px $color-dark inset;
 		background-color: $color-akcent2;
 
 	}
 
 	@media(hover:hover) {
 		&:hover {
-			box-shadow: 0px 0px 10px $color-grey;
+			box-shadow: 0px 0px 10px $color-#9A8855;
 		}
 
 		&:active {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 	}
 
@@ -5581,13 +5581,13 @@ body {
 		&._active-animation {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 
 		&:active {
 			transition: all 0.1s ease;
 			transform: perspective(3000) translate3d(0px, 0px, -100px);
-			box-shadow: 0px 0px 15px $color-grey, 0px 0px 5px $color-dark inset;
+			box-shadow: 0px 0px 15px $color-#9A8855, 0px 0px 5px $color-dark inset;
 		}
 	}
 }
@@ -5632,7 +5632,7 @@ body {
 }
 
 ._button-time {
-	color: $color-grey;
+	color: $color-#9A8855;
 	background-color: transparent;
 	border: 1px solid $color-akcent1;
 	font-size: 25px;
@@ -5691,7 +5691,7 @@ body {
 	width: 40px;
 	height: 40px;
 	background-color: transparent;
-	// border: 1px solid $color-grey;
+	// border: 1px solid $color-#9A8855;
 	transition: all 0.4s linear;
 	cursor: pointer;
 
@@ -5793,7 +5793,7 @@ body {
 	height: 40px;
 	cursor: pointer;
 
-	// background-color: $color-grey;
+	// background-color: $color-#9A8855;
 	&::after,
 	&::before {
 		content: '';
@@ -5801,7 +5801,7 @@ body {
 		top: 7px;
 		width: 2px;
 		height: 29px;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 	}
 
 	&::after {
@@ -5888,7 +5888,7 @@ body {
 
 
 .wrapper {
-	color: $color-grey;
+	color: $color-#9A8855;
 	overflow: hidden;
 	min-height: 120%;
 
@@ -5915,11 +5915,11 @@ body {
 
 	&._error {
 		&::before {
-			background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+			background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #FFC94D 50%, $color-dark-animation 70%, $color-dark-animation 100%);
 			background-size: 200% 100%;
 			animation: no-files 2s linear 0s infinite normal forwards;
 
-			// box-shadow: 0px 0px 50px #f00 inset;
+			// box-shadow: 0px 0px 50px #FFC94D inset;
 		}
 
 	}
@@ -6195,7 +6195,7 @@ body {
 				width: 10px;
 				height: 10px;
 				border-radius: 50%;
-				background-color: #f00;
+				background-color: #FFC94D;
 				animation: live 1.5s linear 0s infinite normal forwards;
 			}
 
@@ -6266,7 +6266,7 @@ body {
 
 			&::after,
 			&::before {
-				background-color: $color-grey;
+				background-color: $color-#9A8855;
 			}
 		}
 
@@ -6393,7 +6393,7 @@ body {
 		border: 2px solid $color-akcent1;
 		width: 40px;
 		height: 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 		font-size: 18px;
 		box-shadow: 0px 0px 20px $color-akcent1 inset;
 		cursor: none;
@@ -6432,7 +6432,7 @@ body {
 			position: relative;
 			z-index: 10;
 			border: 2px solid $color-akcent1;
-			color: $color-grey;
+			color: $color-#9A8855;
 			box-shadow: 0px 0px 10px $color-akcent1 inset;
 
 			&:before {
@@ -6501,7 +6501,7 @@ body {
 				z-index: 20;
 				opacity: 0.7;
 				border-radius: 50%;
-				background-color: #f00;
+				background-color: #FFC94D;
 				animation: live-calendar 1.5s linear 0s infinite normal forwards;
 			}
 		}
@@ -6608,13 +6608,13 @@ body {
 		}
 
 		&._error {
-			color: #f00;
-			border: 1px solid #f00;
+			color: #FFC94D;
+			border: 1px solid #FFC94D;
 			animation: error-animation 1s ease 0s 1 normal forwards;
 		}
 
 		&._error-parsing {
-			box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 20px #f00 inset;
+			box-shadow: 0px 0px 0px $color-akcent2, 0px 0px 20px #FFC94D inset;
 		}
 
 		@media(hover:hover) {
@@ -6682,9 +6682,9 @@ body {
 		}
 
 		&._error-parsing {
-			color: #f00;
-			border: 1px solid #f00;
-			box-shadow: 0px 0px 10px #f00, 0px 0px 10px #f00 inset;
+			color: #FFC94D;
+			border: 1px solid #FFC94D;
+			box-shadow: 0px 0px 10px #FFC94D, 0px 0px 10px #FFC94D inset;
 			animation: error-animation 0.8s ease 0s 1 normal forwards;
 		}
 
@@ -6784,13 +6784,13 @@ body {
 }
 
 .tab-items {
-	border: 1px solid $color-grey;
+	border: 1px solid $color-#9A8855;
 	padding: 20px;
 	border-radius: 10px;
 	display: flex;
 	flex-direction: column;
 	gap: 25px;
-	background-color: #1f2833cd;
+	background-color: #1A1A1Acd;
 	visibility: hidden;
 	opacity: 0;
 	transition: opacity 0.4s ease, transform 0.4s ease, visibility 0s ease 0.3s;
@@ -6894,7 +6894,7 @@ body {
 
 
 	&__stats {
-		// border: 1px solid $color-grey;
+		// border: 1px solid $color-#9A8855;
 		// border-radius: 20px;
 		margin: 20px 0px 0px 0px;
 
@@ -7501,7 +7501,7 @@ body {
 	z-index: 100;
 	width: 100%;
 	height: 120%;
-	background-color: #0b0c10d4;
+	background-color: #131313d4;
 
 	transition: opacity 0.3s ease 0.2s, visibility 0s ease 0.3s;
 	visibility: hidden;
@@ -7520,7 +7520,7 @@ body {
 		width: 95%;
 		height: clamp(400px, 75%, 1000px);
 		inset: 5% 0 0 0;
-		border: 1px solid $color-grey;
+		border: 1px solid $color-#9A8855;
 		background-color: $color-dark;
 		display: flex;
 		flex-direction: column;
@@ -7606,7 +7606,7 @@ body {
 	flex: 0 0 40%;
 	border-radius: 10px;
 	display: flex;
-	// border: 1px solid $color-grey;
+	// border: 1px solid $color-#9A8855;
 	position: relative;
 	padding: 0px 10px;
 
@@ -7635,7 +7635,7 @@ body {
 		font-size: 25px;
 		letter-spacing: 0.4px;
 		margin: 0px 0px 0px 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 		grid-row: 1/2;
 		grid-column: 1/2;
 
@@ -7652,7 +7652,7 @@ body {
 		font-size: 20px;
 		letter-spacing: 0.4px;
 		margin: 0px 0px 0px 40px;
-		color: $color-grey;
+		color: $color-#9A8855;
 
 		@media(max-width:510px) {
 			// margin: 0px 0px 0px 8px;
@@ -7692,7 +7692,7 @@ body {
 			position: absolute;
 			bottom: 10px;
 			left: 10px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 			transition: all 0.2s ease;
 			z-index: 30;
 		}
@@ -7739,7 +7739,7 @@ body {
 
 		&._hidden-text {
 			span {
-				color: #1f283300;
+				color: #1A1A1A00;
 			}
 		}
 
@@ -7788,7 +7788,7 @@ body {
 		transform: translate(-50%, 0px);
 		width: 50%;
 		background-color: $color-akcent1;
-		// box-shadow: 0px 0px 5px $color-grey inset;
+		// box-shadow: 0px 0px 5px $color-#9A8855 inset;
 		transition: all 0.5s ease;
 
 		&._hidden-columns {
@@ -7811,10 +7811,10 @@ body {
 		// top: 0%;
 		// left: 50%;
 		transform: translate(-50%, -32px);
-		background-color: #1b222b;
+		background-color: #131313;
 		padding: 5px;
 		border-radius: 5px;
-		color: #c5c6c7aa;
+		color: #E6C870;
 		font-size: 20px;
 		border: 1px solid $color-akcent1;
 		z-index: 40;
@@ -7834,14 +7834,14 @@ body {
 		}
 
 		&::after {
-			border-top: 10px solid #1b222b;
+			border-top: 10px solid #131313;
 			bottom: -19px;
 		}
 
 		&._akcent {
 			border: 1px solid $color-akcent2;
 			background-color: $color-dark;
-			color: $color-grey;
+			color: $color-#9A8855;
 
 			&::before,
 			&::after {
@@ -7892,7 +7892,7 @@ body {
 
 .all-laps {
 	&::-webkit-scrollbar-track {
-		background-color: #f00;
+		background-color: #FFC94D;
 	}
 
 
@@ -8217,7 +8217,7 @@ body {
 
 		&._no-event {
 			pointer-events: none;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 	}
 
@@ -8353,7 +8353,7 @@ body {
 		left: 0;
 		width: 100%;
 		height: 1px;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 
 	}
 }
@@ -8730,7 +8730,7 @@ body {
 	}
 
 	._hidden-graph-area-lap-node {
-		color: #1f283300;
+		color: #1A1A1A00;
 
 		span {
 			height: 0%;
@@ -8856,7 +8856,7 @@ body {
 		-webkit-appearance: none;
 		/* Для старых версий Safari и Chrome */
 		width: 100%;
-		background-color: $color-grey;
+		background-color: $color-#9A8855;
 		height: 2px;
 		cursor: pointer;
 		z-index: 100;
@@ -8870,12 +8870,12 @@ body {
 			pointer-events: none;
 
 			&::-moz-range-thumb {
-				background: $color-grey;
+				background: $color-#9A8855;
 				opacity: 0;
 			}
 
 			&::-webkit-slider-thumb {
-				background: $color-grey;
+				background: $color-#9A8855;
 				opacity: 0;
 			}
 		}
@@ -8936,7 +8936,7 @@ body {
 		flex: 0 0 50px;
 
 		&._no-event {
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 			pointer-events: none;
 		}
 
@@ -8964,7 +8964,7 @@ body {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		// border: 1px solid #f00;
+		// border: 1px solid #FFC94D;
 		transform: translate(0px, 10px);
 		opacity: 0;
 		visibility: hidden;
@@ -9053,7 +9053,7 @@ body {
 			width: 98%;
 			transform: translate(-50%, 0);
 			height: 1px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 
 
@@ -9137,7 +9137,7 @@ body {
 		grid-column: 2/3;
 		overflow: auto;
 
-		// border: 1px solid #0f0;
+		// border: 1px solid #FFEA70;
 	}
 
 	&__stats-row-container {
@@ -9173,7 +9173,7 @@ body {
 			width: 98%;
 			transform: translate(-50%, 0);
 			height: 2px;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 
 		@media(max-width:767px) {
@@ -9194,7 +9194,7 @@ body {
 	&__single-laps-row {
 		grid-column: 2/3;
 		overflow: auto;
-		// border: 1px solid #0f0;
+		// border: 1px solid #FFEA70;
 	}
 
 	&__single-laps-row-container {
@@ -9704,7 +9704,7 @@ body {
 
 		&._no-event {
 			pointer-events: none;
-			background-color: $color-grey;
+			background-color: $color-#9A8855;
 		}
 	}
 
@@ -10394,7 +10394,7 @@ body {
 .author {
 	width: 100%;
 	height: 30px;
-	background-color: #1f283353;
+	background-color: #1A1A1A53;
 
 	&__container {
 		display: flex;
@@ -10433,7 +10433,7 @@ body {
 		}
 
 		&._error {
-			color: #f00;
+			color: #FFC94D;
 		}
 	}
 
@@ -10646,7 +10646,7 @@ body {
 	}
 
 	100% {
-		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #f00 50%, $color-dark-animation 70%, $color-dark-animation 100%);
+		background: linear-gradient(to right, $color-dark-animation 0%, $color-dark-animation 30%, #FFC94D 50%, $color-dark-animation 70%, $color-dark-animation 100%);
 	}
 
 }
@@ -10663,15 +10663,15 @@ body {
 
 @keyframes live {
 	0% {
-		box-shadow: 0px 0px 2px #f00;
+		box-shadow: 0px 0px 2px #FFC94D;
 	}
 
 	50% {
-		box-shadow: 0px 0px 10px #f00;
+		box-shadow: 0px 0px 10px #FFC94D;
 	}
 
 	100% {
-		box-shadow: 0px 0px 2px #f00;
+		box-shadow: 0px 0px 2px #FFC94D;
 	}
 }
 
@@ -10697,7 +10697,7 @@ body {
   margin: 20px 0;
   font-family: 'Calibri', sans-serif;
   font-size: 1.2rem; // увеличиваем шрифт
-  color: $color-grey;
+  color: $color-#9A8855;
   background-color: $color-dark;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
