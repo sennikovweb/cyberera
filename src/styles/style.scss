@@ -10690,44 +10690,44 @@ body {
 }
 // ------------------- Таблица результатов -------------------
 .results-table {
-  width: 100%;
-  max-height: 500px; // увеличить высоту таблицы
-  overflow-y: auto;
+  width: 95%;                // немного меньше 100%, чтобы не прилипала к краям
+  max-width: 1200px;         // увеличиваем максимально возможную ширину
+  margin: 20px auto;         // центрируем
   border-collapse: collapse;
-  margin: 20px 0;
   font-family: 'Calibri', sans-serif;
-  font-size: 1.2rem; // увеличиваем шрифт
+  font-size: 1.3rem;         // чуть крупнее текст
   color: $color-grey;
   background-color: $color-dark;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  overflow: hidden;
 
   th, td {
-    padding: 16px 12px; // увеличиваем отступы
+    padding: 18px 16px;      // добавляем больше воздуха
     text-align: center;
-    min-width: 100px; // увеличиваем минимальную ширину ячеек
+    min-width: 110px;
   }
 
   th {
     background-color: $color-dark-animation;
     font-weight: 600;
     color: $color-akcent2;
-    border-bottom: 2px solid $color-akcent1;
+    border-bottom: 3px solid $color-akcent1;
     position: sticky;
     top: 0;
     z-index: 2;
   }
 
   td {
-    border-bottom: 1px solid rgba(197,198,199,0.2);
+    border-bottom: 1px solid rgba(197,198,199,0.25);
   }
 
   tr:nth-child(even) {
-    background-color: rgba(197,198,199,0.05);
+    background-color: rgba(197,198,199,0.08);
   }
 
   tr:hover {
-    background-color: rgba(102,252,241,0.1);
+    background-color: rgba(102,252,241,0.15);
     transition: background-color 0.2s;
   }
 }
@@ -10735,7 +10735,8 @@ body {
 // Адаптив для планшетов
 @media (max-width: 768px) {
   .results-table {
-    font-size: 1rem;
+    width: 100%;
+    font-size: 1.1rem;
     th, td {
       padding: 14px 10px;
       min-width: 90px;
@@ -10746,20 +10747,24 @@ body {
 // Адаптив для мобильных
 @media (max-width: 480px) {
   .results-table {
-    font-size: 0.95rem;
+    width: 100%;
+    font-size: 1rem;
     th, td {
       padding: 12px 8px;
       min-width: 80px;
     }
   }
 }
+
 .track-title {
   text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 1em 0 0.7em;
-  color: #fff; // если у тебя тёмный фон
+  font-size: 1.8rem;      // крупнее заголовок
+  font-weight: 700;
+  margin: 1.2em 0 0.8em;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
+
 .youtube-video {
   display: flex;
   justify-content: center;
@@ -10767,7 +10772,9 @@ body {
 }
 
 .youtube-video iframe {
-  max-width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  width: 90%;              // увеличиваем ширину видео
+  max-width: 1000px;       // ограничиваем по максимуму
+  aspect-ratio: 16 / 9;    // сохраняем пропорции
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.4);
 }
