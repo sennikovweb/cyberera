@@ -93,7 +93,7 @@ getButton("rounds").addEventListener("click", function () {
 // ------------------- Адаптив для круговой статистики -------------------
 window.addEventListener("resize", roundStatsStrokeWidthChange);
 
-// ------------------- RESULTS TABLE + YOUTUBE -------------------
+// ------------------- RESULTS TABLE + DYNAMIC TITLE & YOUTUBE -------------------
 async function loadResultsTable() {
   try {
     const res = await fetch("/results.json");
@@ -105,10 +105,10 @@ async function loadResultsTable() {
 
     container.innerHTML = ""; // очищаем контейнер перед загрузкой
 
-    // 🔹 Заголовок
+    // 🔹 Заголовок (берём из JSON или по умолчанию)
     const title = document.createElement("h2");
     title.className = "track-title";
-    title.textContent = "Лучший круг на Трассе №4";
+    title.textContent = data.title || "Результаты заезда";
     container.appendChild(title);
 
     // 🔹 Таблица
@@ -123,7 +123,10 @@ async function loadResultsTable() {
     `;
     table.appendChild(header);
 
-    data.forEach((row, index) => {
+    // Проверяем, где лежат результаты (в поле results или прямо в массиве)
+    const resultsArray = Array.isArray(data) ? data : data.results;
+
+    resultsArray.forEach((row, index) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td>${index + 1}</td>
@@ -135,21 +138,23 @@ async function loadResultsTable() {
 
     container.appendChild(table);
 
-    // 🔹 Вставляем видео YouTube после таблицы
-    const videoWrapper = document.createElement("div");
-    videoWrapper.className = "youtube-video";
-    videoWrapper.innerHTML = `
-      <iframe 
-        width="560" 
-        height="315" 
-        src="https://www.youtube.com/embed/." 
-        title="YouTube video player" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-      </iframe>
-    `;
-    container.appendChild(videoWrapper);
+    // 🔹 Видео YouTube (если указано)
+    if (data.youtube) {
+      // извлекаем ID видео из полной ссылки (например, ?v=abc123)
+      const videoId = data.youtube.split("v=")[1]?.split("&")[0] || data.youtube;
+      const videoWrapper = document.createElement("div");
+      videoWrapper.className = "youtube-video";
+      videoWrapper.innerHTML = `
+        <iframe
+          src="https://www.youtube.com/embed/${videoId}"
+          title="${data.title || "Видео"}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      `;
+      container.appendChild(videoWrapper);
+    }
 
   } catch (err) {
     console.error("Ошибка при загрузке таблицы:", err);
