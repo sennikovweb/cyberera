@@ -1,4 +1,7 @@
-[
+{
+  "title": "Лучший круг на Трассе №4",
+  "youtube": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "results": [
   { "pilot": "frshkk1", "time": "16.503" },
   { "pilot": "Kuza_fpv", "time": "16.666" },
   { "pilot": "Lyoshak", "time": "17.503" },
@@ -10,3 +13,4 @@
   { "pilot": "Housewithroof", "time": "34.046" },
   { "pilot": "VGXIII", "time": "34.381" }
 ]
+}
