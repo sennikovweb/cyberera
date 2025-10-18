@@ -93,7 +93,7 @@ getButton("rounds").addEventListener("click", function () {
 // ------------------- Адаптив для круговой статистики -------------------
 window.addEventListener("resize", roundStatsStrokeWidthChange);
 
-// ------------------- RESULTS TABLE -------------------
+// ------------------- RESULTS TABLE + YOUTUBE -------------------
 async function loadResultsTable() {
   try {
     const res = await fetch("/results.json");
@@ -105,17 +105,16 @@ async function loadResultsTable() {
 
     container.innerHTML = ""; // очищаем контейнер перед загрузкой
 
-    // 🔹 Добавляем заголовок перед таблицей
+    // 🔹 Заголовок
     const title = document.createElement("h2");
     title.className = "track-title";
     title.textContent = "Лучший круг на Трассе №4";
     container.appendChild(title);
 
-    // Создаём таблицу
+    // 🔹 Таблица
     const table = document.createElement("table");
     table.className = "results-table";
 
-    // Заголовки
     const header = document.createElement("tr");
     header.innerHTML = `
       <th>№</th>
@@ -124,7 +123,6 @@ async function loadResultsTable() {
     `;
     table.appendChild(header);
 
-    // Заполняем строки
     data.forEach((row, index) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -135,8 +133,23 @@ async function loadResultsTable() {
       table.appendChild(tr);
     });
 
-    // Добавляем таблицу после заголовка
     container.appendChild(table);
+
+    // 🔹 Вставляем видео YouTube после таблицы
+    const videoWrapper = document.createElement("div");
+    videoWrapper.className = "youtube-video";
+    videoWrapper.innerHTML = `
+      <iframe 
+        width="560" 
+        height="315" 
+        src="https://www.youtube.com/embed/v=nfMM-mhOdi0" 
+        title="YouTube video player" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    `;
+    container.appendChild(videoWrapper);
 
   } catch (err) {
     console.error("Ошибка при загрузке таблицы:", err);
@@ -145,7 +158,7 @@ async function loadResultsTable() {
   }
 }
 
-// Загружаем таблицу только на главной странице
+// ------------------- Запуск при загрузке страницы -------------------
 window.addEventListener("DOMContentLoaded", () => {
   const isUuid = getState("isUuid");
   if (!isUuid || isUuid === "null" || isUuid === "") {
