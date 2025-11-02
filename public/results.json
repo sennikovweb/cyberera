@@ -1,16 +1,11 @@
 {
-  "title": "Лучший круг на Трассе №4",
-  "youtube": "https://www.youtube.com/",
+  "title": "Лучший круг на Трассе №5",
+  "youtube": "https://youtu.be/mthH7BE69Qs",
   "results": [
-  { "pilot": "frshkk1", "time": "16.503" },
-  { "pilot": "Kuza_fpv", "time": "16.666" },
-  { "pilot": "Lyoshak", "time": "17.503" },
-  { "pilot": "MX_299", "time": "18.130" },
-  { "pilot": "Suhariik", "time": "20.605" },
-  { "pilot": "Semen", "time": "24.134" },
-  { "pilot": "kosmodes", "time": "24.871" },
-  { "pilot": "FDivnyy", "time": "27.020" },
-  { "pilot": "Housewithroof", "time": "34.046" },
-  { "pilot": "VGXIII", "time": "34.381" }
+  { "pilot": "X9", "time": "13.67" },
+  { "pilot": "MX_299", "time": "19.65" },
+  { "pilot": "Suhariik", "time": "20.12" },
+  { "pilot": "K00K4BURRA", "time": "21.12" },
+  { "pilot": "ivan_vsn", "time": "23.65" },
 ]
 }
